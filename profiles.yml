@@ -3,6 +3,7 @@ madt8102_dbt:
   outputs:
     dev:
       type: duckdb
+      schema: public
       path: '/content/duckdb.duckdb'
       extensions:
         - httpfs
