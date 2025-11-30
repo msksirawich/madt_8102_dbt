@@ -29,6 +29,11 @@ vars:
 
 # Configuring models
 # Full documentation: https://docs.getdbt.com/docs/configuring-models
+seeds:
+  # 1. Apply config to ALL seeds in your project (using your project name as the path)
+  madt8102_dbt:
+    # 2. Set the default schema for all seeds in this project to 'bronze'
+    +schema: 'bronze'
 
 # Medallion Architecture Configuration
 # Bronze -> Silver -> Gold layers with appropriate materializations and schemas
