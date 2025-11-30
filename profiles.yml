@@ -1,0 +1,21 @@
+madt8102_dbt:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: '/content/duckdb.duckdb'
+      extensions:
+        - httpfs
+        - parquet
+    
+    # prod:
+    #   type: duckdb
+    #   path: '/content/drive/MyDrive/dbt_duckdb/production/medallion.duckdb'
+    #   threads: 8
+    #   extensions:
+    #     - httpfs
+    #     - parquet
+    #     - json
+    #   settings:
+    #     memory_limit: '8GB'
+    #     temp_directory: '/tmp/duckdb_temp'

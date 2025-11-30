@@ -1,0 +1,54 @@
+
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: 'madt8102_dbt'
+version: '1.0.0'
+
+# This setting configures which "profile" dbt uses for this project.
+profile: 'madt8102_dbt'
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:         # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+vars:
+  # By default, set the execution_date to yesterday's date
+  # This uses built-in dbt variables (run_started_at) and Python modules
+  execution_date: "{{ (run_started_at - modules.datetime.timedelta(days=1)).strftime('%Y-%m-%d') }}"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+# Medallion Architecture Configuration
+# Bronze -> Silver -> Gold layers with appropriate materializations and schemas
+models:
+  madt8102_dbt:
+    # Bronze layer: Raw data as views for minimal storage
+    bronze:
+      +materialized: view
+      +schema: bronze
+
+    # Silver layer: Cleaned data as tables for performance
+    silver:
+      +materialized: table
+      +schema: silver
+
+    # Gold layer: Business metrics as tables for analytics
+    gold:
+      +materialized: table
+      +schema: gold
+
+    # Example models (can be removed if not needed)
+    example:
+      +materialized: view

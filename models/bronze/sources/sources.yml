@@ -1,0 +1,58 @@
+version: 2
+
+sources:
+  - name: bronze
+    description: Raw data ingested from source systems
+    schema: bronze
+    tables:
+      - name: raw_customers
+        description: Raw customer data from source system
+        columns:
+          - name: customer_id
+            description: Unique customer identifier
+            tests:
+              - unique
+              - not_null
+          - name: email
+            description: Customer email address
+            tests:
+              - not_null
+          - name: first_name
+            description: Customer first name
+          - name: last_name
+            description: Customer last name
+          - name: created_at
+            description: Timestamp when customer record was created
+          - name: updated_at
+            description: Timestamp when customer record was last updated
+
+      - name: raw_orders
+        description: Raw order data from source system
+        columns:
+          - name: order_id
+            description: Unique order identifier
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            description: Foreign key to customer
+            tests:
+              - not_null
+          - name: order_date
+            description: Date when order was placed
+            tests:
+              - not_null
+          - name: amount
+            description: Order amount in dollars
+            tests:
+              - not_null
+          - name: status
+            description: Current order status
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+          - name: created_at
+            description: Timestamp when order record was created
+          - name: updated_at
+            description: Timestamp when order record was last updated
