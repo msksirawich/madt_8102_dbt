@@ -1,0 +1,25 @@
+# CSV to GCS Pipeline Configuration for Orders
+
+# Pipeline Settings
+pipeline:
+  name: csv_orders_to_gcs
+  source_type: csv  # Options: postgres, csv
+
+  # Source Configuration
+  source:
+    file_path: data/orders.csv  # Path to CSV file
+    encoding: utf-8
+    date_column: created_at  # Column to filter by execution date
+
+  # Target Configuration
+  target:
+    bucket: your-gcs-bucket-name
+    path: raw_data/orders  # Path within bucket
+    partition_column: created_at  # Column used for Hive partitioning (dt=YYYY-MM-DD)
+    file_format: parquet  # Options: parquet, jsonl
+    credentials_path: /path/to/your/service-account-key.json  # GCS service account key file
+
+  # Data Load Configuration
+  dlt:
+    write_disposition: append  # Options: append, replace, merge
+    loader_file_format: parquet

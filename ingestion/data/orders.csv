@@ -1,0 +1,14 @@
+order_id,user_id,product_name,quantity,amount,status,created_at,updated_at
+1001,1,Laptop,1,1299.99,completed,2024-12-01,2024-12-01
+1002,2,Mouse,2,49.98,completed,2024-12-01,2024-12-01
+1003,1,Keyboard,1,89.99,completed,2024-12-01,2024-12-02
+1004,3,Monitor,1,349.99,pending,2024-12-01,2024-12-01
+1005,4,Headphones,1,199.99,completed,2024-12-02,2024-12-02
+1006,5,Webcam,1,79.99,completed,2024-12-02,2024-12-02
+1007,2,USB Cable,3,29.97,completed,2024-12-02,2024-12-02
+1008,6,External SSD,1,149.99,processing,2024-12-02,2024-12-03
+1009,7,Desk Lamp,2,79.98,completed,2024-12-03,2024-12-03
+1010,8,Office Chair,1,299.99,completed,2024-12-03,2024-12-03
+1011,9,Standing Desk,1,599.99,pending,2024-12-03,2024-12-03
+1012,4,Notebook,5,49.95,completed,2024-12-03,2024-12-04
+1013,10,Pen Set,2,19.98,completed,2024-12-03,2024-12-03

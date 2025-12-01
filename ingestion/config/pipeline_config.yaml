@@ -1,0 +1,33 @@
+# Pipeline Configuration
+
+# Database Connection
+database:
+  host: localhost
+  port: 5432
+  database: your_database_name
+  user: your_username
+  password: your_password
+  schema: public
+
+# Pipeline Settings
+pipeline:
+  name: postgres_to_gcs
+  source_type: postgres  # Options: postgres, csv
+
+  # Source Configuration
+  source:
+    table: your_table_name
+    date_column: created_at  # Column to filter by execution date
+
+  # Target Configuration
+  target:
+    bucket: your-gcs-bucket-name
+    path: raw_data/your_table_name  # Path within bucket
+    partition_column: created_at  # Column used for Hive partitioning (dt=YYYY-MM-DD)
+    file_format: parquet  # Options: parquet, jsonl
+    credentials_path: /path/to/your/service-account-key.json  # GCS service account key file
+
+  # Data Load Configuration
+  dlt:
+    write_disposition: append  # Options: append, replace, merge
+    loader_file_format: parquet
