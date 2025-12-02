@@ -3500,3 +3500,97 @@ select * from cleaned
 [0m17:14:39.730583 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x781fbd721970>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x781fb8d0a720>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x781fb8d0be30>]}
 [0m17:14:39.731446 [debug] [MainThread]: Flushing usage events
 [0m17:14:39.819119 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m23:37:11.284140 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c6a6e10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c724ad0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c725390>]}
+
+
+============================== 23:37:11.287294 | 12dc6ecd-d22b-4780-957f-667cf9848844 ==============================
+[0m23:37:11.287294 [info ] [MainThread]: Running with dbt=1.10.10
+[0m23:37:11.287667 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'debug': 'False', 'version_check': 'True', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'fail_fast': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'None', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'invocation_command': 'dbt debug --target prod', 'introspect': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m23:37:11.297854 [info ] [MainThread]: dbt version: 1.10.10
+[0m23:37:11.298082 [info ] [MainThread]: python version: 3.11.12
+[0m23:37:11.298244 [info ] [MainThread]: python path: /opt/homebrew/opt/python@3.11/bin/python3.11
+[0m23:37:11.298384 [info ] [MainThread]: os info: macOS-26.1-arm64-arm-64bit
+[0m23:37:11.301462 [info ] [MainThread]: Error importing adapter: No module named 'dbt.adapters.bigquery'
+[0m23:37:11.301765 [info ] [MainThread]: Using profiles dir at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt
+[0m23:37:11.301911 [info ] [MainThread]: Using profiles.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/profiles.yml
+[0m23:37:11.302038 [info ] [MainThread]: Using dbt_project.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/dbt_project.yml
+[0m23:37:11.362416 [info ] [MainThread]: Configuration:
+[0m23:37:11.362759 [info ] [MainThread]:   profiles.yml file [[31mERROR invalid[0m]
+[0m23:37:11.362927 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m23:37:11.363058 [info ] [MainThread]: Required dependencies:
+[0m23:37:11.363281 [debug] [MainThread]: Executing "git --help"
+[0m23:37:11.380275 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--super-prefix=<path>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m23:37:11.380785 [debug] [MainThread]: STDERR: "b''"
+[0m23:37:11.380967 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m23:37:11.381124 [info ] [MainThread]: Connection test skipped since no profile was found
+[0m23:37:11.381296 [info ] [MainThread]: [31m1 check failed:[0m
+[0m23:37:11.381429 [info ] [MainThread]: Profile loading failed for the following reason:
+Runtime Error
+  Credentials in profile "madt8102_dbt", target "prod" invalid: Runtime Error
+    Could not find adapter type bigquery!
+
+
+[0m23:37:11.384212 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 0.14403541, "process_in_blocks": "0", "process_kernel_time": 0.212683, "process_mem_max_rss": "123158528", "process_out_blocks": "0", "process_user_time": 0.85077}
+[0m23:37:11.384458 [debug] [MainThread]: Command `dbt debug` failed at 23:37:11.384402 after 0.14 seconds
+[0m23:37:11.384746 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107f17250>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107efd290>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c3fda10>]}
+[0m23:37:11.384976 [debug] [MainThread]: Flushing usage events
+[0m23:37:13.367815 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m23:38:11.290689 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10da3b610>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10da38ad0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10daad0d0>]}
+
+
+============================== 23:38:11.293266 | 0fccd4e2-364d-412f-a56e-1353c3873beb ==============================
+[0m23:38:11.293266 [info ] [MainThread]: Running with dbt=1.10.10
+[0m23:38:11.293603 [debug] [MainThread]: running dbt with arguments {'cache_selected_only': 'False', 'debug': 'False', 'version_check': 'True', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'invocation_command': 'dbt debug --target prod', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'introspect': 'True', 'empty': 'None', 'indirect_selection': 'eager', 'write_json': 'True', 'use_experimental_parser': 'False', 'static_parser': 'True', 'partial_parse': 'True', 'quiet': 'False', 'warn_error': 'None', 'no_print': 'None', 'send_anonymous_usage_stats': 'True', 'use_colors': 'True', 'log_format': 'default', 'target_path': 'None', 'printer_width': '80', 'log_cache_events': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'fail_fast': 'False'}
+[0m23:38:11.299069 [info ] [MainThread]: dbt version: 1.10.10
+[0m23:38:11.299362 [info ] [MainThread]: python version: 3.11.12
+[0m23:38:11.299569 [info ] [MainThread]: python path: /opt/homebrew/opt/python@3.11/bin/python3.11
+[0m23:38:11.299731 [info ] [MainThread]: os info: macOS-26.1-arm64-arm-64bit
+[0m23:38:14.448557 [info ] [MainThread]: Using profiles dir at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt
+[0m23:38:14.448871 [info ] [MainThread]: Using profiles.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/profiles.yml
+[0m23:38:14.449032 [info ] [MainThread]: Using dbt_project.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/dbt_project.yml
+[0m23:38:14.449176 [info ] [MainThread]: adapter type: bigquery
+[0m23:38:14.449306 [info ] [MainThread]: adapter version: 1.10.3
+[0m23:38:14.509347 [info ] [MainThread]: Configuration:
+[0m23:38:14.509645 [info ] [MainThread]:   profiles.yml file [[32mOK found and valid[0m]
+[0m23:38:14.509790 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m23:38:14.509917 [info ] [MainThread]: Required dependencies:
+[0m23:38:14.510099 [debug] [MainThread]: Executing "git --help"
+[0m23:38:14.536165 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--super-prefix=<path>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m23:38:14.536849 [debug] [MainThread]: STDERR: "b''"
+[0m23:38:14.537063 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m23:38:14.537268 [info ] [MainThread]: Connection:
+[0m23:38:14.537705 [info ] [MainThread]:   method: service-account
+[0m23:38:14.537884 [info ] [MainThread]:   database: madt-8102-479812
+[0m23:38:14.538028 [info ] [MainThread]:   execution_project: madt-8102-479812
+[0m23:38:14.538154 [info ] [MainThread]:   schema: main
+[0m23:38:14.538278 [info ] [MainThread]:   location: US
+[0m23:38:14.538391 [info ] [MainThread]:   priority: None
+[0m23:38:14.538507 [info ] [MainThread]:   maximum_bytes_billed: None
+[0m23:38:14.538624 [info ] [MainThread]:   impersonate_service_account: None
+[0m23:38:14.538741 [info ] [MainThread]:   job_retry_deadline_seconds: None
+[0m23:38:14.538859 [info ] [MainThread]:   job_retries: 1
+[0m23:38:14.539006 [info ] [MainThread]:   job_creation_timeout_seconds: None
+[0m23:38:14.539124 [info ] [MainThread]:   job_execution_timeout_seconds: 300
+[0m23:38:14.539242 [info ] [MainThread]:   timeout_seconds: 300
+[0m23:38:14.539360 [info ] [MainThread]:   client_id: None
+[0m23:38:14.539475 [info ] [MainThread]:   token_uri: None
+[0m23:38:14.539585 [info ] [MainThread]:   compute_region: None
+[0m23:38:14.539695 [info ] [MainThread]:   dataproc_cluster_name: None
+[0m23:38:14.539805 [info ] [MainThread]:   gcs_bucket: None
+[0m23:38:14.539915 [info ] [MainThread]:   dataproc_batch: None
+[0m23:38:14.540248 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m23:38:14.679468 [debug] [MainThread]: Acquiring new bigquery connection 'debug'
+[0m23:38:14.679908 [debug] [MainThread]: On debug: select 1 as id
+[0m23:38:14.680104 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m23:38:16.887393 [debug] [MainThread]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:4331b8a1-2674-48b2-8212-a71e36a6e947&page=queryresults
+[0m23:38:17.861084 [info ] [MainThread]:   Connection test: [[32mOK connection ok[0m]
+
+[0m23:38:17.861426 [info ] [MainThread]: [32mAll checks passed![0m
+[0m23:38:17.861824 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": true, "command_wall_clock_time": 6.616427, "process_in_blocks": "0", "process_kernel_time": 0.843649, "process_mem_max_rss": "434143232", "process_out_blocks": "0", "process_user_time": 2.681043}
+[0m23:38:17.862097 [debug] [MainThread]: Command `dbt debug` succeeded at 23:38:17.862039 after 6.62 seconds
+[0m23:38:17.862286 [debug] [MainThread]: Connection 'debug' was properly closed.
+[0m23:38:17.862485 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1093ac710>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10938a510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10db71850>]}
+[0m23:38:17.863257 [debug] [MainThread]: Flushing usage events
+[0m23:38:20.195935 [debug] [MainThread]: An error was encountered while trying to flush usage events

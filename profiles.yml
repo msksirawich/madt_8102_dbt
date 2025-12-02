@@ -9,14 +9,13 @@ madt8102_dbt:
         - httpfs
         - parquet
     
-    # prod:
-    #   type: duckdb
-    #   path: '/content/drive/MyDrive/dbt_duckdb/production/medallion.duckdb'
-    #   threads: 8
-    #   extensions:
-    #     - httpfs
-    #     - parquet
-    #     - json
-    #   settings:
-    #     memory_limit: '8GB'
-    #     temp_directory: '/tmp/duckdb_temp'
+    prod:
+      type: bigquery
+      method: service-account
+      project: madt-8102-479812
+      dataset: main
+      threads: 4
+      keyfile: /Users/sirawich/Desktop/madt-8102-dbt-bq-key.json  # Replace with path to your keyfile
+      location: US  # Replace with your GCP location (e.g., US, EU, asia-southeast1)
+      timeout_seconds: 300
+      retries: 1
