@@ -1,23 +1,15 @@
-{{
-    config(
-        materialized='incremental',
-        unique_key='order_id',
-        schema='silver'
-    )
-}}
+
 
 -- Silver layer: Cleaned and standardized order data
 -- This layer applies data quality rules and enriches with customer information
 
 with source as (
-    select * from {{ ref('orders') }}
-    {% if is_incremental() %}
-    where CAST(created_at AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
-    {% endif %}
+    select * from `madt-8102-479812`.`madt8102_bronze`.`orders`
+    
 ),
 
 customers as (
-    select customer_id from {{ ref('silver_customers') }}
+    select customer_id from `madt-8102-479812`.`madt8102_silver`.`silver_customers`
 ),
 
 cleaned as (

@@ -1,18 +1,22 @@
-{% snapshot silver_customers_snapshot %}
 
-{{
-    config(
-        target_schema='madt8102_silver',
-        unique_key='customer_id',
-        strategy='check',
-        check_cols='all',
-        updated_at='updated_at'
-    )
-}}
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_customers`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized customer data
+-- This layer applies data quality rules and standardization
 
 with source as (
-    select * from {{ ref('customers') }}
-    where CAST(created_at AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
 ),
 
 cleaned as (
@@ -36,5 +40,5 @@ cleaned as (
 )
 
 select * from cleaned
-
-{% endsnapshot %}
+    );
+  

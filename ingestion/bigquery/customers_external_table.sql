@@ -1,11 +1,11 @@
-CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.bronze.customers`
+CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.madt8102_bronze.customers`
 (
   customer_id STRING,
   email STRING,
   first_name STRING,
   last_name STRING,
-  created_at TIMESTAMP_NANOS,
-  updated_at TIMESTAMP_NANOS
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
 )
 WITH PARTITION COLUMNS (
   dt DATE  -- Hive partition column

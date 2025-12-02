@@ -3594,3 +3594,1314 @@ Runtime Error
 [0m23:38:17.862485 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1093ac710>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10938a510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10db71850>]}
 [0m23:38:17.863257 [debug] [MainThread]: Flushing usage events
 [0m23:38:20.195935 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m23:52:22.198520 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10de25750>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10de99e10>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10deb2750>]}
+
+
+============================== 23:52:22.201589 | 4a1a83d6-7207-4f84-9580-293293905800 ==============================
+[0m23:52:22.201589 [info ] [MainThread]: Running with dbt=1.10.10
+[0m23:52:22.201966 [debug] [MainThread]: running dbt with arguments {'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'cache_selected_only': 'False', 'static_parser': 'True', 'log_format': 'default', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'empty': 'False', 'send_anonymous_usage_stats': 'True', 'target_path': 'None', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'use_experimental_parser': 'False', 'no_print': 'None', 'printer_width': '80', 'fail_fast': 'False', 'partial_parse': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'indirect_selection': 'eager', 'version_check': 'True', 'use_colors': 'True', 'quiet': 'False', 'write_json': 'True', 'invocation_command': 'dbt run --select silver --vars {execution_date: "2023-01-01"}', 'debug': 'False', 'warn_error': 'None'}
+[0m23:52:22.866140 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10deecb10>]}
+[0m23:52:22.901375 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b708b10>]}
+[0m23:52:22.903086 [info ] [MainThread]: Registered adapter: duckdb=1.9.6
+[0m23:52:22.956501 [debug] [MainThread]: checksum: c1da2fbcab0cd389091ad94966899043c077e394c85e6fb32e2ed23b7de646f7, vars: {'execution_date': '2023-01-01'}, profile: , target: , version: 1.10.10
+[0m23:52:23.050539 [info ] [MainThread]: Unable to do partial parsing because of a version mismatch
+[0m23:52:23.050918 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10cff2490>]}
+[0m23:52:23.839136 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m23:52:23.839511 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e7e0710>]}
+[0m23:52:23.954278 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b8f1590>]}
+[0m23:52:24.012585 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m23:52:24.014271 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m23:52:24.029171 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10eab4c10>]}
+[0m23:52:24.029487 [info ] [MainThread]: Found 8 models, 1 snapshot, 2 seeds, 56 data tests, 2 sources, 431 macros
+[0m23:52:24.029659 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '4a1a83d6-7207-4f84-9580-293293905800', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e356090>]}
+[0m23:52:24.030730 [info ] [MainThread]: 
+[0m23:52:24.030906 [info ] [MainThread]: Concurrency: 1 threads (target='dev')
+[0m23:52:24.031040 [info ] [MainThread]: 
+[0m23:52:24.031284 [debug] [MainThread]: Acquiring new duckdb connection 'master'
+[0m23:52:24.033557 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_duckdb'
+[0m23:52:24.065710 [debug] [ThreadPool]: Using duckdb connection "list_duckdb"
+[0m23:52:24.065986 [debug] [ThreadPool]: On list_duckdb: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "dev", "connection_name": "list_duckdb"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where lower(catalog_name) = '"duckdb"'
+    
+  
+  
+[0m23:52:24.066138 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m23:52:24.073451 [debug] [ThreadPool]: DuckDB adapter: Error running SQL: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "dev", "connection_name": "list_duckdb"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where lower(catalog_name) = '"duckdb"'
+    
+  
+  
+[0m23:52:24.073701 [debug] [ThreadPool]: DuckDB adapter: Rolling back transaction.
+[0m23:52:24.074182 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m23:52:24.074357 [debug] [MainThread]: Connection 'list_duckdb' was properly closed.
+[0m23:52:24.074501 [info ] [MainThread]: 
+[0m23:52:24.074654 [info ] [MainThread]: Finished running  in 0 hours 0 minutes and 0.04 seconds (0.04s).
+[0m23:52:24.074897 [error] [MainThread]: Encountered an error:
+Runtime Error
+  IO Error: Cannot open file "/content/duckdb.duckdb": No such file or directory
+[0m23:52:24.075184 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 5 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m23:52:24.076957 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 1.9235437, "process_in_blocks": "0", "process_kernel_time": 0.296607, "process_mem_max_rss": "163151872", "process_out_blocks": "0", "process_user_time": 2.02649}
+[0m23:52:24.077180 [debug] [MainThread]: Command `dbt run` failed at 23:52:24.077132 after 1.92 seconds
+[0m23:52:24.077368 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10decb210>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10ea199d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1097707d0>]}
+[0m23:52:24.077547 [debug] [MainThread]: Flushing usage events
+[0m23:52:25.814003 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m23:53:49.702042 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e4da0d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e54cf90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e54d910>]}
+
+
+============================== 23:53:49.704743 | 3db97b74-7a81-46fe-8dab-201662198184 ==============================
+[0m23:53:49.704743 [info ] [MainThread]: Running with dbt=1.10.10
+[0m23:53:49.705061 [debug] [MainThread]: running dbt with arguments {'indirect_selection': 'eager', 'send_anonymous_usage_stats': 'True', 'log_format': 'default', 'static_parser': 'True', 'no_print': 'None', 'use_colors': 'True', 'log_cache_events': 'False', 'invocation_command': 'dbt run --select silver --vars {execution_date: "2023-01-01"} --target prod', 'write_json': 'True', 'introspect': 'True', 'warn_error': 'None', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'printer_width': '80', 'fail_fast': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'quiet': 'False', 'use_experimental_parser': 'False', 'debug': 'False', 'empty': 'False', 'partial_parse': 'True', 'target_path': 'None', 'cache_selected_only': 'False'}
+[0m23:53:52.410017 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10dded4d0>]}
+[0m23:53:52.444159 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10bdbc110>]}
+[0m23:53:52.444513 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m23:53:52.582786 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m23:53:52.646374 [info ] [MainThread]: Unable to do partial parsing because config vars, config profile, or config target have changed
+[0m23:53:52.646688 [debug] [MainThread]: previous checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, current checksum: c1da2fbcab0cd389091ad94966899043c077e394c85e6fb32e2ed23b7de646f7
+[0m23:53:52.646898 [info ] [MainThread]: Unable to do partial parsing because profile has changed
+[0m23:53:52.647075 [info ] [MainThread]: Unable to do partial parsing because a project dependency has been added
+[0m23:53:52.647253 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10d6a6410>]}
+[0m23:53:53.564667 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m23:53:53.565026 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fa20550>]}
+[0m23:53:53.684732 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11facde50>]}
+[0m23:53:53.740550 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m23:53:53.741847 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m23:53:53.756340 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fd3bed0>]}
+[0m23:53:53.756671 [info ] [MainThread]: Found 8 models, 1 snapshot, 2 seeds, 56 data tests, 2 sources, 495 macros
+[0m23:53:53.756854 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fb23d50>]}
+[0m23:53:53.757935 [info ] [MainThread]: 
+[0m23:53:53.758115 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m23:53:53.758252 [info ] [MainThread]: 
+[0m23:53:53.758498 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m23:53:53.760495 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m23:53:53.760738 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m23:53:54.641313 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now create_madt-8102-479812_main_silver)
+[0m23:53:54.641995 [debug] [ThreadPool]: Creating schema "database: "madt-8102-479812"
+schema: "main_silver"
+"
+[0m23:53:54.647240 [debug] [ThreadPool]: On create_madt-8102-479812_main_silver: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "connection_name": "create_madt-8102-479812_main_silver"} */
+create schema if not exists `madt-8102-479812`.`main_silver`
+  
+[0m23:53:54.647487 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m23:53:55.642584 [debug] [ThreadPool]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:f2edf90c-4baa-4638-968d-82e4a6c09a61&page=queryresults
+[0m23:53:56.740592 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly create_madt-8102-479812_main_silver, now list_madt-8102-479812_main_gold)
+[0m23:53:56.740993 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m23:53:56.741321 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_main'
+[0m23:53:56.741550 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m23:53:56.741803 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_main_silver'
+[0m23:53:56.742031 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m23:53:56.742227 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m23:53:56.742444 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m23:53:57.631516 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_main_silver, now list_madt-8102-479812_main_bronze)
+[0m23:53:57.632567 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m23:53:58.774096 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e5cb9d0>]}
+[0m23:53:58.775863 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m23:53:58.783671 [debug] [Thread-1 (]: Began running node model.madt8102_dbt.silver_customers
+[0m23:53:58.784472 [info ] [Thread-1 (]: 1 of 2 START sql table model main_silver.silver_customers ...................... [RUN]
+[0m23:53:58.785025 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_main_gold, now model.madt8102_dbt.silver_customers)
+[0m23:53:58.785396 [debug] [Thread-1 (]: Began compiling node model.madt8102_dbt.silver_customers
+[0m23:53:58.797048 [debug] [Thread-1 (]: Writing injected SQL for node "model.madt8102_dbt.silver_customers"
+[0m23:53:58.798929 [debug] [Thread-1 (]: Began executing node model.madt8102_dbt.silver_customers
+[0m23:53:58.822621 [debug] [Thread-1 (]: Writing runtime sql for node "model.madt8102_dbt.silver_customers"
+[0m23:53:58.823449 [debug] [Thread-1 (]: On model.madt8102_dbt.silver_customers: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "model.madt8102_dbt.silver_customers"} */
+
+  
+    
+
+    create or replace table `madt-8102-479812`.`main_silver`.`silver_customers`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized customer data
+-- This layer applies data quality rules and standardization
+
+with source as (
+    select * from `madt-8102-479812`.`main_bronze`.`bronze_customers`
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+    );
+  
+[0m23:53:58.823694 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m23:53:59.821669 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:483626b3-3d93-4b8d-a4d4-932f5cecf196&page=queryresults
+[0m23:53:59.822625 [error] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:483626b3-3d93-4b8d-a4d4-932f5cecf196&page=queryresults
+[0m23:53:59.829418 [debug] [Thread-1 (]: Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Dataset madt-8102-479812:main_bronze was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql
+[0m23:53:59.831765 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '3db97b74-7a81-46fe-8dab-201662198184', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1200b6390>]}
+[0m23:53:59.832236 [error] [Thread-1 (]: 1 of 2 ERROR creating sql table model main_silver.silver_customers ............. [[31mERROR[0m in 1.05s]
+[0m23:53:59.833107 [debug] [Thread-1 (]: Finished running node model.madt8102_dbt.silver_customers
+[0m23:53:59.833736 [debug] [Thread-7 (]: Marking all children of 'model.madt8102_dbt.silver_customers' to be skipped because of status 'error'.  Reason: Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Dataset madt-8102-479812:main_bronze was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql.
+[0m23:53:59.835268 [debug] [Thread-3 (]: Began running node model.madt8102_dbt.silver_orders
+[0m23:53:59.835913 [info ] [Thread-3 (]: 2 of 2 SKIP relation main_silver.silver_orders ................................. [[33mSKIP[0m]
+[0m23:53:59.836569 [debug] [Thread-3 (]: Finished running node model.madt8102_dbt.silver_orders
+[0m23:53:59.837755 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m23:53:59.839412 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m23:53:59.839709 [debug] [MainThread]: Connection 'model.madt8102_dbt.silver_customers' was properly closed.
+[0m23:53:59.839966 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m23:53:59.840208 [debug] [MainThread]: Connection 'list_madt-8102-479812_main' was properly closed.
+[0m23:53:59.840444 [debug] [MainThread]: Connection 'list_madt-8102-479812_main_bronze' was properly closed.
+[0m23:53:59.840719 [info ] [MainThread]: 
+[0m23:53:59.841003 [info ] [MainThread]: Finished running 1 incremental model, 1 table model in 0 hours 0 minutes and 6.08 seconds (6.08s).
+[0m23:53:59.841520 [debug] [MainThread]: Command end result
+[0m23:53:59.868654 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m23:53:59.870133 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m23:53:59.873844 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m23:53:59.874059 [info ] [MainThread]: 
+[0m23:53:59.874302 [info ] [MainThread]: [31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+[0m23:53:59.874493 [info ] [MainThread]: 
+[0m23:53:59.874706 [error] [MainThread]: [31mFailure in model silver_customers (models/silver/silver_customers.sql)[0m
+[0m23:53:59.874910 [error] [MainThread]:   Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Dataset madt-8102-479812:main_bronze was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql
+[0m23:53:59.875063 [info ] [MainThread]: 
+[0m23:53:59.875236 [info ] [MainThread]:   compiled code at target/compiled/madt8102_dbt/models/silver/silver_customers.sql
+[0m23:53:59.875386 [info ] [MainThread]: 
+[0m23:53:59.875552 [info ] [MainThread]: Done. PASS=0 WARN=0 ERROR=1 SKIP=1 NO-OP=0 TOTAL=2
+[0m23:53:59.875860 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 5 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m23:53:59.876152 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 10.218508, "process_in_blocks": "0", "process_kernel_time": 0.745105, "process_mem_max_rss": "460668928", "process_out_blocks": "0", "process_user_time": 4.142702}
+[0m23:53:59.876360 [debug] [MainThread]: Command `dbt run` failed at 23:53:59.876318 after 10.22 seconds
+[0m23:53:59.876569 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x109dda6d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10d815e50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11efcfd50>]}
+[0m23:53:59.876761 [debug] [MainThread]: Flushing usage events
+[0m23:54:01.820550 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m23:57:05.253289 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10dc05350>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10dc79fd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10dc784d0>]}
+
+
+============================== 23:57:05.256248 | e256c7ba-b730-41ba-a3ee-c0d2942a180f ==============================
+[0m23:57:05.256248 [info ] [MainThread]: Running with dbt=1.10.10
+[0m23:57:05.256587 [debug] [MainThread]: running dbt with arguments {'use_colors': 'True', 'introspect': 'True', 'no_print': 'None', 'invocation_command': 'dbt debug --target prod', 'cache_selected_only': 'False', 'printer_width': '80', 'fail_fast': 'False', 'warn_error': 'None', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'log_format': 'default', 'debug': 'False', 'indirect_selection': 'eager', 'static_parser': 'True', 'target_path': 'None', 'write_json': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'empty': 'None', 'partial_parse': 'True', 'version_check': 'True', 'log_cache_events': 'False', 'use_experimental_parser': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs'}
+[0m23:57:05.266138 [info ] [MainThread]: dbt version: 1.10.10
+[0m23:57:05.266431 [info ] [MainThread]: python version: 3.11.12
+[0m23:57:05.266603 [info ] [MainThread]: python path: /opt/homebrew/opt/python@3.11/bin/python3.11
+[0m23:57:05.266752 [info ] [MainThread]: os info: macOS-26.1-arm64-arm-64bit
+[0m23:57:07.779168 [info ] [MainThread]: Using profiles dir at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt
+[0m23:57:07.779628 [info ] [MainThread]: Using profiles.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/profiles.yml
+[0m23:57:07.779822 [info ] [MainThread]: Using dbt_project.yml file at /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/dbt_project.yml
+[0m23:57:07.840915 [info ] [MainThread]: Configuration:
+[0m23:57:07.841236 [info ] [MainThread]:   profiles.yml file [[31mERROR invalid[0m]
+[0m23:57:07.841378 [info ] [MainThread]:   dbt_project.yml file [[32mOK found and valid[0m]
+[0m23:57:07.841509 [info ] [MainThread]: Required dependencies:
+[0m23:57:07.841710 [debug] [MainThread]: Executing "git --help"
+[0m23:57:07.867751 [debug] [MainThread]: STDOUT: "b"usage: git [-v | --version] [-h | --help] [-C <path>] [-c <name>=<value>]\n           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]\n           [-p | --paginate | -P | --no-pager] [--no-replace-objects] [--bare]\n           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]\n           [--super-prefix=<path>] [--config-env=<name>=<envvar>]\n           <command> [<args>]\n\nThese are common Git commands used in various situations:\n\nstart a working area (see also: git help tutorial)\n   clone     Clone a repository into a new directory\n   init      Create an empty Git repository or reinitialize an existing one\n\nwork on the current change (see also: git help everyday)\n   add       Add file contents to the index\n   mv        Move or rename a file, a directory, or a symlink\n   restore   Restore working tree files\n   rm        Remove files from the working tree and from the index\n\nexamine the history and state (see also: git help revisions)\n   bisect    Use binary search to find the commit that introduced a bug\n   diff      Show changes between commits, commit and working tree, etc\n   grep      Print lines matching a pattern\n   log       Show commit logs\n   show      Show various types of objects\n   status    Show the working tree status\n\ngrow, mark and tweak your common history\n   branch    List, create, or delete branches\n   commit    Record changes to the repository\n   merge     Join two or more development histories together\n   rebase    Reapply commits on top of another base tip\n   reset     Reset current HEAD to the specified state\n   switch    Switch branches\n   tag       Create, list, delete or verify a tag object signed with GPG\n\ncollaborate (see also: git help workflows)\n   fetch     Download objects and refs from another repository\n   pull      Fetch from and integrate with another repository or a local branch\n   push      Update remote refs along with associated objects\n\n'git help -a' and 'git help -g' list available subcommands and some\nconcept guides. See 'git help <command>' or 'git help <concept>'\nto read about a specific subcommand or concept.\nSee 'git help git' for an overview of the system.\n""
+[0m23:57:07.868406 [debug] [MainThread]: STDERR: "b''"
+[0m23:57:07.868601 [info ] [MainThread]:  - git [[32mOK found[0m]
+
+[0m23:57:07.868781 [info ] [MainThread]: Connection test skipped since no profile was found
+[0m23:57:07.868936 [info ] [MainThread]: [31m1 check failed:[0m
+[0m23:57:07.869074 [info ] [MainThread]: Profile loading failed for the following reason:
+Runtime Error
+  Credentials in profile "madt8102_dbt", target "prod" invalid: Runtime Error
+    Must specify schema
+
+
+[0m23:57:07.869633 [debug] [MainThread]: Resource report: {"command_name": "debug", "command_success": false, "command_wall_clock_time": 2.6576812, "process_in_blocks": "0", "process_kernel_time": 0.559889, "process_mem_max_rss": "422985728", "process_out_blocks": "0", "process_user_time": 2.396879}
+[0m23:57:07.869886 [debug] [MainThread]: Command `dbt debug` failed at 23:57:07.869832 after 2.66 seconds
+[0m23:57:07.870228 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1094e4610>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1094c6510>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10dc06910>]}
+[0m23:57:07.870508 [debug] [MainThread]: Flushing usage events
+[0m23:57:09.664431 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m00:09:45.088933 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10deb2bd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10df25410>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10df250d0>]}
+
+
+============================== 00:09:45.092108 | 2260ea66-85ff-4bd9-8a4f-a492fbb107b9 ==============================
+[0m00:09:45.092108 [info ] [MainThread]: Running with dbt=1.10.10
+[0m00:09:45.092459 [debug] [MainThread]: running dbt with arguments {'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'fail_fast': 'False', 'empty': 'False', 'use_colors': 'True', 'warn_error': 'None', 'log_cache_events': 'False', 'invocation_command': 'dbt run --select silver --vars {execution_date: "2023-01-01"} --target prod', 'use_experimental_parser': 'False', 'write_json': 'True', 'printer_width': '80', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'static_parser': 'True', 'cache_selected_only': 'False', 'no_print': 'None', 'version_check': 'True', 'target_path': 'None', 'introspect': 'True', 'log_format': 'default', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'indirect_selection': 'eager', 'quiet': 'False', 'debug': 'False', 'partial_parse': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m00:09:47.740621 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11e8c4d50>]}
+[0m00:09:47.775173 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10b790f90>]}
+[0m00:09:47.775537 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m00:09:47.917237 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m00:09:47.987245 [info ] [MainThread]: Unable to do partial parsing because profile has changed
+[0m00:09:47.987668 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'partial_parser', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10d07e490>]}
+[0m00:09:48.941068 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m00:09:48.941406 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f3a4e50>]}
+[0m00:09:49.066025 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f462b50>]}
+[0m00:09:49.125450 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:09:49.127046 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:09:49.143382 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f398290>]}
+[0m00:09:49.143742 [info ] [MainThread]: Found 8 models, 1 snapshot, 2 seeds, 56 data tests, 2 sources, 495 macros
+[0m00:09:49.143930 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f44dfd0>]}
+[0m00:09:49.145028 [info ] [MainThread]: 
+[0m00:09:49.145210 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m00:09:49.145347 [info ] [MainThread]: 
+[0m00:09:49.145599 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m00:09:49.147582 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m00:09:49.147806 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:09:49.903248 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now create_madt-8102-479812_madt8102_silver)
+[0m00:09:49.904015 [debug] [ThreadPool]: Creating schema "database: "madt-8102-479812"
+schema: "madt8102_silver"
+"
+[0m00:09:49.914204 [debug] [ThreadPool]: On create_madt-8102-479812_madt8102_silver: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "connection_name": "create_madt-8102-479812_madt8102_silver"} */
+create schema if not exists `madt-8102-479812`.`madt8102_silver`
+  
+[0m00:09:49.914531 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:09:50.917896 [debug] [ThreadPool]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:99cc3320-4d96-43f8-9c98-6397ad1b5197&page=queryresults
+[0m00:09:52.213896 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly create_madt-8102-479812_madt8102_silver, now list_madt-8102-479812_madt8102_silver)
+[0m00:09:52.214285 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m00:09:52.214564 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:09:52.214801 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m00:09:52.215084 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_bronze'
+[0m00:09:52.215291 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:09:52.215525 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:09:52.254369 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:09:53.175922 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_silver, now list_madt-8102-479812_madt8102_gold)
+[0m00:09:53.176917 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:09:54.523029 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f44cb90>]}
+[0m00:09:54.524312 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m00:09:54.531359 [debug] [Thread-1 (]: Began running node model.madt8102_dbt.silver_customers
+[0m00:09:54.532182 [info ] [Thread-1 (]: 1 of 2 START sql table model madt8102_silver.silver_customers .................. [RUN]
+[0m00:09:54.532798 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_gold, now model.madt8102_dbt.silver_customers)
+[0m00:09:54.533265 [debug] [Thread-1 (]: Began compiling node model.madt8102_dbt.silver_customers
+[0m00:09:54.542960 [debug] [Thread-1 (]: Writing injected SQL for node "model.madt8102_dbt.silver_customers"
+[0m00:09:54.544098 [debug] [Thread-1 (]: Began executing node model.madt8102_dbt.silver_customers
+[0m00:09:54.569950 [debug] [Thread-1 (]: Writing runtime sql for node "model.madt8102_dbt.silver_customers"
+[0m00:09:54.570719 [debug] [Thread-1 (]: On model.madt8102_dbt.silver_customers: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "model.madt8102_dbt.silver_customers"} */
+
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_customers`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized customer data
+-- This layer applies data quality rules and standardization
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`bronze_customers`
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+    );
+  
+[0m00:09:54.571027 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m00:09:55.734968 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:19898a04-da63-4fa2-b879-f6dc44f9cff0&page=queryresults
+[0m00:09:55.736526 [error] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:19898a04-da63-4fa2-b879-f6dc44f9cff0&page=queryresults
+[0m00:09:55.749443 [debug] [Thread-1 (]: Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Table madt-8102-479812:madt8102_bronze.bronze_customers was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql
+[0m00:09:55.751986 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '2260ea66-85ff-4bd9-8a4f-a492fbb107b9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f4a2ed0>]}
+[0m00:09:55.753011 [error] [Thread-1 (]: 1 of 2 ERROR creating sql table model madt8102_silver.silver_customers ......... [[31mERROR[0m in 1.22s]
+[0m00:09:55.753608 [debug] [Thread-1 (]: Finished running node model.madt8102_dbt.silver_customers
+[0m00:09:55.754179 [debug] [Thread-7 (]: Marking all children of 'model.madt8102_dbt.silver_customers' to be skipped because of status 'error'.  Reason: Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Table madt-8102-479812:madt8102_bronze.bronze_customers was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql.
+[0m00:09:55.755489 [debug] [Thread-3 (]: Began running node model.madt8102_dbt.silver_orders
+[0m00:09:55.756048 [info ] [Thread-3 (]: 2 of 2 SKIP relation madt8102_silver.silver_orders ............................. [[33mSKIP[0m]
+[0m00:09:55.756360 [debug] [Thread-3 (]: Finished running node model.madt8102_dbt.silver_orders
+[0m00:09:55.757526 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m00:09:55.759211 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m00:09:55.759486 [debug] [MainThread]: Connection 'model.madt8102_dbt.silver_customers' was properly closed.
+[0m00:09:55.759712 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102' was properly closed.
+[0m00:09:55.759926 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m00:09:55.760131 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_bronze' was properly closed.
+[0m00:09:55.760393 [info ] [MainThread]: 
+[0m00:09:55.760655 [info ] [MainThread]: Finished running 1 incremental model, 1 table model in 0 hours 0 minutes and 6.61 seconds (6.61s).
+[0m00:09:55.761409 [debug] [MainThread]: Command end result
+[0m00:09:55.787370 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:09:55.788932 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:09:55.792293 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m00:09:55.792486 [info ] [MainThread]: 
+[0m00:09:55.792707 [info ] [MainThread]: [31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+[0m00:09:55.792877 [info ] [MainThread]: 
+[0m00:09:55.793076 [error] [MainThread]: [31mFailure in model silver_customers (models/silver/silver_customers.sql)[0m
+[0m00:09:55.793272 [error] [MainThread]:   Database Error in model silver_customers (models/silver/silver_customers.sql)
+  Not found: Table madt-8102-479812:madt8102_bronze.bronze_customers was not found in location US
+  compiled code at target/run/madt8102_dbt/models/silver/silver_customers.sql
+[0m00:09:55.793420 [info ] [MainThread]: 
+[0m00:09:55.793595 [info ] [MainThread]:   compiled code at target/compiled/madt8102_dbt/models/silver/silver_customers.sql
+[0m00:09:55.793741 [info ] [MainThread]: 
+[0m00:09:55.793900 [info ] [MainThread]: Done. PASS=0 WARN=0 ERROR=1 SKIP=1 NO-OP=0 TOTAL=2
+[0m00:09:55.794187 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 5 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m00:09:55.794468 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 10.746257, "process_in_blocks": "0", "process_kernel_time": 0.760306, "process_mem_max_rss": "460177408", "process_out_blocks": "0", "process_user_time": 4.221165}
+[0m00:09:55.794680 [debug] [MainThread]: Command `dbt run` failed at 00:09:55.794638 after 10.75 seconds
+[0m00:09:55.794888 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10985c890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10983a650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10d7edbd0>]}
+[0m00:09:55.795080 [debug] [MainThread]: Flushing usage events
+[0m00:09:57.320535 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m00:13:49.582627 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e631dd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e6a5650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e6a50d0>]}
+
+
+============================== 00:13:49.585797 | a4a3cf0c-5f27-4a2d-8914-350a08a150df ==============================
+[0m00:13:49.585797 [info ] [MainThread]: Running with dbt=1.10.10
+[0m00:13:49.586154 [debug] [MainThread]: running dbt with arguments {'warn_error': 'None', 'target_path': 'None', 'cache_selected_only': 'False', 'quiet': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'use_experimental_parser': 'False', 'no_print': 'None', 'printer_width': '80', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'use_colors': 'True', 'send_anonymous_usage_stats': 'True', 'log_cache_events': 'False', 'version_check': 'True', 'indirect_selection': 'eager', 'empty': 'False', 'log_format': 'default', 'invocation_command': 'dbt run --select silver --vars {execution_date: "2023-01-01"} --target prod', 'write_json': 'True', 'static_parser': 'True', 'debug': 'False', 'introspect': 'True', 'fail_fast': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'partial_parse': 'True'}
+[0m00:13:52.305652 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c13c990>]}
+[0m00:13:52.341856 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10beb4b90>]}
+[0m00:13:52.342333 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m00:13:52.477849 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m00:13:52.572349 [debug] [MainThread]: Partial parsing enabled: 2 files deleted, 2 files added, 3 files changed.
+[0m00:13:52.572812 [debug] [MainThread]: Partial parsing: added file: madt8102_dbt://models/bronze/orders.sql
+[0m00:13:52.573045 [debug] [MainThread]: Partial parsing: added file: madt8102_dbt://models/bronze/customers.sql
+[0m00:13:52.573429 [debug] [MainThread]: Partial parsing: deleted file: madt8102_dbt://models/bronze/bronze_orders.sql
+[0m00:13:52.573681 [debug] [MainThread]: Partial parsing: deleted file: madt8102_dbt://models/bronze/bronze_customers.sql
+[0m00:13:52.573856 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://models/silver/silver_orders.sql
+[0m00:13:52.574009 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://snapshots/silver/silver_customers_snapshot.sql
+[0m00:13:52.574153 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://models/silver/silver_customers.sql
+[0m00:13:52.991317 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m00:13:52.991698 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11ef02d10>]}
+[0m00:13:53.081887 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f476b90>]}
+[0m00:13:53.140414 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:13:53.141997 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:13:53.156794 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fa8e310>]}
+[0m00:13:53.157129 [info ] [MainThread]: Found 8 models, 2 seeds, 56 data tests, 1 snapshot, 2 sources, 495 macros
+[0m00:13:53.157308 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f7d5c10>]}
+[0m00:13:53.158394 [info ] [MainThread]: 
+[0m00:13:53.158589 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m00:13:53.158720 [info ] [MainThread]: 
+[0m00:13:53.158969 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m00:13:53.160942 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m00:13:53.161165 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:13:54.146982 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now list_madt-8102-479812_madt8102_gold)
+[0m00:13:54.147835 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m00:13:54.148437 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:13:54.148898 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m00:13:54.149493 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_silver'
+[0m00:13:54.149966 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:13:54.150505 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:13:54.202804 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:13:55.346876 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_silver, now list_madt-8102-479812_madt8102_bronze)
+[0m00:13:55.347878 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:13:56.137528 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10cb5c650>]}
+[0m00:13:56.139048 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m00:13:56.146434 [debug] [Thread-1 (]: Began running node model.madt8102_dbt.silver_customers
+[0m00:13:56.147148 [info ] [Thread-1 (]: 1 of 2 START sql table model madt8102_silver.silver_customers .................. [RUN]
+[0m00:13:56.147712 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_gold, now model.madt8102_dbt.silver_customers)
+[0m00:13:56.148130 [debug] [Thread-1 (]: Began compiling node model.madt8102_dbt.silver_customers
+[0m00:13:56.156521 [debug] [Thread-1 (]: Writing injected SQL for node "model.madt8102_dbt.silver_customers"
+[0m00:13:56.157440 [debug] [Thread-1 (]: Began executing node model.madt8102_dbt.silver_customers
+[0m00:13:56.186901 [debug] [Thread-1 (]: Writing runtime sql for node "model.madt8102_dbt.silver_customers"
+[0m00:13:56.187904 [debug] [Thread-1 (]: On model.madt8102_dbt.silver_customers: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "model.madt8102_dbt.silver_customers"} */
+
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_customers`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized customer data
+-- This layer applies data quality rules and standardization
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+    );
+  
+[0m00:13:56.188231 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m00:13:58.311585 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:d380b87e-3096-4e69-b021-e3df34a9327d&page=queryresults
+[0m00:14:02.940222 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fa13290>]}
+[0m00:14:02.941426 [info ] [Thread-1 (]: 1 of 2 OK created sql table model madt8102_silver.silver_customers ............. [[32mCREATE TABLE (8.0 rows, 456.0 Bytes processed)[0m in 6.79s]
+[0m00:14:02.942000 [debug] [Thread-1 (]: Finished running node model.madt8102_dbt.silver_customers
+[0m00:14:02.942931 [debug] [Thread-3 (]: Began running node model.madt8102_dbt.silver_orders
+[0m00:14:02.943336 [info ] [Thread-3 (]: 2 of 2 START sql incremental model madt8102_silver.silver_orders ............... [RUN]
+[0m00:14:02.943726 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102, now model.madt8102_dbt.silver_orders)
+[0m00:14:02.944034 [debug] [Thread-3 (]: Began compiling node model.madt8102_dbt.silver_orders
+[0m00:14:02.947870 [debug] [Thread-3 (]: Writing injected SQL for node "model.madt8102_dbt.silver_orders"
+[0m00:14:02.948622 [debug] [Thread-3 (]: Began executing node model.madt8102_dbt.silver_orders
+[0m00:14:02.974325 [debug] [Thread-3 (]: Writing runtime sql for node "model.madt8102_dbt.silver_orders"
+[0m00:14:02.975041 [debug] [Thread-3 (]: On model.madt8102_dbt.silver_orders: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "model.madt8102_dbt.silver_orders"} */
+
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_orders`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized order data
+-- This layer applies data quality rules and enriches with customer information
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`orders`
+    
+),
+
+customers as (
+    select customer_id from `madt-8102-479812`.`madt8102_silver`.`silver_customers`
+),
+
+cleaned as (
+    select
+        o.order_id,
+        o.customer_id,
+        o.order_date,
+        cast(o.order_date as date) as order_date_only,
+        o.amount,
+        upper(trim(o.status)) as status,
+        o.created_at,
+        o.updated_at,
+        current_timestamp as dbt_loaded_at
+    from source o
+    inner join customers c
+        on o.customer_id = c.customer_id
+    where
+        -- Data quality filters
+        o.order_id is not null
+        and o.customer_id is not null
+        and o.order_date is not null
+        and o.amount is not null
+        and o.amount > 0
+        and o.status is not null
+)
+
+select * from cleaned
+    );
+  
+[0m00:14:02.975333 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m00:14:05.104643 [debug] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:cfa420f4-15e6-4ffc-bbe9-8a8633386fa2&page=queryresults
+[0m00:14:05.447624 [error] [Thread-3 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:cfa420f4-15e6-4ffc-bbe9-8a8633386fa2&page=queryresults
+[0m00:14:05.456415 [debug] [Thread-3 (]: Database Error in model silver_orders (models/silver/silver_orders.sql)
+  No matching signature for operator > for argument types: STRING, INT64
+    Signature: T1 > T1
+      Unable to find common supertype for templated argument <T1>
+        Input types for <T1>: {INT64, STRING} at [48:13]
+  compiled code at target/run/madt8102_dbt/models/silver/silver_orders.sql
+[0m00:14:05.456863 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'a4a3cf0c-5f27-4a2d-8914-350a08a150df', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fe9d710>]}
+[0m00:14:05.457340 [error] [Thread-3 (]: 2 of 2 ERROR creating sql incremental model madt8102_silver.silver_orders ...... [[31mERROR[0m in 2.51s]
+[0m00:14:05.457714 [debug] [Thread-3 (]: Finished running node model.madt8102_dbt.silver_orders
+[0m00:14:05.458069 [debug] [Thread-7 (]: Marking all children of 'model.madt8102_dbt.silver_orders' to be skipped because of status 'error'.  Reason: Database Error in model silver_orders (models/silver/silver_orders.sql)
+  No matching signature for operator > for argument types: STRING, INT64
+    Signature: T1 > T1
+      Unable to find common supertype for templated argument <T1>
+        Input types for <T1>: {INT64, STRING} at [48:13]
+  compiled code at target/run/madt8102_dbt/models/silver/silver_orders.sql.
+[0m00:14:05.459340 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m00:14:05.460524 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m00:14:05.460754 [debug] [MainThread]: Connection 'model.madt8102_dbt.silver_customers' was properly closed.
+[0m00:14:05.461024 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m00:14:05.461272 [debug] [MainThread]: Connection 'model.madt8102_dbt.silver_orders' was properly closed.
+[0m00:14:05.461507 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_bronze' was properly closed.
+[0m00:14:05.461789 [info ] [MainThread]: 
+[0m00:14:05.462078 [info ] [MainThread]: Finished running 1 incremental model, 1 table model in 0 hours 0 minutes and 12.30 seconds (12.30s).
+[0m00:14:05.462753 [debug] [MainThread]: Command end result
+[0m00:14:05.492114 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:14:05.493607 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:14:05.497508 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m00:14:05.497723 [info ] [MainThread]: 
+[0m00:14:05.497965 [info ] [MainThread]: [31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+[0m00:14:05.498150 [info ] [MainThread]: 
+[0m00:14:05.498374 [error] [MainThread]: [31mFailure in model silver_orders (models/silver/silver_orders.sql)[0m
+[0m00:14:05.498590 [error] [MainThread]:   Database Error in model silver_orders (models/silver/silver_orders.sql)
+  No matching signature for operator > for argument types: STRING, INT64
+    Signature: T1 > T1
+      Unable to find common supertype for templated argument <T1>
+        Input types for <T1>: {INT64, STRING} at [48:13]
+  compiled code at target/run/madt8102_dbt/models/silver/silver_orders.sql
+[0m00:14:05.498776 [info ] [MainThread]: 
+[0m00:14:05.498968 [info ] [MainThread]:   compiled code at target/compiled/madt8102_dbt/models/silver/silver_orders.sql
+[0m00:14:05.499128 [info ] [MainThread]: 
+[0m00:14:05.499301 [info ] [MainThread]: Done. PASS=1 WARN=0 ERROR=1 SKIP=0 NO-OP=0 TOTAL=2
+[0m00:14:05.499624 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 4 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m00:14:05.499932 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": false, "command_wall_clock_time": 15.961073, "process_in_blocks": "0", "process_kernel_time": 0.763369, "process_mem_max_rss": "454344704", "process_out_blocks": "0", "process_user_time": 3.809843}
+[0m00:14:05.500158 [debug] [MainThread]: Command `dbt run` failed at 00:14:05.500115 after 15.96 seconds
+[0m00:14:05.500388 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x109fe66d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e6d7910>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e38d710>]}
+[0m00:14:05.500586 [debug] [MainThread]: Flushing usage events
+[0m00:14:07.226908 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m00:44:24.633115 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10984de50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1098c1f90>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1098da2d0>]}
+
+
+============================== 00:44:24.636220 | fe56e6fb-b87c-4622-acca-a9c796077aa6 ==============================
+[0m00:44:24.636220 [info ] [MainThread]: Running with dbt=1.10.10
+[0m00:44:24.636571 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'no_print': 'None', 'static_parser': 'True', 'quiet': 'False', 'partial_parse': 'True', 'use_experimental_parser': 'False', 'fail_fast': 'False', 'debug': 'False', 'introspect': 'True', 'printer_width': '80', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'warn_error': 'None', 'cache_selected_only': 'False', 'indirect_selection': 'eager', 'write_json': 'True', 'send_anonymous_usage_stats': 'True', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'target_path': 'None', 'invocation_command': 'dbt run --select silver_orders --vars {execution_date: "2023-01-01"} --target prod', 'empty': 'False', 'log_cache_events': 'False', 'use_colors': 'True', 'log_format': 'default'}
+[0m00:44:27.366187 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x109883ed0>]}
+[0m00:44:27.401180 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107128250>]}
+[0m00:44:27.401575 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m00:44:27.533115 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m00:44:27.624626 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 1 files changed.
+[0m00:44:27.625092 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://models/silver/silver_orders.sql
+[0m00:44:27.931875 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m00:44:27.932227 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a84e850>]}
+[0m00:44:27.991235 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a621d10>]}
+[0m00:44:28.046764 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:44:28.048228 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:44:28.062847 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a94a810>]}
+[0m00:44:28.063191 [info ] [MainThread]: Found 8 models, 2 seeds, 56 data tests, 1 snapshot, 2 sources, 495 macros
+[0m00:44:28.063364 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a662d50>]}
+[0m00:44:28.064391 [info ] [MainThread]: 
+[0m00:44:28.064572 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m00:44:28.064706 [info ] [MainThread]: 
+[0m00:44:28.064972 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m00:44:28.065431 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m00:44:28.065620 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:44:28.948114 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now list_madt-8102-479812_madt8102_gold)
+[0m00:44:28.948951 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_silver'
+[0m00:44:28.949659 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m00:44:28.950311 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m00:44:28.950665 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:44:28.951116 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:44:28.951432 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:44:28.951727 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:44:30.022899 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_silver, now list_madt-8102-479812_madt8102_bronze)
+[0m00:44:30.024272 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:44:30.864223 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10988c7d0>]}
+[0m00:44:30.865687 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m00:44:30.869062 [debug] [Thread-1 (]: Began running node model.madt8102_dbt.silver_orders
+[0m00:44:30.869554 [info ] [Thread-1 (]: 1 of 1 START sql incremental model madt8102_silver.silver_orders ............... [RUN]
+[0m00:44:30.869933 [debug] [Thread-1 (]: Acquiring new bigquery connection 'model.madt8102_dbt.silver_orders'
+[0m00:44:30.870166 [debug] [Thread-1 (]: Began compiling node model.madt8102_dbt.silver_orders
+[0m00:44:30.878337 [debug] [Thread-1 (]: Writing injected SQL for node "model.madt8102_dbt.silver_orders"
+[0m00:44:30.879439 [debug] [Thread-1 (]: Began executing node model.madt8102_dbt.silver_orders
+[0m00:44:30.924800 [debug] [Thread-1 (]: Writing runtime sql for node "model.madt8102_dbt.silver_orders"
+[0m00:44:30.925824 [debug] [Thread-1 (]: On model.madt8102_dbt.silver_orders: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "model.madt8102_dbt.silver_orders"} */
+
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_orders`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+
+-- Silver layer: Cleaned and standardized order data
+-- This layer applies data quality rules and enriches with customer information
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`orders`
+    
+),
+
+customers as (
+    select customer_id from `madt-8102-479812`.`madt8102_silver`.`silver_customers`
+),
+
+cleaned as (
+    select
+        o.order_id,
+        o.customer_id,
+        o.order_date,
+        cast(o.order_date as date) as order_date_only,
+        cast(o.amount as float64) as amount,
+        upper(trim(o.status)) as status,
+        o.created_at,
+        o.updated_at,
+        current_timestamp as dbt_loaded_at
+    from source o
+    inner join customers c
+        on o.customer_id = c.customer_id
+    where
+        -- Data quality filters
+        o.order_id is not null
+        and o.customer_id is not null
+        and o.order_date is not null
+        and o.amount is not null
+        and cast(o.amount as float64) > 0
+        and o.status is not null
+)
+
+select * from cleaned
+    );
+  
+[0m00:44:30.926160 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m00:44:32.919627 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:9898e113-c925-44e9-bb20-3fa5446a0940&page=queryresults
+[0m00:44:37.106770 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'fe56e6fb-b87c-4622-acca-a9c796077aa6', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11abbd890>]}
+[0m00:44:37.107334 [info ] [Thread-1 (]: 1 of 1 OK created sql incremental model madt8102_silver.silver_orders .......... [[32mCREATE TABLE (0.0 rows, 1.5 KiB processed)[0m in 6.24s]
+[0m00:44:37.107752 [debug] [Thread-1 (]: Finished running node model.madt8102_dbt.silver_orders
+[0m00:44:37.109070 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m00:44:37.111344 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m00:44:37.111817 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_gold' was properly closed.
+[0m00:44:37.112211 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_bronze' was properly closed.
+[0m00:44:37.112570 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m00:44:37.112918 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102' was properly closed.
+[0m00:44:37.113270 [debug] [MainThread]: Connection 'model.madt8102_dbt.silver_orders' was properly closed.
+[0m00:44:37.113616 [info ] [MainThread]: 
+[0m00:44:37.113963 [info ] [MainThread]: Finished running 1 incremental model in 0 hours 0 minutes and 9.05 seconds (9.05s).
+[0m00:44:37.114663 [debug] [MainThread]: Command end result
+[0m00:44:37.142782 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:44:37.144511 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:44:37.148461 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m00:44:37.148682 [info ] [MainThread]: 
+[0m00:44:37.148959 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m00:44:37.149149 [info ] [MainThread]: 
+[0m00:44:37.149356 [info ] [MainThread]: Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=1
+[0m00:44:37.149722 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 2 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m00:44:37.150073 [debug] [MainThread]: Resource report: {"command_name": "run", "command_success": true, "command_wall_clock_time": 12.5595665, "process_in_blocks": "0", "process_kernel_time": 0.733924, "process_mem_max_rss": "449478656", "process_out_blocks": "0", "process_user_time": 3.498001}
+[0m00:44:37.150335 [debug] [MainThread]: Command `dbt run` succeeded at 00:44:37.150284 after 12.56 seconds
+[0m00:44:37.150590 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1098f78d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1098f7350>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10519ba50>]}
+[0m00:44:37.150830 [debug] [MainThread]: Flushing usage events
+[0m00:44:38.696087 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m00:53:46.506819 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10996c8d0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1099e1fd0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1099fa3d0>]}
+
+
+============================== 00:53:46.509924 | c971488a-8be3-4cce-8ee3-efd92eba44c7 ==============================
+[0m00:53:46.509924 [info ] [MainThread]: Running with dbt=1.10.10
+[0m00:53:46.510261 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'printer_width': '80', 'log_format': 'default', 'fail_fast': 'False', 'warn_error': 'None', 'log_cache_events': 'False', 'send_anonymous_usage_stats': 'True', 'write_json': 'True', 'partial_parse': 'True', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'introspect': 'True', 'static_parser': 'True', 'empty': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'invocation_command': 'dbt snapshot --select silver_customers_snapshot --vars {execution_date: "2023-01-01"} --target prod', 'indirect_selection': 'eager', 'cache_selected_only': 'False', 'use_colors': 'True', 'debug': 'False', 'use_experimental_parser': 'False', 'quiet': 'False'}
+[0m00:53:49.266452 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a3a3f10>]}
+[0m00:53:49.301154 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10724c390>]}
+[0m00:53:49.301557 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m00:53:49.437471 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m00:53:49.534348 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 0 files changed.
+[0m00:53:49.534644 [debug] [MainThread]: Partial parsing enabled, no changes found, skipping parsing
+[0m00:53:49.676570 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a42df50>]}
+[0m00:53:49.732051 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:53:49.733397 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:53:49.747956 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1078b1390>]}
+[0m00:53:49.748255 [info ] [MainThread]: Found 8 models, 2 seeds, 56 data tests, 1 snapshot, 2 sources, 495 macros
+[0m00:53:49.748429 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1092810d0>]}
+[0m00:53:49.749431 [info ] [MainThread]: 
+[0m00:53:49.749610 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m00:53:49.749742 [info ] [MainThread]: 
+[0m00:53:49.749988 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m00:53:49.750450 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m00:53:49.750646 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:53:50.788297 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now create_madt-8102-479812_silver)
+[0m00:53:50.789481 [debug] [ThreadPool]: Creating schema "database: "madt-8102-479812"
+schema: "silver"
+"
+[0m00:53:50.802801 [debug] [ThreadPool]: On create_madt-8102-479812_silver: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "connection_name": "create_madt-8102-479812_silver"} */
+create schema if not exists `madt-8102-479812`.`silver`
+  
+[0m00:53:50.803270 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:53:52.031976 [debug] [ThreadPool]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:0072d872-c5c6-4840-af88-99865a75d83c&page=queryresults
+[0m00:53:53.368464 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m00:53:53.368825 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m00:53:53.369098 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_gold'
+[0m00:53:53.369294 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:53:53.369512 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_bronze'
+[0m00:53:53.369713 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:53:53.369886 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:53:53.370115 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:53:54.308222 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_bronze, now list_madt-8102-479812_madt8102_silver)
+[0m00:53:54.309096 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:53:55.110033 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11728dc10>]}
+[0m00:53:55.111166 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m00:53:55.114307 [debug] [Thread-1 (]: Began running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:53:55.114630 [info ] [Thread-1 (]: 1 of 1 START snapshot silver.silver_customers_snapshot ......................... [RUN]
+[0m00:53:55.114864 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102, now snapshot.madt8102_dbt.silver_customers_snapshot)
+[0m00:53:55.115049 [debug] [Thread-1 (]: Began compiling node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:53:55.125590 [debug] [Thread-1 (]: Began executing node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:53:55.168080 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+select * from (
+        
+    
+
+    select *,
+        to_hex(md5(concat(coalesce(cast(customer_id as string), ''), '|',coalesce(cast(updated_at as string), '')))) as dbt_scd_id,
+        updated_at as dbt_updated_at,
+        updated_at as dbt_valid_from,
+        
+  
+  coalesce(nullif(updated_at, updated_at), null)
+  as dbt_valid_to
+from (
+        
+
+
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+    where created_at::date = CAST('2023-01-01' AS DATE)
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+
+    ) sbq
+
+
+
+    ) as __dbt_sbq
+    where false and current_timestamp() = current_timestamp()
+    limit 0
+
+[0m00:53:55.168510 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m00:53:56.024379 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:efc2ab7b-d27e-4169-b60a-2c754d99868f&page=queryresults
+[0m00:53:56.025613 [error] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:efc2ab7b-d27e-4169-b60a-2c754d99868f&page=queryresults
+[0m00:53:56.037327 [debug] [Thread-1 (]: Database Error in snapshot silver_customers_snapshot (snapshots/silver/silver_customers_snapshot.sql)
+  Syntax error: Expected ")" but got ":" at [21:21]
+[0m00:53:56.039857 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c971488a-8be3-4cce-8ee3-efd92eba44c7', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11a2c6910>]}
+[0m00:53:56.040986 [error] [Thread-1 (]: 1 of 1 ERROR snapshotting silver.silver_customers_snapshot ..................... [[31mERROR[0m in 0.92s]
+[0m00:53:56.041809 [debug] [Thread-1 (]: Finished running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:53:56.042615 [debug] [Thread-7 (]: Marking all children of 'snapshot.madt8102_dbt.silver_customers_snapshot' to be skipped because of status 'error'.  Reason: Database Error in snapshot silver_customers_snapshot (snapshots/silver/silver_customers_snapshot.sql)
+  Syntax error: Expected ")" but got ":" at [21:21].
+[0m00:53:56.044889 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m00:53:56.046531 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m00:53:56.046814 [debug] [MainThread]: Connection 'create_madt-8102-479812_silver' was properly closed.
+[0m00:53:56.047058 [debug] [MainThread]: Connection 'snapshot.madt8102_dbt.silver_customers_snapshot' was properly closed.
+[0m00:53:56.047280 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m00:53:56.047498 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_gold' was properly closed.
+[0m00:53:56.047708 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_silver' was properly closed.
+[0m00:53:56.047962 [info ] [MainThread]: 
+[0m00:53:56.048234 [info ] [MainThread]: Finished running 1 snapshot in 0 hours 0 minutes and 6.30 seconds (6.30s).
+[0m00:53:56.048752 [debug] [MainThread]: Command end result
+[0m00:53:56.079240 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:53:56.080714 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:53:56.084540 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m00:53:56.084797 [info ] [MainThread]: 
+[0m00:53:56.085042 [info ] [MainThread]: [31mCompleted with 1 error, 0 partial successes, and 0 warnings:[0m
+[0m00:53:56.085227 [info ] [MainThread]: 
+[0m00:53:56.085450 [error] [MainThread]: [31mFailure in snapshot silver_customers_snapshot (snapshots/silver/silver_customers_snapshot.sql)[0m
+[0m00:53:56.085645 [error] [MainThread]:   Database Error in snapshot silver_customers_snapshot (snapshots/silver/silver_customers_snapshot.sql)
+  Syntax error: Expected ")" but got ":" at [21:21]
+[0m00:53:56.085799 [info ] [MainThread]: 
+[0m00:53:56.085974 [info ] [MainThread]: Done. PASS=0 WARN=0 ERROR=1 SKIP=0 NO-OP=0 TOTAL=1
+[0m00:53:56.086267 [debug] [MainThread]: Resource report: {"command_name": "snapshot", "command_success": false, "command_wall_clock_time": 9.624995, "process_in_blocks": "0", "process_kernel_time": 0.721065, "process_mem_max_rss": "440909824", "process_out_blocks": "0", "process_user_time": 3.306219}
+[0m00:53:56.086485 [debug] [MainThread]: Command `dbt snapshot` failed at 00:53:56.086438 after 9.63 seconds
+[0m00:53:56.086710 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10035a450>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x107223390>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1003eb790>]}
+[0m00:53:56.086919 [debug] [MainThread]: Flushing usage events
+[0m00:53:57.820276 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m00:56:03.829183 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c74d310>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c7bf290>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c7c10d0>]}
+
+
+============================== 00:56:03.832351 | 058b30cf-35e3-4a34-8af4-6a97aec65785 ==============================
+[0m00:56:03.832351 [info ] [MainThread]: Running with dbt=1.10.10
+[0m00:56:03.832697 [debug] [MainThread]: running dbt with arguments {'log_cache_events': 'False', 'printer_width': '80', 'static_parser': 'True', 'no_print': 'None', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'use_colors': 'True', 'log_format': 'default', 'use_experimental_parser': 'False', 'quiet': 'False', 'debug': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'version_check': 'True', 'fail_fast': 'False', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'write_json': 'True', 'warn_error': 'None', 'introspect': 'True', 'target_path': 'None', 'cache_selected_only': 'False', 'send_anonymous_usage_stats': 'True', 'partial_parse': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt snapshot --select silver_customers_snapshot --vars {execution_date: "2023-01-01"} --target prod', 'empty': 'False'}
+[0m00:56:06.663102 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11d15a790>]}
+[0m00:56:06.698423 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a0852d0>]}
+[0m00:56:06.698806 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m00:56:06.835165 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m00:56:06.931385 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 2 files changed.
+[0m00:56:06.931943 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://snapshots/silver/silver_customers_snapshot.sql
+[0m00:56:06.932188 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://models/silver/silver_orders.sql
+[0m00:56:07.353500 [warn ] [MainThread]: [[33mWARNING[0m][MissingArgumentsPropertyInGenericTestDeprecation]: Deprecated
+functionality
+Found top-level arguments to test `relationships`. Arguments to generic tests
+should be nested under the `arguments` property.`
+[0m00:56:07.353844 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'deprecation', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'property_': 'warn', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11d8d4890>]}
+[0m00:56:07.412254 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11db18d10>]}
+[0m00:56:07.471424 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:56:07.472809 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:56:07.487624 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11dd0ff90>]}
+[0m00:56:07.487964 [info ] [MainThread]: Found 8 models, 2 seeds, 56 data tests, 1 snapshot, 2 sources, 495 macros
+[0m00:56:07.488142 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11d0e61d0>]}
+[0m00:56:07.489200 [info ] [MainThread]: 
+[0m00:56:07.489388 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m00:56:07.489544 [info ] [MainThread]: 
+[0m00:56:07.489794 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m00:56:07.490244 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m00:56:07.490485 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:56:08.306445 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now list_madt-8102-479812_madt8102_silver)
+[0m00:56:08.306926 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_silver'
+[0m00:56:08.307318 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m00:56:08.307573 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_bronze'
+[0m00:56:08.307713 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:56:08.307972 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:56:08.308213 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:56:08.308458 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m00:56:09.183113 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_silver, now list_madt-8102-479812_madt8102_gold)
+[0m00:56:09.183707 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m00:56:10.445451 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11d90a650>]}
+[0m00:56:10.446739 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m00:56:10.452254 [debug] [Thread-1 (]: Began running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:56:10.453108 [info ] [Thread-1 (]: 1 of 1 START snapshot silver.silver_customers_snapshot ......................... [RUN]
+[0m00:56:10.453694 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_gold, now snapshot.madt8102_dbt.silver_customers_snapshot)
+[0m00:56:10.454134 [debug] [Thread-1 (]: Began compiling node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:56:10.463382 [debug] [Thread-1 (]: Began executing node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:56:10.519337 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+select * from (
+        
+    
+
+    select *,
+        to_hex(md5(concat(coalesce(cast(customer_id as string), ''), '|',coalesce(cast(updated_at as string), '')))) as dbt_scd_id,
+        updated_at as dbt_updated_at,
+        updated_at as dbt_valid_from,
+        
+  
+  coalesce(nullif(updated_at, updated_at), null)
+  as dbt_valid_to
+from (
+        
+
+
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+    where CAST(created_at AS DATE) = CAST('2023-01-01' AS DATE)
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+
+    ) sbq
+
+
+
+    ) as __dbt_sbq
+    where false and current_timestamp() = current_timestamp()
+    limit 0
+
+[0m00:56:10.519798 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m00:56:12.757235 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:3ee0b947-9b68-441a-831e-2f8d86fd2155&page=queryresults
+[0m00:56:13.404054 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+select * from (
+        select 
+    current_timestamp()
+ as dbt_snapshot_time
+    ) as __dbt_sbq
+    where false and current_timestamp() = current_timestamp()
+    limit 0
+
+[0m00:56:14.123763 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:63c86cbb-e558-4c77-82db-772d20f0fe38&page=queryresults
+[0m00:56:14.511826 [debug] [Thread-1 (]: Writing runtime sql for node "snapshot.madt8102_dbt.silver_customers_snapshot"
+[0m00:56:14.513761 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+
+      
+  
+    
+
+    create or replace table `madt-8102-479812`.`silver`.`silver_customers_snapshot`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+    
+
+    select *,
+        to_hex(md5(concat(coalesce(cast(customer_id as string), ''), '|',coalesce(cast(updated_at as string), '')))) as dbt_scd_id,
+        updated_at as dbt_updated_at,
+        updated_at as dbt_valid_from,
+        
+  
+  coalesce(nullif(updated_at, updated_at), null)
+  as dbt_valid_to
+from (
+        
+
+
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+    where CAST(created_at AS DATE) = CAST('2023-01-01' AS DATE)
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+
+    ) sbq
+
+
+
+    );
+  
+  
+[0m00:56:15.354034 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:6080b271-168a-4abe-b09e-cf80fa478ee9&page=queryresults
+[0m00:56:20.052303 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '058b30cf-35e3-4a34-8af4-6a97aec65785', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11dcf7450>]}
+[0m00:56:20.052989 [info ] [Thread-1 (]: 1 of 1 OK snapshotted silver.silver_customers_snapshot ......................... [[32mCREATE TABLE (4.0 rows, 228.0 Bytes processed)[0m in 9.60s]
+[0m00:56:20.053330 [debug] [Thread-1 (]: Finished running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m00:56:20.054068 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m00:56:20.055267 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m00:56:20.055692 [debug] [MainThread]: Connection 'snapshot.madt8102_dbt.silver_customers_snapshot' was properly closed.
+[0m00:56:20.055974 [debug] [MainThread]: Connection 'list_madt-8102-479812_silver' was properly closed.
+[0m00:56:20.056224 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102' was properly closed.
+[0m00:56:20.056469 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_bronze' was properly closed.
+[0m00:56:20.056747 [info ] [MainThread]: 
+[0m00:56:20.057039 [info ] [MainThread]: Finished running 1 snapshot in 0 hours 0 minutes and 12.57 seconds (12.57s).
+[0m00:56:20.057627 [debug] [MainThread]: Command end result
+[0m00:56:20.080283 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m00:56:20.081718 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m00:56:20.084913 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m00:56:20.085109 [info ] [MainThread]: 
+[0m00:56:20.085320 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m00:56:20.085463 [info ] [MainThread]: 
+[0m00:56:20.085612 [info ] [MainThread]: Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=1
+[0m00:56:20.085882 [warn ] [MainThread]: [[33mWARNING[0m][DeprecationsSummary]: Deprecated functionality
+Summary of encountered deprecations:
+- MissingArgumentsPropertyInGenericTestDeprecation: 2 occurrences
+To see all deprecation instances instead of just the first occurrence of each,
+run command again with the `--show-all-deprecations` flag. You may also need to
+run with `--no-partial-parse` as some deprecations are only encountered during
+parsing.
+[0m00:56:20.086129 [debug] [MainThread]: Resource report: {"command_name": "snapshot", "command_success": true, "command_wall_clock_time": 16.30051, "process_in_blocks": "0", "process_kernel_time": 0.7651, "process_mem_max_rss": "453853184", "process_out_blocks": "0", "process_user_time": 3.674647}
+[0m00:56:20.086319 [debug] [MainThread]: Command `dbt snapshot` succeeded at 00:56:20.086280 after 16.30 seconds
+[0m00:56:20.086498 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c49e750>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1080ea650>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x1080cc390>]}
+[0m00:56:20.086679 [debug] [MainThread]: Flushing usage events
+[0m00:56:21.577901 [debug] [MainThread]: An error was encountered while trying to flush usage events
+[0m01:00:18.091573 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e852010>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e852a50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10e8c50d0>]}
+
+
+============================== 01:00:18.094795 | b8c75c68-f89b-4dd5-b246-af7a21363b20 ==============================
+[0m01:00:18.094795 [info ] [MainThread]: Running with dbt=1.10.10
+[0m01:00:18.095147 [debug] [MainThread]: running dbt with arguments {'fail_fast': 'False', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'static_parser': 'True', 'warn_error': 'None', 'use_experimental_parser': 'False', 'log_format': 'default', 'invocation_command': 'dbt snapshot --select silver_customers_snapshot --vars {execution_date: "2023-01-01"} --target prod', 'debug': 'False', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'log_path': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/logs', 'target_path': 'None', 'indirect_selection': 'eager', 'partial_parse': 'True', 'profiles_dir': '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt', 'use_colors': 'True', 'log_cache_events': 'False', 'version_check': 'True', 'empty': 'False', 'introspect': 'True', 'printer_width': '80', 'no_print': 'None', 'write_json': 'True', 'cache_selected_only': 'False'}
+[0m01:00:20.878352 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f1cea50>]}
+[0m01:00:20.912857 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10c0d4310>]}
+[0m01:00:20.913217 [info ] [MainThread]: Registered adapter: bigquery=1.10.3
+[0m01:00:21.047138 [debug] [MainThread]: checksum: 28566ee9731cf3cf8c5706296742895250ff27e3f978510568081c6b7e740ad3, vars: {'execution_date': '2023-01-01'}, profile: , target: prod, version: 1.10.10
+[0m01:00:21.147451 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 1 files changed.
+[0m01:00:21.148059 [debug] [MainThread]: Partial parsing: updated file: madt8102_dbt://snapshots/silver/silver_customers_snapshot.sql
+[0m01:00:21.419611 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11f8acd10>]}
+[0m01:00:21.474105 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m01:00:21.475248 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m01:00:21.488514 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fae3d50>]}
+[0m01:00:21.488810 [info ] [MainThread]: Found 8 models, 2 seeds, 56 data tests, 1 snapshot, 2 sources, 495 macros
+[0m01:00:21.488983 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10da0cb10>]}
+[0m01:00:21.490025 [info ] [MainThread]: 
+[0m01:00:21.490212 [info ] [MainThread]: Concurrency: 4 threads (target='prod')
+[0m01:00:21.490346 [info ] [MainThread]: 
+[0m01:00:21.490594 [debug] [MainThread]: Acquiring new bigquery connection 'master'
+[0m01:00:21.491040 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812'
+[0m01:00:21.491240 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m01:00:22.511793 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_madt-8102-479812, now list_madt-8102-479812_madt8102_bronze)
+[0m01:00:22.512626 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102'
+[0m01:00:22.513215 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_gold'
+[0m01:00:22.513987 [debug] [ThreadPool]: Acquiring new bigquery connection 'list_madt-8102-479812_madt8102_silver'
+[0m01:00:22.514486 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m01:00:22.514977 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m01:00:22.515347 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m01:00:22.515714 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m01:00:23.663988 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fa3b9d0>]}
+[0m01:00:23.665221 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m01:00:23.671964 [debug] [Thread-1 (]: Began running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m01:00:23.672835 [info ] [Thread-1 (]: 1 of 1 START snapshot madt8102_silver.silver_customers_snapshot ................ [RUN]
+[0m01:00:23.673461 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly list_madt-8102-479812_madt8102_bronze, now snapshot.madt8102_dbt.silver_customers_snapshot)
+[0m01:00:23.674029 [debug] [Thread-1 (]: Began compiling node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m01:00:23.684595 [debug] [Thread-1 (]: Began executing node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m01:00:23.735514 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+select * from (
+        
+    
+
+    select *,
+        to_hex(md5(concat(coalesce(cast(customer_id as string), ''), '|',coalesce(cast(updated_at as string), '')))) as dbt_scd_id,
+        updated_at as dbt_updated_at,
+        updated_at as dbt_valid_from,
+        
+  
+  coalesce(nullif(updated_at, updated_at), null)
+  as dbt_valid_to
+from (
+        
+
+
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+    where CAST(created_at AS DATE) = CAST('2023-01-01' AS DATE)
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+
+    ) sbq
+
+
+
+    ) as __dbt_sbq
+    where false and current_timestamp() = current_timestamp()
+    limit 0
+
+[0m01:00:23.735960 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m01:00:26.610051 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:7238e0e7-99ea-4434-abea-6c11d24cc7be&page=queryresults
+[0m01:00:27.024843 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+select * from (
+        select 
+    current_timestamp()
+ as dbt_snapshot_time
+    ) as __dbt_sbq
+    where false and current_timestamp() = current_timestamp()
+    limit 0
+
+[0m01:00:27.686412 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:bd211058-4fda-4508-b2eb-cecfe340d285&page=queryresults
+[0m01:00:28.074442 [debug] [Thread-1 (]: Writing runtime sql for node "snapshot.madt8102_dbt.silver_customers_snapshot"
+[0m01:00:28.075964 [debug] [Thread-1 (]: On snapshot.madt8102_dbt.silver_customers_snapshot: /* {"app": "dbt", "dbt_version": "1.10.10", "profile_name": "madt8102_dbt", "target_name": "prod", "node_id": "snapshot.madt8102_dbt.silver_customers_snapshot"} */
+
+      
+  
+    
+
+    create or replace table `madt-8102-479812`.`madt8102_silver`.`silver_customers_snapshot`
+      
+    
+    
+
+    
+    OPTIONS()
+    as (
+      
+    
+
+    select *,
+        to_hex(md5(concat(coalesce(cast(customer_id as string), ''), '|',coalesce(cast(updated_at as string), '')))) as dbt_scd_id,
+        updated_at as dbt_updated_at,
+        updated_at as dbt_valid_from,
+        
+  
+  coalesce(nullif(updated_at, updated_at), null)
+  as dbt_valid_to
+from (
+        
+
+
+
+with source as (
+    select * from `madt-8102-479812`.`madt8102_bronze`.`customers`
+    where CAST(created_at AS DATE) = CAST('2023-01-01' AS DATE)
+),
+
+cleaned as (
+    select
+        customer_id,
+        lower(trim(email)) as email,
+        trim(first_name) as first_name,
+        trim(last_name) as last_name,
+        first_name || ' ' || last_name as full_name,
+        created_at,
+        updated_at,
+        current_timestamp as dbt_loaded_at
+    from source
+    where
+        -- Data quality filters
+        customer_id is not null
+        and email is not null
+        and email like '%@%.%'  -- Basic email validation
+        and first_name is not null
+        and last_name is not null
+)
+
+select * from cleaned
+
+    ) sbq
+
+
+
+    );
+  
+  
+[0m01:00:29.627251 [debug] [Thread-1 (]: BigQuery adapter: https://console.cloud.google.com/bigquery?project=madt-8102-479812&j=bq:US:e9a3f280-82b6-4a52-95cc-8e2fcd9b3e27&page=queryresults
+[0m01:00:34.044230 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'b8c75c68-f89b-4dd5-b246-af7a21363b20', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x11fb3dc90>]}
+[0m01:00:34.044869 [info ] [Thread-1 (]: 1 of 1 OK snapshotted madt8102_silver.silver_customers_snapshot ................ [[32mCREATE TABLE (4.0 rows, 228.0 Bytes processed)[0m in 10.37s]
+[0m01:00:34.045258 [debug] [Thread-1 (]: Finished running node snapshot.madt8102_dbt.silver_customers_snapshot
+[0m01:00:34.046338 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m01:00:34.047601 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m01:00:34.047920 [debug] [MainThread]: Connection 'snapshot.madt8102_dbt.silver_customers_snapshot' was properly closed.
+[0m01:00:34.048197 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102' was properly closed.
+[0m01:00:34.048448 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_gold' was properly closed.
+[0m01:00:34.048681 [debug] [MainThread]: Connection 'list_madt-8102-479812_madt8102_silver' was properly closed.
+[0m01:00:34.048947 [info ] [MainThread]: 
+[0m01:00:34.049253 [info ] [MainThread]: Finished running 1 snapshot in 0 hours 0 minutes and 12.56 seconds (12.56s).
+[0m01:00:34.049860 [debug] [MainThread]: Command end result
+[0m01:00:34.075174 [debug] [MainThread]: Wrote artifact WritableManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/manifest.json
+[0m01:00:34.076712 [debug] [MainThread]: Wrote artifact SemanticManifest to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/semantic_manifest.json
+[0m01:00:34.080539 [debug] [MainThread]: Wrote artifact RunExecutionResult to /Users/sirawich/Documents/madt8102_git/madt_8102_dbt/target/run_results.json
+[0m01:00:34.080757 [info ] [MainThread]: 
+[0m01:00:34.081021 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m01:00:34.081202 [info ] [MainThread]: 
+[0m01:00:34.081403 [info ] [MainThread]: Done. PASS=1 WARN=0 ERROR=0 SKIP=0 NO-OP=0 TOTAL=1
+[0m01:00:34.081710 [debug] [MainThread]: Resource report: {"command_name": "snapshot", "command_success": true, "command_wall_clock_time": 16.036528, "process_in_blocks": "0", "process_kernel_time": 0.753108, "process_mem_max_rss": "444186624", "process_out_blocks": "0", "process_user_time": 3.47135}
+[0m01:00:34.081955 [debug] [MainThread]: Command `dbt snapshot` succeeded at 01:00:34.081904 after 16.04 seconds
+[0m01:00:34.082192 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a1a2450>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a1a2550>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x10a233850>]}
+[0m01:00:34.082415 [debug] [MainThread]: Flushing usage events
+[0m01:00:35.781410 [debug] [MainThread]: An error was encountered while trying to flush usage events

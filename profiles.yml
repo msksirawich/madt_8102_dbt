@@ -13,7 +13,7 @@ madt8102_dbt:
       type: bigquery
       method: service-account
       project: madt-8102-479812
-      dataset: main
+      dataset: madt8102
       threads: 4
       keyfile: /Users/sirawich/Desktop/madt-8102-dbt-bq-key.json  # Replace with path to your keyfile
       location: US  # Replace with your GCP location (e.g., US, EU, asia-southeast1)

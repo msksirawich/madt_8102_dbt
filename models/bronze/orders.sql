@@ -16,4 +16,4 @@ select
     status,
     created_at,
     updated_at
-from {{ source('bronze', 'raw_orders') }}
+from {{ source('bronze', 'orders') }}

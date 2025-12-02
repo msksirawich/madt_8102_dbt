@@ -15,4 +15,4 @@ select
     last_name,
     created_at,
     updated_at
-from {{ source('bronze', 'raw_customers') }}
+from {{ source('bronze', 'customers') }}

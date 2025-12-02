@@ -1,7 +1,7 @@
 -- BigQuery External Table DDL for Orders
 -- This table reads from GCS with Hive-style partitioning (dt=YYYY-MM-DD)
 
-CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.bronze.orders`
+CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.madt8102_bronze.orders`
 (
   order_id STRING,
   customer_id STRING,

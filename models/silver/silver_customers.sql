@@ -9,7 +9,7 @@
 -- This layer applies data quality rules and standardization
 
 with source as (
-    select * from {{ ref('bronze_customers') }}
+    select * from {{ ref('customers') }}
 ),
 
 cleaned as (
