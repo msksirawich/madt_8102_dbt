@@ -4,9 +4,10 @@ psycopg2-binary>=2.9.0
 # YAML configuration
 PyYAML>=6.0
 
-# Google Cloud Storage support
+# Google Cloud support
 gcsfs>=2023.1.0
 google-cloud-storage>=2.10.0
+google-cloud-bigquery>=3.11.0
 
 # Data handling and Parquet
 pandas>=2.0.0

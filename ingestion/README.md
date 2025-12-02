@@ -10,26 +10,32 @@ A simple, configuration-driven data ingestion framework for loading data from va
 - Execution date filtering
 - Hive-style partitioning (e.g., `dt=2024-12-01`)
 - Support for Parquet and JSONL formats
+- BigQuery DDL execution script for creating tables
 
 ## Project Structure
 
 ```
 ingestion/
+├── bigquery/
+│   ├── README.md                           # BigQuery DDL documentation
+│   ├── orders_external_table.sql           # Orders external table DDL
+│   └── users_external_table.sql            # Users external table DDL
 ├── config/
-│   ├── pipeline_config.yaml              # PostgreSQL pipeline configuration
-│   ├── csv_pipeline_config.yaml          # CSV pipeline configuration (users)
-│   └── csv_orders_pipeline_config.yaml   # CSV pipeline configuration (orders)
+│   ├── pipeline_config.yaml                # PostgreSQL pipeline configuration
+│   ├── csv_pipeline_config.yaml            # CSV pipeline configuration (users)
+│   └── csv_orders_pipeline_config.yaml     # CSV pipeline configuration (orders)
 ├── data/
-│   ├── users.csv                          # Sample CSV data
-│   └── orders.csv                         # Sample CSV data
+│   ├── users.csv                            # Sample CSV data
+│   └── orders.csv                           # Sample CSV data
 ├── sources/
 │   ├── __init__.py
-│   ├── postgres_source.py                 # PostgreSQL source module
-│   └── csv_source.py                      # CSV source module
+│   ├── postgres_source.py                   # PostgreSQL source module
+│   └── csv_source.py                        # CSV source module
 ├── targets/
 │   ├── __init__.py
-│   └── gcs_target.py                      # GCS target module with Hive partitioning
-├── main.py                                 # Main ingestion script
+│   └── gcs_target.py                        # GCS target module with Hive partitioning
+├── main.py                                   # Main ingestion script
+├── run_bigquery_ddl.py                       # BigQuery DDL execution script
 ├── requirements.txt
 └── README.md
 ```
@@ -171,6 +177,52 @@ Data will be written to:
 ```
 gs://my-data-lake/raw_data/users/dt=2024-12-01/
 ```
+
+## BigQuery Table Creation
+
+After ingesting data to GCS, you can create BigQuery external tables to query the data:
+
+### Quick Start
+
+```bash
+# Run all DDL files in bigquery folder
+python run_bigquery_ddl.py
+
+# With specific credentials
+python run_bigquery_ddl.py --credentials /path/to/service-account.json
+
+# Run specific files only
+python run_bigquery_ddl.py --files users_external_table.sql orders_external_table.sql
+
+# Validate without executing (dry run)
+python run_bigquery_ddl.py --dry-run
+```
+
+### Adding New DDL Files
+
+1. Create your SQL file in the `bigquery/` folder (e.g., `my_table.sql`)
+2. Write your `CREATE OR REPLACE TABLE` or `CREATE OR REPLACE EXTERNAL TABLE` statement
+3. Run the script to execute it on BigQuery
+
+Example DDL file:
+```sql
+CREATE OR REPLACE EXTERNAL TABLE `project-id.dataset.table_name`
+(
+  id INT64,
+  name STRING,
+  created_at DATE
+)
+WITH PARTITION COLUMNS (
+  dt DATE
+)
+OPTIONS (
+  format = 'PARQUET',
+  uris = ['gs://bucket-name/path/dt=*/*'],
+  hive_partition_uri_prefix = 'gs://bucket-name/path'
+);
+```
+
+See `bigquery/README.md` for detailed documentation and examples.
 
 ## Extending the Framework
 
