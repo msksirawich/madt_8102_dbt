@@ -115,16 +115,22 @@ def run_ingestion(config: dict, execution_date: str):
             print("No data to load for this date.")
             return
 
-        # Convert date strings to date objects for proper parquet schema
+        # Convert timestamp strings to datetime objects and add dt partition column
         for record in data_list:
-            # Convert date string columns to date objects
+            # Convert timestamp string columns to datetime objects
             for key, value in record.items():
                 if isinstance(value, str) and key in ['created_at', 'updated_at']:
                     try:
-                        # Parse YYYY-MM-DD string to date object
-                        record[key] = date_type.fromisoformat(value)
+                        # Parse timestamp string to datetime object (preserves time)
+                        record[key] = datetime.fromisoformat(value)
                     except (ValueError, AttributeError):
                         pass  # Keep as string if parsing fails
+
+            # Add dt column for partitioning (date only)
+            if 'created_at' in record and isinstance(record['created_at'], datetime):
+                record['dt'] = record['created_at'].date()
+            elif 'updated_at' in record and isinstance(record['updated_at'], datetime):
+                record['dt'] = record['updated_at'].date()
 
         # Convert to DataFrame
         df = pd.DataFrame(data_list)
@@ -138,11 +144,13 @@ def run_ingestion(config: dict, execution_date: str):
         print(f"Writing {len(df)} records to {file_path}...")
 
         # Write using pandas to_parquet with gcsfs (simpler approach)
+        # Use coerce_timestamps='us' for BigQuery compatibility (microsecond precision)
         df.to_parquet(
             file_path,
             engine='pyarrow',
             compression='snappy',
-            index=False
+            index=False,
+            coerce_timestamps='us'  # Convert timestamps to microseconds (BigQuery compatible)
         )
 
         print(f"✓ Successfully wrote {len(df)} records to {file_path}")

@@ -1,23 +1,23 @@
 -- BigQuery External Table DDL for Orders
 -- This table reads from GCS with Hive-style partitioning (dt=YYYY-MM-DD)
 
-CREATE OR REPLACE EXTERNAL TABLE `your-project-id.your_dataset.orders_external`
+CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.bronze.orders`
 (
-  order_id INT64,
-  user_id INT64,
-  product_name STRING,
-  quantity INT64,
-  amount FLOAT64,
+  order_id STRING,
+  customer_id STRING,
+  order_date STRING,
+  quantity STRING,
+  amount STRING,
   status STRING,
-  created_at DATE,
-  updated_at DATE
+  created_at TIMESTAMP,
+  updated_at TIMESTAMP
 )
 WITH PARTITION COLUMNS (
   dt DATE  -- Hive partition column
 )
 OPTIONS (
   format = 'PARQUET',
-  uris = ['gs://madt8102_bronze/orders/dt=*/*'],  -- Pattern: dt=YYYY-MM-DD/*.parquet
+  uris = ['gs://madt8102_bronze/orders/*'],  -- Pattern: dt=YYYY-MM-DD/*.parquet
   hive_partition_uri_prefix = 'gs://madt8102_bronze/orders',
   require_hive_partition_filter = false
 );

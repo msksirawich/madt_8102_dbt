@@ -7,14 +7,14 @@ pipeline:
 
   # Source Configuration
   source:
-    file_path: data/raw_orders.csv  # Path to CSV file
+    file_path: data/raw_customers.csv  # Path to CSV file
     encoding: utf-8
     date_column: created_at  # Column to filter by execution date
 
   # Target Configuration
   target:
     bucket: madt8102_bronze
-    path: orders  # Path within bucket
+    path: customers  # Path within bucket
     partition_column: dt  # Column used for Hive partitioning (dt=YYYY-MM-DD) - auto-generated from created_at
     file_format: parquet  # Options: parquet, jsonl
     credentials_path: /Users/sirawich/Desktop/madt-8102-dbt-bq-key.json  # GCS service account key file
