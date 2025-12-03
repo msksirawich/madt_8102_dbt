@@ -18,24 +18,27 @@ A simple, configuration-driven data ingestion framework for loading data from va
 ingestion/
 ├── bigquery/
 │   ├── README.md                           # BigQuery DDL documentation
-│   ├── orders_external_table.sql           # Orders external table DDL
-│   └── users_external_table.sql            # Users external table DDL
+│   ├── customers_external_table.sql        # Customers external table DDL
+│   └── orders_external_table.sql           # Orders external table DDL
 ├── config/
 │   ├── pipeline_config.yaml                # PostgreSQL pipeline configuration
-│   ├── csv_pipeline_config.yaml            # CSV pipeline configuration (users)
-│   └── csv_orders_pipeline_config.yaml     # CSV pipeline configuration (orders)
+│   ├── csv_customers_pipeline_config.yaml  # CSV pipeline configuration (customers)
+│   ├── csv_orders_pipeline_config.yaml     # CSV pipeline configuration (orders)
+│   └── csv_users_pipeline_config.yaml      # CSV pipeline configuration (users)
 ├── data/
-│   ├── users.csv                            # Sample CSV data
-│   └── orders.csv                           # Sample CSV data
+│   ├── raw_customers.csv                   # Sample customer CSV data
+│   ├── raw_orders.csv                      # Sample order CSV data
+│   ├── users.csv                           # Sample user CSV data
+│   └── orders.csv                          # Sample order CSV data
 ├── sources/
 │   ├── __init__.py
-│   ├── postgres_source.py                   # PostgreSQL source module
-│   └── csv_source.py                        # CSV source module
+│   ├── postgres_source.py                  # PostgreSQL source module
+│   └── csv_source.py                       # CSV source module
 ├── targets/
 │   ├── __init__.py
-│   └── gcs_target.py                        # GCS target module with Hive partitioning
-├── main.py                                   # Main ingestion script
-├── run_bigquery_ddl.py                       # BigQuery DDL execution script
+│   └── gcs_target.py                       # GCS target module with Hive partitioning
+├── main.py                                 # Main ingestion script
+├── run_bigquery_ddl.py                     # BigQuery DDL execution script
 ├── requirements.txt
 └── README.md
 ```
@@ -76,7 +79,7 @@ pipeline:
     credentials_path: /path/to/your/service-account-key.json
 ```
 
-**For CSV source**, edit `config/csv_pipeline_config.yaml`:
+**For CSV source**, edit `config/csv_customers_pipeline_config.yaml`:
 
 ```yaml
 pipeline:
@@ -84,13 +87,13 @@ pipeline:
   source_type: csv
 
   source:
-    file_path: data/users.csv
+    file_path: data/raw_customers.csv
     encoding: utf-8
     date_column: created_at
 
   target:
     bucket: your-gcs-bucket-name
-    path: raw_data/users
+    path: raw_data/customers
     partition_column: created_at
     file_format: parquet
     credentials_path: /path/to/your/service-account-key.json
@@ -134,11 +137,14 @@ python main.py --config config/pipeline_config.yaml --execution-date 2024-12-01
 Run with CSV source (using sample data):
 
 ```bash
-# Ingest users data for 2024-12-01
-python main.py --config config/csv_pipeline_config.yaml --execution-date 2024-12-01
+# Ingest customers data for 2024-12-01
+python main.py --config config/csv_customers_pipeline_config.yaml --execution-date 2024-12-01
 
 # Ingest orders data for 2024-12-02
 python main.py --config config/csv_orders_pipeline_config.yaml --execution-date 2024-12-02
+
+# Ingest users data for 2024-12-01
+python main.py --config config/csv_users_pipeline_config.yaml --execution-date 2024-12-01
 ```
 
 ## How It Works
@@ -155,13 +161,18 @@ The framework creates a clean Hive-partitioned structure:
 
 ```
 gs://madt8102_bronze/
-└── users/
+├── customers/
+│   ├── dt=2024-12-01/
+│   │   └── 20241201_143022.parquet
+│   ├── dt=2024-12-02/
+│   │   └── 20241202_093015.parquet
+│   └── dt=2024-12-03/
+│       └── 20241203_120533.parquet
+└── orders/
     ├── dt=2024-12-01/
-    │   └── 20241201_143022.parquet
-    ├── dt=2024-12-02/
-    │   └── 20241202_093015.parquet
-    └── dt=2024-12-03/
-        └── 20241203_120533.parquet
+    │   └── 20241201_143025.parquet
+    └── dt=2024-12-02/
+        └── 20241202_093018.parquet
 ```
 
 **No extra folders, no metadata tables** - just clean parquet files in Hive partitions!
@@ -169,13 +180,13 @@ gs://madt8102_bronze/
 ## Example
 
 For execution date `2024-12-01` with config:
-- Bucket: `my-data-lake`
-- Path: `raw_data/users`
+- Bucket: `madt8102_bronze`
+- Path: `customers`
 - Partition column: `created_at`
 
 Data will be written to:
 ```
-gs://my-data-lake/raw_data/users/dt=2024-12-01/
+gs://madt8102_bronze/customers/dt=2024-12-01/
 ```
 
 ## BigQuery Table Creation
@@ -192,7 +203,7 @@ python run_bigquery_ddl.py
 python run_bigquery_ddl.py --credentials /path/to/service-account.json
 
 # Run specific files only
-python run_bigquery_ddl.py --files users_external_table.sql orders_external_table.sql
+python run_bigquery_ddl.py --files customers_external_table.sql orders_external_table.sql
 
 # Validate without executing (dry run)
 python run_bigquery_ddl.py --dry-run
@@ -259,3 +270,18 @@ class MyTarget:
 - The framework uses dlt's filesystem destination for GCS
 - Default write disposition is `append`
 - Supports batch processing for efficient memory usage
+
+## Available Configuration Files
+
+- `csv_customers_pipeline_config.yaml`: Ingests customer data from `data/raw_customers.csv`
+- `csv_orders_pipeline_config.yaml`: Ingests order data from `data/raw_orders.csv`
+- `csv_users_pipeline_config.yaml`: Ingests user data from `data/users.csv`
+- `pipeline_config.yaml`: Template for PostgreSQL source ingestion
+
+## Data Files
+
+Sample CSV files are provided in the `data/` folder:
+- `raw_customers.csv`: Customer records with customer_id, email, first_name, last_name, created_at, updated_at
+- `raw_orders.csv`: Order records with order_id, customer_id, order_date, amount, status, created_at, updated_at
+- `users.csv`: User records (alternative dataset)
+- `orders.csv`: Order records (alternative dataset)
