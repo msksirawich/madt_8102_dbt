@@ -1,0 +1,60 @@
+# Users Table Mock Data Configuration
+
+table_name: users
+description: "Core user identity table"
+
+# Number of records to generate
+# Increased to support higher application and event volumes
+num_records: 1500
+
+# Output settings
+output:
+  file_format: csv  # csv or parquet
+  file_name: users.csv
+
+# Column definitions with Faker providers
+columns:
+  user_id:
+    type: sequence
+    start: 1
+    description: "Primary key, auto-increment"
+
+  email:
+    type: faker
+    provider: email
+    unique: true
+    description: "User email address (unique)"
+
+  password_hash:
+    type: faker
+    provider: sha256
+    description: "Hashed password"
+
+  is_active:
+    type: faker
+    provider: boolean
+    probability: 0.95  # 95% active users
+    description: "User active status"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2025-12-15"
+    description: "Account creation timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 365
+    description: "Last update timestamp (derived from created_at)"
+
+# Data distribution and constraints
+constraints:
+  - unique_email: true
+  - active_users_ratio: 0.95
+
+# Dependencies (for foreign key generation)
+dependencies: []

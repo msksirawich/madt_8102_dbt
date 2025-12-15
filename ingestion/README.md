@@ -1,14 +1,16 @@
 # Data Ingestion Framework
 
-A simple, configuration-driven data ingestion framework for loading data from various sources to Google Cloud Storage with Hive-style partitioning.
+A simple, configuration-driven data ingestion framework for loading data from various sources to multiple targets including Google Cloud Storage and DuckDB.
 
 ## Features
 
 - Configuration-driven using YAML
 - Modular source and target architecture
 - Multiple source support: PostgreSQL, CSV
+- Multiple target support: Google Cloud Storage (GCS), DuckDB
 - Execution date filtering
-- Hive-style partitioning (e.g., `dt=2024-12-01`)
+- Hive-style partitioning (e.g., `dt=2024-12-01`) for GCS
+- Partition column support for DuckDB
 - Support for Parquet and JSONL formats
 - BigQuery DDL execution script for creating tables
 
@@ -36,7 +38,8 @@ ingestion/
 │   └── csv_source.py                       # CSV source module
 ├── targets/
 │   ├── __init__.py
-│   └── gcs_target.py                       # GCS target module with Hive partitioning
+│   ├── gcs_target.py                       # GCS target module with Hive partitioning
+│   └── duckdb_target.py                    # DuckDB target module
 ├── main.py                                 # Main ingestion script
 ├── run_bigquery_ddl.py                     # BigQuery DDL execution script
 ├── requirements.txt
@@ -79,7 +82,7 @@ pipeline:
     credentials_path: /path/to/your/service-account-key.json
 ```
 
-**For CSV source**, edit `config/csv_customers_pipeline_config.yaml`:
+**For CSV source to GCS**, edit `config/csv_customers_pipeline_config.yaml`:
 
 ```yaml
 pipeline:
@@ -92,6 +95,7 @@ pipeline:
     date_column: created_at
 
   target:
+    type: gcs
     bucket: your-gcs-bucket-name
     path: raw_data/customers
     partition_column: created_at
@@ -99,9 +103,29 @@ pipeline:
     credentials_path: /path/to/your/service-account-key.json
 ```
 
-3. Set up Google Cloud credentials:
+**For CSV source to DuckDB**, edit `config/csv_to_duckdb_pipeline_config.yaml`:
 
-The framework supports multiple ways to authenticate with GCS:
+```yaml
+pipeline:
+  name: csv_to_duckdb
+  source_type: csv
+
+  source:
+    file_path: data/raw_customers.csv
+    encoding: utf-8
+    date_column: created_at
+
+  target:
+    type: duckdb
+    database_path: data/ingestion.duckdb
+    table_name: customers
+    partition_column: dt
+    if_exists: overwrite_partition  # Options: append, replace, overwrite_partition
+```
+
+3. Set up credentials:
+
+**For GCS target** - The framework supports multiple ways to authenticate with GCS:
 
 **Option 1: Specify in config (Recommended)**
 ```yaml
@@ -116,6 +140,8 @@ export GOOGLE_APPLICATION_CREDENTIALS=/path/to/your/service-account-key.json
 
 **Option 3: Application Default Credentials**
 When running in GCP (Cloud Run, GCE, Cloud Functions), no credentials needed.
+
+**For DuckDB target** - No credentials needed. Just specify the database file path:
 
 ## Usage
 
@@ -147,13 +173,99 @@ python main.py --config config/csv_orders_pipeline_config.yaml --execution-date 
 python main.py --config config/csv_users_pipeline_config.yaml --execution-date 2024-12-01
 ```
 
+### CSV to DuckDB
+
+Run with CSV source to DuckDB:
+
+```bash
+# Ingest customers data for 2024-12-01
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-01
+
+# Ingest data for multiple dates (incremental append)
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-02
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-03
+```
+
+### PostgreSQL to DuckDB
+
+Run with PostgreSQL source to DuckDB:
+
+```bash
+# Ingest data for 2024-12-01
+python main.py --config config/postgres_to_duckdb_pipeline_config.yaml --execution-date 2024-12-01
+```
+
+### DuckDB Write Modes
+
+DuckDB target supports three write modes:
+
+1. **`append`**: Adds new records to the table without removing existing data
+   - Use when you want to keep all historical records
+   - May create duplicates if same data is ingested multiple times
+
+2. **`replace`**: Drops and recreates the entire table
+   - Use when you want to completely refresh all data
+   - Removes all existing partitions
+
+3. **`overwrite_partition`** (Recommended): Deletes only the specific partition being written
+   - Deletes existing records where `dt = execution_date`
+   - Inserts new records for that partition
+   - Keeps all other partitions intact
+   - Ideal for incremental daily loads
+
+**Example behavior with `overwrite_partition`:**
+```bash
+# Day 1: Ingest data for 2024-12-01 (creates partition)
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-01
+# Table has: 100 records for dt=2024-12-01
+
+# Day 2: Ingest data for 2024-12-02 (creates new partition)
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-02
+# Table has: 100 records for dt=2024-12-01, 150 records for dt=2024-12-02
+
+# Day 3: Re-ingest corrected data for 2024-12-01 (overwrites partition)
+python main.py --config config/csv_to_duckdb_pipeline_config.yaml --execution-date 2024-12-01
+# Table has: 120 records for dt=2024-12-01, 150 records for dt=2024-12-02
+# (Only the 2024-12-01 partition was replaced, 2024-12-02 remains unchanged)
+```
+
+### Querying DuckDB Data
+
+After ingestion, you can query your DuckDB database using SQL:
+
+```python
+import duckdb
+
+# Connect to database
+con = duckdb.connect('data/ingestion.duckdb')
+
+# Query data
+result = con.execute('SELECT * FROM customers WHERE dt = ?', ['2024-12-01']).fetchdf()
+print(result)
+
+# Aggregate queries
+stats = con.execute('''
+    SELECT dt, COUNT(*) as record_count
+    FROM customers
+    GROUP BY dt
+    ORDER BY dt
+''').fetchdf()
+print(stats)
+
+con.close()
+```
+
 ## How It Works
 
 1. **Configuration Loading**: Loads pipeline settings from YAML file
 2. **Data Extraction**: Connects to source (PostgreSQL/CSV) and extracts data filtered by `execution_date`
 3. **Data Transformation**: Converts date strings to proper date types
-4. **Data Loading**: Writes parquet files directly to GCS with Hive-style partitioning
-5. **Partitioning**: Data is written to `gs://{bucket}/{path}/dt={execution_date}/*.parquet`
+4. **Data Loading**:
+   - **GCS**: Writes parquet files directly to GCS with Hive-style partitioning
+   - **DuckDB**: Inserts data into DuckDB table with partition column
+5. **Partitioning**:
+   - **GCS**: Data is written to `gs://{bucket}/{path}/dt={execution_date}/*.parquet`
+   - **DuckDB**: Partition column `dt` is added to each record
 
 ## GCS Structure
 
@@ -176,6 +288,36 @@ gs://madt8102_bronze/
 ```
 
 **No extra folders, no metadata tables** - just clean parquet files in Hive partitions!
+
+## DuckDB Structure
+
+For DuckDB targets, data is stored in a single database file with tables:
+
+```
+data/ingestion.duckdb
+├── customers (table)
+│   ├── customer_id
+│   ├── email
+│   ├── first_name
+│   ├── last_name
+│   ├── created_at
+│   ├── updated_at
+│   └── dt (partition column)
+└── orders (table)
+    ├── order_id
+    ├── customer_id
+    ├── order_date
+    ├── amount
+    ├── status
+    ├── created_at
+    ├── updated_at
+    └── dt (partition column)
+```
+
+The `dt` column allows for efficient filtering by date:
+```sql
+SELECT * FROM customers WHERE dt = '2024-12-01'
+```
 
 ## Example
 
@@ -264,19 +406,38 @@ class MyTarget:
         return {"destination": "...", "bucket_url": "..."}
 ```
 
+## DuckDB Advantages
+
+DuckDB is a great alternative to GCS for:
+
+- **Local Development**: Test your pipelines locally without cloud dependencies
+- **Small to Medium Datasets**: Efficient for datasets that fit on a single machine
+- **Fast Analytics**: DuckDB is optimized for analytical queries
+- **SQL Interface**: Query data directly using standard SQL
+- **No Cloud Costs**: Store and query data locally without cloud storage fees
+- **Portability**: Single file database that can be easily shared or backed up
+
 ## Notes
 
 - Execution date must be in `YYYY-MM-DD` format
 - The framework uses dlt's filesystem destination for GCS
-- Default write disposition is `append`
+- For DuckDB, **`overwrite_partition`** is the recommended write mode for daily incremental loads
 - Supports batch processing for efficient memory usage
+- DuckDB database files are created automatically if they don't exist
+- For GCS, ensure proper authentication is configured
+- For DuckDB, ensure the target directory exists or has write permissions
 
 ## Available Configuration Files
 
-- `csv_customers_pipeline_config.yaml`: Ingests customer data from `data/raw_customers.csv`
-- `csv_orders_pipeline_config.yaml`: Ingests order data from `data/raw_orders.csv`
-- `csv_users_pipeline_config.yaml`: Ingests user data from `data/users.csv`
-- `pipeline_config.yaml`: Template for PostgreSQL source ingestion
+### GCS Targets
+- `csv_customers_pipeline_config.yaml`: Ingests customer data from CSV to GCS
+- `csv_orders_pipeline_config.yaml`: Ingests order data from CSV to GCS
+- `csv_users_pipeline_config.yaml`: Ingests user data from CSV to GCS
+- `pipeline_config.yaml`: Template for PostgreSQL to GCS
+
+### DuckDB Targets
+- `csv_to_duckdb_pipeline_config.yaml`: Ingests CSV data to DuckDB
+- `postgres_to_duckdb_pipeline_config.yaml`: Template for PostgreSQL to DuckDB
 
 ## Data Files
 

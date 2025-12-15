@@ -1,0 +1,105 @@
+# Work History Table Mock Data Configuration
+
+table_name: work_history
+description: "User work experience history (many-to-one with users)"
+
+# Number of records (each user has 1-5 work experiences)
+records_per_user:
+  min: 0  # Some users may be fresh graduates
+  max: 5
+  avg: 2.5
+
+# Output settings
+output:
+  file_format: csv
+  file_name: work_history.csv
+
+# Column definitions
+columns:
+  work_id:
+    type: sequence
+    start: 1
+    description: "Primary key"
+
+  user_id:
+    type: foreign_key
+    reference_table: users
+    reference_column: user_id
+    description: "Foreign key to users table"
+
+  company_name:
+    type: faker
+    provider: company
+    description: "Company name"
+
+  title:
+    type: faker
+    provider: random_element
+    elements:
+      - "Software Engineer"
+      - "Senior Software Engineer"
+      - "Staff Engineer"
+      - "Principal Engineer"
+      - "Data Scientist"
+      - "Senior Data Scientist"
+      - "Machine Learning Engineer"
+      - "Data Engineer"
+      - "Senior Data Engineer"
+      - "Backend Developer"
+      - "Frontend Developer"
+      - "Full Stack Developer"
+      - "DevOps Engineer"
+      - "Cloud Architect"
+      - "Product Manager"
+      - "Engineering Manager"
+      - "Technical Lead"
+      - "Data Analyst"
+      - "Business Analyst"
+      - "QA Engineer"
+    description: "Job title"
+
+  start_date:
+    type: faker
+    provider: date_between
+    start_date: "2024-01-01"
+    end_date: "2024-11-01"
+    description: "Employment start date"
+
+  end_date:
+    type: conditional
+    condition: is_current_job
+    if_true: null
+    if_false:
+      type: faker
+      provider: date_between
+      start_date: start_date  # After start_date
+      end_date: "2025-12-15"
+    probability_current: 0.2  # 20% are current jobs
+    description: "Employment end date (null if current job)"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2025-12-15"
+    description: "Record creation timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 30
+    description: "Last update timestamp"
+
+# Business rules
+rules:
+  - Work experiences should be in chronological order
+  - No overlapping employment periods (except for part-time)
+  - End date must be after start date
+  - 20% of most recent jobs are current (end_date = null)
+
+# Dependencies
+dependencies:
+  - table: users
+    column: user_id

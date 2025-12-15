@@ -1,0 +1,285 @@
+{
+  "graph_info": {
+    "name": "job_recommendation_graph",
+    "description": "Heterogeneous graph for job recommendation using GNN",
+    "version": "1.0",
+    "created_date": "2024-12-14",
+    "graph_type": "heterogeneous"
+  },
+  "node_types": {
+    "user": {
+      "count": 50,
+      "file": "nodes_user.csv",
+      "id_column": "node_id",
+      "feature_columns": [
+        "years_experience_norm",
+        "degree_bs",
+        "degree_ms",
+        "degree_phd",
+        "degree_mba",
+        "role_data",
+        "role_engineer",
+        "role_manager",
+        "role_other",
+        "num_skills",
+        "avg_proficiency"
+      ],
+      "feature_dims": {
+        "years_experience_norm": 1,
+        "degree_bs": 1,
+        "degree_ms": 1,
+        "degree_phd": 1,
+        "degree_mba": 1,
+        "role_data": 1,
+        "role_engineer": 1,
+        "role_manager": 1,
+        "role_other": 1,
+        "num_skills": 1,
+        "avg_proficiency": 1
+      },
+      "total_feature_dim": 11,
+      "feature_types": {
+        "years_experience_norm": "continuous",
+        "degree_bs": "binary",
+        "degree_ms": "binary",
+        "degree_phd": "binary",
+        "degree_mba": "binary",
+        "role_data": "binary",
+        "role_engineer": "binary",
+        "role_manager": "binary",
+        "role_other": "binary",
+        "num_skills": "integer",
+        "avg_proficiency": "continuous"
+      }
+    },
+    "job": {
+      "count": 50,
+      "file": "nodes_job.csv",
+      "id_column": "node_id",
+      "feature_columns": [
+        "industry_technology",
+        "industry_finance",
+        "industry_healthcare",
+        "industry_other",
+        "description_length_norm",
+        "num_required_skills",
+        "avg_skill_importance",
+        "seniority_junior",
+        "seniority_mid",
+        "seniority_senior"
+      ],
+      "feature_dims": {
+        "industry_technology": 1,
+        "industry_finance": 1,
+        "industry_healthcare": 1,
+        "industry_other": 1,
+        "description_length_norm": 1,
+        "num_required_skills": 1,
+        "avg_skill_importance": 1,
+        "seniority_junior": 1,
+        "seniority_mid": 1,
+        "seniority_senior": 1
+      },
+      "total_feature_dim": 10,
+      "feature_types": {
+        "industry_technology": "binary",
+        "industry_finance": "binary",
+        "industry_healthcare": "binary",
+        "industry_other": "binary",
+        "description_length_norm": "continuous",
+        "num_required_skills": "integer",
+        "avg_skill_importance": "continuous",
+        "seniority_junior": "binary",
+        "seniority_mid": "binary",
+        "seniority_senior": "binary"
+      }
+    },
+    "skill": {
+      "count": 50,
+      "file": "nodes_skill.csv",
+      "id_column": "node_id",
+      "feature_columns": [
+        "category_tech",
+        "category_soft_skill",
+        "category_language",
+        "popularity_user",
+        "popularity_job",
+        "avg_proficiency",
+        "avg_importance"
+      ],
+      "feature_dims": {
+        "category_tech": 1,
+        "category_soft_skill": 1,
+        "category_language": 1,
+        "popularity_user": 1,
+        "popularity_job": 1,
+        "avg_proficiency": 1,
+        "avg_importance": 1
+      },
+      "total_feature_dim": 7,
+      "feature_types": {
+        "category_tech": "binary",
+        "category_soft_skill": "binary",
+        "category_language": "binary",
+        "popularity_user": "integer",
+        "popularity_job": "integer",
+        "avg_proficiency": "continuous",
+        "avg_importance": "continuous"
+      }
+    }
+  },
+  "edge_types": {
+    "user_skill": {
+      "relation": ["user", "has_skill", "skill"],
+      "count": 250,
+      "file": "edges_user_skill.csv",
+      "source_column": "src_node_id",
+      "target_column": "dst_node_id",
+      "edge_features": ["proficiency_level", "proficiency_norm"],
+      "edge_feature_dims": {
+        "proficiency_level": 1,
+        "proficiency_norm": 1
+      },
+      "is_directed": false,
+      "description": "User possesses skill with proficiency level"
+    },
+    "job_skill": {
+      "relation": ["job", "requires_skill", "skill"],
+      "count": 300,
+      "file": "edges_job_skill.csv",
+      "source_column": "src_node_id",
+      "target_column": "dst_node_id",
+      "edge_features": ["importance_weight", "importance_norm"],
+      "edge_feature_dims": {
+        "importance_weight": 1,
+        "importance_norm": 1
+      },
+      "is_directed": false,
+      "description": "Job requires skill with importance weight"
+    },
+    "user_job": {
+      "relation": ["user", "interacts", "job"],
+      "count": 180,
+      "file": "edges_user_job.csv",
+      "source_column": "src_node_id",
+      "target_column": "dst_node_id",
+      "edge_features": [
+        "interaction_weight",
+        "is_apply",
+        "date_key",
+        "time_key",
+        "engagement_score"
+      ],
+      "edge_feature_dims": {
+        "interaction_weight": 1,
+        "is_apply": 1,
+        "date_key": 1,
+        "time_key": 1,
+        "engagement_score": 1
+      },
+      "is_directed": true,
+      "description": "User interacts with job (impression/click/view/apply)",
+      "labels": {
+        "target_column": "is_apply",
+        "positive_class": 1,
+        "negative_class": 0,
+        "task_type": "link_prediction"
+      }
+    }
+  },
+  "statistics": {
+    "total_nodes": 150,
+    "total_edges": 730,
+    "node_distribution": {
+      "user": 50,
+      "job": 50,
+      "skill": 50
+    },
+    "edge_distribution": {
+      "user_skill": 250,
+      "job_skill": 300,
+      "user_job": 180
+    },
+    "interaction_stats": {
+      "total_interactions": 180,
+      "impressions": 50,
+      "clicks": 50,
+      "views": 33,
+      "applications": 7,
+      "conversion_rate": 0.0389
+    },
+    "density": {
+      "user_job": 0.072,
+      "user_skill": 0.1,
+      "job_skill": 0.12
+    }
+  },
+  "training_config": {
+    "task": "link_prediction",
+    "target_edge_type": "user_job",
+    "target_label": "is_apply",
+    "train_split": 0.7,
+    "val_split": 0.15,
+    "test_split": 0.15,
+    "negative_sampling_ratio": 5,
+    "evaluation_metrics": [
+      "hit_rate@10",
+      "ndcg@10",
+      "mrr",
+      "auc"
+    ]
+  },
+  "data_preprocessing": {
+    "normalization": {
+      "years_experience": "min-max scaling to [0,1]",
+      "description_length": "min-max scaling to [0,1]",
+      "proficiency_level": "divided by 5 (max value)",
+      "importance_weight": "divided by 5 (max value)"
+    },
+    "encoding": {
+      "degree": "one-hot encoding (bs, ms, phd, mba)",
+      "role": "one-hot encoding (data, engineer, manager, other)",
+      "industry": "one-hot encoding (technology, finance, healthcare, other)",
+      "seniority": "one-hot encoding (junior, mid, senior)",
+      "skill_category": "one-hot encoding (tech, soft_skill, language)"
+    }
+  },
+  "recommended_models": [
+    {
+      "name": "GraphSAGE",
+      "reason": "Good for inductive learning with new users/jobs",
+      "hyperparameters": {
+        "hidden_channels": 64,
+        "num_layers": 2,
+        "aggregator": "mean"
+      }
+    },
+    {
+      "name": "GAT",
+      "reason": "Attention mechanism for interpretable skill matching",
+      "hyperparameters": {
+        "hidden_channels": 64,
+        "num_layers": 2,
+        "heads": 4
+      }
+    },
+    {
+      "name": "HetGNN",
+      "reason": "Designed for heterogeneous graphs with multiple node/edge types",
+      "hyperparameters": {
+        "hidden_channels": 64,
+        "num_layers": 2
+      }
+    }
+  ],
+  "usage_example": {
+    "pytorch_geometric": {
+      "installation": "pip install torch-geometric",
+      "code_snippet": "import pandas as pd\nimport torch\nfrom torch_geometric.data import HeteroData\n\n# Load graph\ndata = HeteroData()\n\n# Load user nodes\nusers = pd.read_csv('nodes_user.csv')\ndata['user'].x = torch.tensor(users[feature_cols].values, dtype=torch.float)\n\n# Load job nodes\njobs = pd.read_csv('nodes_job.csv')\ndata['job'].x = torch.tensor(jobs[feature_cols].values, dtype=torch.float)\n\n# Load edges\nuser_skill_edges = pd.read_csv('edges_user_skill.csv')\ndata['user', 'has_skill', 'skill'].edge_index = torch.tensor(\n    [user_skill_edges['src_node_id'].values,\n     user_skill_edges['dst_node_id'].values],\n    dtype=torch.long\n)"
+    },
+    "dgl": {
+      "installation": "pip install dgl",
+      "code_snippet": "import pandas as pd\nimport dgl\nimport torch\n\n# Load edges\nuser_skill = pd.read_csv('edges_user_skill.csv')\njob_skill = pd.read_csv('edges_job_skill.csv')\nuser_job = pd.read_csv('edges_user_job.csv')\n\n# Create heterograph\ngraph_data = {\n    ('user', 'has_skill', 'skill'): (user_skill['src_node_id'], user_skill['dst_node_id']),\n    ('job', 'requires_skill', 'skill'): (job_skill['src_node_id'], job_skill['dst_node_id']),\n    ('user', 'interacts', 'job'): (user_job['src_node_id'], user_job['dst_node_id'])\n}\n\ng = dgl.heterograph(graph_data)\n\n# Add node features\nusers = pd.read_csv('nodes_user.csv')\ng.nodes['user'].data['feat'] = torch.tensor(users[feature_cols].values)"
+    }
+  }
+}

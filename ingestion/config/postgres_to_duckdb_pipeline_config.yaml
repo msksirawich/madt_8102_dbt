@@ -1,0 +1,28 @@
+# PostgreSQL to DuckDB Pipeline Configuration
+
+# Database Connection Settings
+database:
+  host: localhost
+  port: 5432
+  database: your_database_name
+  user: your_username
+  password: your_password
+  schema: public
+
+# Pipeline Settings
+pipeline:
+  name: postgres_to_duckdb
+  source_type: postgres
+
+  # Source Configuration
+  source:
+    table: your_table_name
+    date_column: created_at
+
+  # Target Configuration
+  target:
+    type: duckdb  # Target type: duckdb
+    database_path: data/ingestion.duckdb  # Path to DuckDB database file
+    table_name: your_table_name  # Table name in DuckDB
+    partition_column: dt  # Column used for partitioning (will be added automatically)
+    if_exists: overwrite_partition  # Options: append, replace, overwrite_partition

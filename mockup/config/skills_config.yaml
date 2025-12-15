@@ -1,0 +1,258 @@
+# Skills Table Mock Data Configuration
+
+table_name: skills
+description: "Master list of skills"
+
+# Number of records to generate (fixed skill catalog)
+# Set to 'auto' to use the length of predefined list
+num_records: auto
+
+# Output settings
+output:
+  file_format: csv
+  file_name: skills.csv
+
+# Column definitions
+columns:
+  skill_id:
+    type: sequence
+    start: 1
+    description: "Primary key"
+
+  name:
+    type: predefined_list
+    values:
+      # Programming Languages
+      - "Python"
+      - "Java"
+      - "JavaScript"
+      - "TypeScript"
+      - "C++"
+      - "C#"
+      - "Go"
+      - "Rust"
+      - "Ruby"
+      - "PHP"
+      - "Swift"
+      - "Kotlin"
+      - "Scala"
+      - "R"
+      - "MATLAB"
+      # Databases
+      - "SQL"
+      - "PostgreSQL"
+      - "MySQL"
+      - "MongoDB"
+      - "Redis"
+      - "Cassandra"
+      - "DynamoDB"
+      - "Elasticsearch"
+      - "Neo4j"
+      # Cloud & DevOps
+      - "AWS"
+      - "Azure"
+      - "GCP"
+      - "Docker"
+      - "Kubernetes"
+      - "Terraform"
+      - "CI/CD"
+      - "Jenkins"
+      - "GitLab CI"
+      - "GitHub Actions"
+      # Data & ML
+      - "Machine Learning"
+      - "Deep Learning"
+      - "NLP"
+      - "Computer Vision"
+      - "TensorFlow"
+      - "PyTorch"
+      - "Scikit-learn"
+      - "Pandas"
+      - "NumPy"
+      - "Spark"
+      - "Hadoop"
+      - "Kafka"
+      - "Airflow"
+      - "dbt"
+      - "ETL"
+      - "Data Warehousing"
+      - "Data Modeling"
+      - "Statistical Analysis"
+      # Web & Mobile
+      - "React"
+      - "Angular"
+      - "Vue.js"
+      - "Node.js"
+      - "Django"
+      - "Flask"
+      - "Spring Boot"
+      - "Express.js"
+      - "REST API"
+      - "GraphQL"
+      - "HTML/CSS"
+      - "React Native"
+      - "Flutter"
+      # Tools & Platforms
+      - "Git"
+      - "Linux"
+      - "Agile/Scrum"
+      - "Jira"
+      - "Tableau"
+      - "Power BI"
+      - "Looker"
+      - "Excel"
+      - "Jupyter"
+      # Soft Skills
+      - "Communication"
+      - "Leadership"
+      - "Problem Solving"
+      - "Teamwork"
+      - "Project Management"
+      - "Critical Thinking"
+      - "Time Management"
+      - "Presentation Skills"
+      # Languages
+      - "English"
+      - "Spanish"
+      - "Mandarin"
+      - "French"
+      - "German"
+      - "Japanese"
+      - "Korean"
+      # Other Technical
+      - "Microservices"
+      - "System Design"
+      - "Testing"
+      - "Security"
+      - "Networking"
+      - "Blockchain"
+      - "IoT"
+    unique: true
+    description: "Skill name (unique)"
+
+  category:
+    type: category_mapping
+    mapping:
+      tech:
+        - "Python"
+        - "Java"
+        - "JavaScript"
+        - "TypeScript"
+        - "C++"
+        - "C#"
+        - "Go"
+        - "Rust"
+        - "Ruby"
+        - "PHP"
+        - "Swift"
+        - "Kotlin"
+        - "Scala"
+        - "R"
+        - "MATLAB"
+        - "SQL"
+        - "PostgreSQL"
+        - "MySQL"
+        - "MongoDB"
+        - "Redis"
+        - "Cassandra"
+        - "DynamoDB"
+        - "Elasticsearch"
+        - "Neo4j"
+        - "AWS"
+        - "Azure"
+        - "GCP"
+        - "Docker"
+        - "Kubernetes"
+        - "Terraform"
+        - "CI/CD"
+        - "Jenkins"
+        - "GitLab CI"
+        - "GitHub Actions"
+        - "Machine Learning"
+        - "Deep Learning"
+        - "NLP"
+        - "Computer Vision"
+        - "TensorFlow"
+        - "PyTorch"
+        - "Scikit-learn"
+        - "Pandas"
+        - "NumPy"
+        - "Spark"
+        - "Hadoop"
+        - "Kafka"
+        - "Airflow"
+        - "dbt"
+        - "ETL"
+        - "Data Warehousing"
+        - "Data Modeling"
+        - "Statistical Analysis"
+        - "React"
+        - "Angular"
+        - "Vue.js"
+        - "Node.js"
+        - "Django"
+        - "Flask"
+        - "Spring Boot"
+        - "Express.js"
+        - "REST API"
+        - "GraphQL"
+        - "HTML/CSS"
+        - "React Native"
+        - "Flutter"
+        - "Git"
+        - "Linux"
+        - "Jira"
+        - "Tableau"
+        - "Power BI"
+        - "Looker"
+        - "Excel"
+        - "Jupyter"
+        - "Microservices"
+        - "System Design"
+        - "Testing"
+        - "Security"
+        - "Networking"
+        - "Blockchain"
+        - "IoT"
+      soft_skill:
+        - "Communication"
+        - "Leadership"
+        - "Problem Solving"
+        - "Teamwork"
+        - "Project Management"
+        - "Critical Thinking"
+        - "Time Management"
+        - "Presentation Skills"
+        - "Agile/Scrum"
+      language:
+        - "English"
+        - "Spanish"
+        - "Mandarin"
+        - "French"
+        - "German"
+        - "Japanese"
+        - "Korean"
+    description: "Skill category (tech, soft_skill, language)"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2024-12-31"
+    description: "Skill registration timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 180
+    description: "Last update timestamp"
+
+# Constraints
+constraints:
+  - unique_skill_name: true
+  - total_skills: 100
+
+# Dependencies
+dependencies: []

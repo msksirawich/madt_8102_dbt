@@ -1,0 +1,138 @@
+# Job Postings Table Mock Data Configuration
+
+table_name: job_postings
+description: "Job catalog/postings"
+
+# Number of records to generate
+# Increased for more variety in applications and events
+# ~5-7 new jobs per day over 6.5 months
+num_records: 1200
+
+# Output settings
+output:
+  file_format: csv
+  file_name: job_postings.csv
+
+# Column definitions
+columns:
+  job_id:
+    type: sequence
+    start: 1
+    description: "Primary key"
+
+  company_id:
+    type: foreign_key
+    reference_table: companies
+    reference_column: company_id
+    description: "Foreign key to companies table"
+
+  title:
+    type: faker
+    provider: random_element
+    elements:
+      - "Software Engineer"
+      - "Senior Software Engineer"
+      - "Staff Software Engineer"
+      - "Principal Software Engineer"
+      - "Data Scientist"
+      - "Senior Data Scientist"
+      - "Lead Data Scientist"
+      - "Machine Learning Engineer"
+      - "Senior ML Engineer"
+      - "Data Engineer"
+      - "Senior Data Engineer"
+      - "Backend Engineer"
+      - "Frontend Engineer"
+      - "Full Stack Engineer"
+      - "DevOps Engineer"
+      - "Senior DevOps Engineer"
+      - "Cloud Architect"
+      - "Solutions Architect"
+      - "Product Manager"
+      - "Senior Product Manager"
+      - "Engineering Manager"
+      - "Technical Lead"
+      - "Data Analyst"
+      - "Senior Data Analyst"
+      - "Business Analyst"
+      - "QA Engineer"
+      - "Security Engineer"
+      - "Mobile Developer"
+      - "iOS Developer"
+      - "Android Developer"
+    description: "Job title"
+
+  description_html:
+    type: faker
+    provider: text
+    max_nb_chars: 2000
+    description: "Job description in HTML format"
+
+  min_salary:
+    type: faker
+    provider: random_int
+    min: 50000
+    max: 180000
+    description: "Minimum salary"
+
+  max_salary:
+    type: derived
+    source: min_salary
+    offset:
+      min: 20000
+      max: 100000
+    description: "Maximum salary (min_salary + offset)"
+
+  status:
+    type: faker
+    provider: random_element
+    elements:
+      - "open"
+      - "closed"
+      - "draft"
+    weights: [70, 20, 10]
+    description: "Job posting status"
+
+  published_at:
+    type: conditional
+    condition: status
+    if_equals:
+      open:
+        type: faker
+        provider: date_time_between
+        start_date: "2024-06-01"
+        end_date: "2025-12-15"
+      closed:
+        type: faker
+        provider: date_time_between
+        start_date: "2024-01-01"
+        end_date: "2024-11-01"
+      draft: null
+    description: "Publication timestamp (null if draft)"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2025-12-15"
+    description: "Job creation timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 60
+    description: "Last update timestamp"
+
+# Business rules
+rules:
+  - max_salary > min_salary
+  - published_at >= created_at
+  - draft jobs have no published_at
+  - 70% jobs are open, 20% closed, 10% draft
+
+# Dependencies
+dependencies:
+  - table: companies
+    column: company_id

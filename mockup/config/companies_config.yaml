@@ -1,0 +1,87 @@
+# Companies Table Mock Data Configuration
+
+table_name: companies
+description: "Company registry for job postings"
+
+# Number of records to generate
+num_records: 200
+
+# Output settings
+output:
+  file_format: csv
+  file_name: companies.csv
+
+# Column definitions
+columns:
+  company_id:
+    type: sequence
+    start: 1
+    description: "Primary key"
+
+  name:
+    type: faker
+    provider: company
+    unique: true
+    description: "Company name (unique)"
+
+  industry:
+    type: faker
+    provider: random_element
+    elements:
+      - "Technology"
+      - "Finance"
+      - "Healthcare"
+      - "E-Commerce"
+      - "Gaming"
+      - "Media"
+      - "Education"
+      - "Manufacturing"
+      - "Retail"
+      - "Consulting"
+      - "Insurance"
+      - "Telecommunications"
+      - "Automotive"
+      - "Aerospace"
+      - "Biotechnology"
+      - "Energy"
+      - "Real Estate"
+      - "Cybersecurity"
+    weights: [25, 15, 10, 10, 5, 5, 5, 3, 3, 4, 3, 3, 2, 2, 2, 2, 1, 4]
+    description: "Industry sector"
+
+  size_range:
+    type: faker
+    provider: random_element
+    elements:
+      - "1-10"
+      - "11-50"
+      - "51-200"
+      - "201-500"
+      - "501-1000"
+      - "1001-5000"
+      - "5001-10000"
+      - "10000+"
+    weights: [5, 15, 25, 20, 15, 10, 5, 5]
+    description: "Company size range"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2025-12-15"
+    description: "Company registration timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 365
+    description: "Last update timestamp"
+
+# Constraints
+constraints:
+  - unique_company_name: true
+
+# Dependencies
+dependencies: []

@@ -21,14 +21,16 @@ class CSVSource:
     def extract_data(
         self,
         date_column: str,
-        execution_date: str,
+        start_date: str,
+        end_date: str = None,
         batch_size: int = 1000
     ) -> Iterator[Dict[str, Any]]:
-        """Extract data from CSV file filtered by date.
+        """Extract data from CSV file filtered by date range.
 
         Args:
             date_column: Column name to filter by date
-            execution_date: Date to filter (YYYY-MM-DD format)
+            start_date: Start date to filter (YYYY-MM-DD format)
+            end_date: End date to filter (YYYY-MM-DD format), defaults to start_date if not provided
             batch_size: Number of rows to yield per batch (for consistency)
 
         Yields:
@@ -36,6 +38,10 @@ class CSVSource:
         """
         if not self.file_path:
             raise ValueError("file_path is required in source configuration")
+
+        # Default end_date to start_date for backward compatibility
+        if end_date is None:
+            end_date = start_date
 
         file_path = Path(self.file_path)
         if not file_path.exists():
@@ -45,10 +51,10 @@ class CSVSource:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                # Filter by date
+                # Filter by date range
                 if date_column in row:
                     row_date = row[date_column].split()[0]  # Extract date part (YYYY-MM-DD)
-                    if row_date == execution_date:
+                    if start_date <= row_date <= end_date:
                         yield row
 
     def __enter__(self):

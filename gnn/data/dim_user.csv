@@ -1,0 +1,51 @@
+user_key,user_id_natural,current_role,years_experience,highest_degree,valid_from,valid_to,is_current
+1,101,Data Scientist,5,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+2,102,Software Engineer,3,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+3,103,Machine Learning Engineer,4,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+4,104,Data Analyst,2,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+5,105,Senior Data Engineer,7,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+6,106,Full Stack Developer,4,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+7,107,Backend Developer,3,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+8,108,DevOps Engineer,5,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+9,109,Product Manager,6,MBA,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+10,110,Frontend Developer,2,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+11,111,Data Engineer,4,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+12,112,AI Research Scientist,8,PhD,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+13,113,Business Analyst,3,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+14,114,ML Engineer,3,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+15,115,Cloud Architect,9,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+16,116,QA Engineer,4,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+17,117,Database Administrator,6,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+18,118,Junior Developer,1,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+19,119,Tech Lead,10,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+20,120,Data Scientist,4,PhD,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+21,121,Software Engineer,2,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+22,122,Analytics Engineer,3,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+23,123,Site Reliability Engineer,5,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+24,124,Research Engineer,4,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+25,125,Solutions Architect,8,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+26,126,Mobile Developer,3,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+27,127,Data Analyst,1,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+28,128,Platform Engineer,6,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+29,129,BI Developer,4,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+30,130,Security Engineer,7,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+31,131,Junior Data Scientist,1,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+32,132,Senior Software Engineer,8,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+33,133,Data Engineer,3,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+34,134,ML Ops Engineer,4,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+35,135,Engineering Manager,12,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+36,136,Software Architect,11,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+37,137,Computer Vision Engineer,5,PhD,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+38,138,NLP Engineer,4,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+39,139,Quantitative Analyst,6,PhD,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+40,140,Backend Engineer,4,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+41,141,Full Stack Engineer,5,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+42,142,Infrastructure Engineer,7,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+43,143,Applied Scientist,6,PhD,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+44,144,Data Platform Engineer,5,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+45,145,Staff Engineer,13,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+46,146,Graduate Software Engineer,0,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+47,147,Principal Engineer,15,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+48,148,Automation Engineer,4,BS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+49,149,Systems Engineer,5,MS,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+50,150,Technical Program Manager,7,MBA,2024-01-01 00:00:00,9999-12-31 23:59:59,true

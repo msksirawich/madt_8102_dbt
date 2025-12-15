@@ -1,0 +1,20 @@
+# CSV to DuckDB Pipeline Configuration - Streaming Job Activity
+
+# Pipeline Settings
+pipeline:
+  name: csv_streaming_job_activity_to_duckdb
+  source_type: csv  # Options: postgres, csv
+
+  # Source Configuration
+  source:
+    file_path: data/streaming_job_activity.csv  # Path to CSV file
+    encoding: utf-8
+    date_column: event_timestamp  # Column to filter by execution date
+
+  # Target Configuration
+  target:
+    type: duckdb  # Target type: duckdb
+    database_path: data/ingestion.duckdb  # Path to DuckDB database file
+    table_name: bronze_streaming_job_activity  # Table name in DuckDB
+    partition_column: dt  # Column used for partitioning (will be added automatically)
+    if_exists: append  # Options: append, replace, overwrite_partition

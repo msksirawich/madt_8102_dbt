@@ -38,16 +38,18 @@ class PostgresSource:
         self,
         table: str,
         date_column: str,
-        execution_date: str,
+        start_date: str,
+        end_date: str = None,
         schema: str = 'public',
         batch_size: int = 1000
     ) -> Iterator[Dict[str, Any]]:
-        """Extract data from PostgreSQL table filtered by date.
+        """Extract data from PostgreSQL table filtered by date range.
 
         Args:
             table: Table name to extract from
             date_column: Column name to filter by date
-            execution_date: Date to filter (YYYY-MM-DD format)
+            start_date: Start date to filter (YYYY-MM-DD format)
+            end_date: End date to filter (YYYY-MM-DD format), defaults to start_date if not provided
             schema: Database schema (default: public)
             batch_size: Number of rows to fetch per batch
 
@@ -57,15 +59,19 @@ class PostgresSource:
         if not self.connection:
             self.connect()
 
-        # Build query with date filter
+        # Default end_date to start_date for backward compatibility
+        if end_date is None:
+            end_date = start_date
+
+        # Build query with date range filter
         query = f"""
             SELECT *
             FROM {schema}.{table}
-            WHERE DATE({date_column}) = %s
+            WHERE DATE({date_column}) BETWEEN %s AND %s
         """
 
         cursor = self.connection.cursor(cursor_factory=RealDictCursor)
-        cursor.execute(query, (execution_date,))
+        cursor.execute(query, (start_date, end_date))
 
         while True:
             rows = cursor.fetchmany(batch_size)

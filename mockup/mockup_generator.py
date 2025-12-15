@@ -1,0 +1,799 @@
+"""
+OLTP Data Mockup Generator
+
+This script generates realistic mock data for OLTP tables based on YAML configuration files.
+Uses Faker library to generate realistic data with proper constraints and relationships.
+
+Usage:
+    python mockup_generator.py --config config/users_config.yaml
+    python mockup_generator.py --all  # Generate all tables
+    python mockup_generator.py --tables users,companies,skills  # Generate specific tables
+"""
+
+import yaml
+import pandas as pd
+import numpy as np
+from faker import Faker
+from datetime import datetime, timedelta, time
+from pathlib import Path
+import argparse
+import logging
+from typing import Dict, Any, List, Optional, Tuple
+import hashlib
+import random
+import json
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
+
+
+class MockDataGenerator:
+    """Generate mock data based on YAML configuration"""
+
+    def __init__(self, config_path: str, output_dir: str = "output"):
+        """
+        Initialize generator with configuration
+
+        Args:
+            config_path: Path to YAML config file
+            output_dir: Directory to save generated data
+        """
+        self.config_path = Path(config_path)
+        self.output_dir = Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # Load configuration
+        with open(config_path, 'r') as f:
+            self.config = yaml.safe_load(f)
+
+        self.table_name = self.config['table_name']
+        self.faker = Faker()
+        Faker.seed(42)  # For reproducibility
+        random.seed(42)
+        np.random.seed(42)
+
+        # Cache for generated data (for foreign keys)
+        self.generated_data = {}
+
+        logger.info(f"Loaded configuration for table: {self.table_name}")
+
+    def load_reference_data(self, table_name: str) -> pd.DataFrame:
+        """Load reference data for foreign key relationships"""
+        ref_file = self.output_dir / f"{table_name}.csv"
+        if ref_file.exists():
+            logger.info(f"Loading reference data from {ref_file}")
+            return pd.read_csv(ref_file)
+        else:
+            logger.warning(f"Reference file not found: {ref_file}")
+            return pd.DataFrame()
+
+    def _parse_date_string(self, date_str: str):
+        """
+        Parse date string and convert to datetime if in YYYY-MM-DD format.
+        Otherwise, return as-is for Faker to handle relative dates like '-3y' or 'now'.
+        """
+        if isinstance(date_str, str):
+            # Check if it's an explicit date in YYYY-MM-DD format
+            try:
+                # Try to parse as explicit date
+                if len(date_str) == 10 and date_str[4] == '-' and date_str[7] == '-':
+                    return datetime.strptime(date_str, '%Y-%m-%d')
+            except ValueError:
+                pass
+        # Return as-is for relative dates or other formats
+        return date_str
+
+    def generate_sequence(self, column_config: Dict) -> List:
+        """Generate sequence values (auto-increment)"""
+        start = column_config.get('start', 1)
+        num_records = self.get_num_records()
+        return list(range(start, start + num_records))
+
+    def generate_faker_value(self, column_config: Dict) -> Any:
+        """Generate value using Faker provider"""
+        provider = column_config['provider']
+
+        # Handle random_element separately
+        if provider == 'random_element':
+            elements = column_config['elements']
+            weights = column_config.get('weights')
+            if weights:
+                return random.choices(elements, weights=weights, k=1)[0]
+            else:
+                return random.choice(elements)
+
+        # Handle date/datetime providers
+        if provider == 'date_time_between':
+            start_date = column_config.get('start_date', '-1y')
+            end_date = column_config.get('end_date', 'now')
+            # Convert explicit date strings (YYYY-MM-DD) to datetime objects
+            start_date = self._parse_date_string(start_date)
+            end_date = self._parse_date_string(end_date)
+            return self.faker.date_time_between(start_date=start_date, end_date=end_date)
+
+        if provider == 'date_between':
+            start_date = column_config.get('start_date', '-1y')
+            end_date = column_config.get('end_date', 'now')
+            # Convert explicit date strings (YYYY-MM-DD) to datetime objects
+            start_date = self._parse_date_string(start_date)
+            end_date = self._parse_date_string(end_date)
+            return self.faker.date_between(start_date=start_date, end_date=end_date)
+
+        # Handle random_int
+        if provider == 'random_int':
+            min_val = column_config.get('min', 0)
+            max_val = column_config.get('max', 100)
+            return self.faker.random_int(min=min_val, max=max_val)
+
+        # Handle boolean
+        if provider == 'boolean':
+            probability = column_config.get('probability', 0.5)
+            return self.faker.boolean(chance_of_getting_true=int(probability * 100))
+
+        # Handle text
+        if provider == 'text':
+            max_chars = column_config.get('max_nb_chars', 200)
+            return self.faker.text(max_nb_chars=max_chars)
+
+        # Handle sha256 (for password hash)
+        if provider == 'sha256':
+            random_string = self.faker.password()
+            return hashlib.sha256(random_string.encode()).hexdigest()
+
+        # Generic faker provider
+        faker_method = getattr(self.faker, provider, None)
+        if faker_method:
+            return faker_method()
+        else:
+            logger.warning(f"Unknown Faker provider: {provider}")
+            return None
+
+    def generate_foreign_key(self, column_config: Dict, num_records: int) -> List:
+        """Generate foreign key values"""
+        ref_table = column_config['reference_table']
+        ref_column = column_config['reference_column']
+
+        # Load reference data
+        ref_data = self.load_reference_data(ref_table)
+
+        if ref_data.empty:
+            logger.error(f"Cannot generate foreign key: {ref_table} data not found")
+            return [None] * num_records
+
+        ref_values = ref_data[ref_column].tolist()
+
+        # Check if unique constraint
+        if column_config.get('unique', False):
+            if num_records > len(ref_values):
+                logger.warning(f"Not enough unique values in {ref_table}.{ref_column}")
+                return ref_values[:num_records]
+            return random.sample(ref_values, num_records)
+        else:
+            return [random.choice(ref_values) for _ in range(num_records)]
+
+    def generate_derived_value(self, column_config: Dict, source_values: List) -> List:
+        """Generate derived values based on source column"""
+        source_col = column_config['source']
+        offset_days_config = column_config.get('offset_days', {})
+        min_offset = offset_days_config.get('min', 0)
+        max_offset = offset_days_config.get('max', 30)
+
+        derived_values = []
+        for source_val in source_values:
+            if pd.isna(source_val):
+                derived_values.append(None)
+            else:
+                # Convert to datetime if needed
+                if isinstance(source_val, str):
+                    source_date = pd.to_datetime(source_val)
+                else:
+                    source_date = source_val
+
+                offset = random.randint(min_offset, max_offset)
+                derived_date = source_date + timedelta(days=offset)
+                derived_values.append(derived_date)
+
+        return derived_values
+
+    def generate_predefined_list(self, column_config: Dict, num_records: int) -> List:
+        """Generate values from predefined list"""
+        values = column_config['values']
+
+        # If predefined list length matches num_records, return as-is
+        if len(values) == num_records:
+            return values
+
+        # If we need fewer records, take a subset
+        if len(values) > num_records:
+            logger.warning(f"Predefined list has {len(values)} values but only {num_records} needed. Taking subset.")
+            return values[:num_records]
+
+        # If we need more records, this shouldn't happen for predefined lists
+        logger.error(f"Predefined list has only {len(values)} values but {num_records} needed!")
+        # Pad with None or repeat values
+        return values + [None] * (num_records - len(values))
+
+    def get_num_records(self) -> int:
+        """Get number of records to generate"""
+        if 'num_records' in self.config:
+            num_records = self.config['num_records']
+
+            # Handle 'auto' for predefined lists
+            if num_records == 'auto':
+                # Check if there's a predefined_list column
+                for col_config in self.config['columns'].values():
+                    if col_config.get('type') == 'predefined_list':
+                        return len(col_config['values'])
+                # If no predefined list found, use default
+                logger.warning("num_records set to 'auto' but no predefined_list found. Using default.")
+                return 100
+
+            return num_records
+        elif 'num_records_ratio' in self.config:
+            # Need to load reference table to calculate
+            ratio = self.config['num_records_ratio']
+            # Assume users table for now
+            ref_data = self.load_reference_data('users')
+            return int(len(ref_data) * ratio)
+        else:
+            return 100  # Default
+
+    def generate_column_data(self, column_name: str, column_config: Dict, num_records: int, generated_df: pd.DataFrame = None) -> List:
+        """Generate data for a single column"""
+        col_type = column_config['type']
+
+        if col_type == 'sequence':
+            return self.generate_sequence(column_config)
+
+        elif col_type == 'faker':
+            values = []
+            unique = column_config.get('unique', False)
+            for _ in range(num_records):
+                val = self.generate_faker_value(column_config)
+                if unique:
+                    # Ensure uniqueness
+                    max_attempts = 1000
+                    attempts = 0
+                    while val in values and attempts < max_attempts:
+                        val = self.generate_faker_value(column_config)
+                        attempts += 1
+                values.append(val)
+            return values
+
+        elif col_type == 'foreign_key':
+            return self.generate_foreign_key(column_config, num_records)
+
+        elif col_type == 'derived':
+            source_col = column_config['source']
+            if generated_df is not None and source_col in generated_df.columns:
+                source_values = generated_df[source_col].tolist()
+
+                # Handle offset for salary
+                if 'offset' in column_config:
+                    offset_config = column_config['offset']
+                    min_offset = offset_config.get('min', 0)
+                    max_offset = offset_config.get('max', 0)
+                    return [val + random.randint(min_offset, max_offset) if not pd.isna(val) else None
+                            for val in source_values]
+                # Handle offset_days for dates
+                else:
+                    return self.generate_derived_value(column_config, source_values)
+            else:
+                logger.warning(f"Source column {source_col} not found for derived column {column_name}")
+                return [None] * num_records
+
+        elif col_type == 'predefined_list':
+            return self.generate_predefined_list(column_config, num_records)
+
+        elif col_type == 'category_mapping':
+            # For skills table - map skill name to category
+            return [None] * num_records  # Will be filled later
+
+        elif col_type == 'same_as':
+            source_col = column_config['source']
+            if generated_df is not None and source_col in generated_df.columns:
+                return generated_df[source_col].tolist()
+            else:
+                return [None] * num_records
+
+        elif col_type == 'conditional':
+            # Handle conditional logic (for draft jobs, etc.)
+            return [None] * num_records  # Placeholder, will handle in post-processing
+
+        elif col_type == 'session_generator':
+            return self.generate_sessions(column_config, num_records, generated_df)
+
+        elif col_type == 'realistic_sessions':
+            return self.generate_realistic_sessions(column_config, num_records, generated_df)
+
+        elif col_type == 'json_properties':
+            return self.generate_json_properties(column_config, num_records, generated_df)
+
+        elif col_type == 'daily_distribution':
+            return self.generate_daily_distribution(column_config, num_records)
+
+        elif col_type == 'daily_hourly_distribution':
+            return self.generate_daily_hourly_distribution(column_config, num_records)
+
+        else:
+            logger.warning(f"Unknown column type: {col_type}")
+            return [None] * num_records
+
+    def generate_sessions(self, column_config: Dict, num_records: int, generated_df: pd.DataFrame = None) -> List:
+        """Generate session IDs for streaming events"""
+        # Generate sessions with realistic distribution
+        # Each unique user_cookie_id gets 1-5 sessions
+        # Each session has multiple events
+
+        if generated_df is not None and 'user_cookie_id' in generated_df.columns:
+            user_cookies = generated_df['user_cookie_id'].tolist()
+        else:
+            # If user_cookie_id not yet generated, create sessions generically
+            logger.warning("user_cookie_id not found, generating sessions without user context")
+            # Estimate ~200 events per session
+            num_sessions = max(num_records // 200, 1)
+            sessions = []
+            for i in range(num_sessions):
+                session_id = hashlib.sha256(f"session_{i}_{random.random()}".encode()).hexdigest()[:16]
+                # Each session gets 50-500 events
+                session_length = random.randint(50, 500)
+                sessions.extend([session_id] * min(session_length, num_records - len(sessions)))
+                if len(sessions) >= num_records:
+                    break
+            return sessions[:num_records]
+
+        # Group events by user_cookie_id
+        user_sessions = {}
+        sessions = []
+
+        for user_cookie in user_cookies:
+            if user_cookie not in user_sessions:
+                # Generate 1-5 sessions per user
+                num_user_sessions = random.randint(1, 3)
+                user_sessions[user_cookie] = [
+                    hashlib.sha256(f"{user_cookie}_session_{i}".encode()).hexdigest()[:16]
+                    for i in range(num_user_sessions)
+                ]
+
+            # Assign a random session for this user
+            session_id = random.choice(user_sessions[user_cookie])
+            sessions.append(session_id)
+
+        return sessions
+
+    def generate_json_properties(self, column_config: Dict, num_records: int, generated_df: pd.DataFrame = None) -> List:
+        """Generate JSON properties based on event_type"""
+        import json
+
+        if generated_df is None or 'event_type' not in generated_df.columns:
+            logger.warning("event_type column not found, cannot generate dynamic properties")
+            return [json.dumps({}) for _ in range(num_records)]
+
+        event_types = generated_df['event_type'].tolist()
+        mapping = column_config.get('mapping', {})
+        properties = []
+
+        for event_type in event_types:
+            if event_type not in mapping:
+                properties.append(json.dumps({}))
+                continue
+
+            # Get the property schema for this event type
+            schema = mapping[event_type]
+            props = {}
+
+            for prop_name, prop_config in schema.items():
+                prop_type = prop_config['type']
+
+                if prop_type == 'random_int':
+                    min_val = prop_config.get('min', 0)
+                    max_val = prop_config.get('max', 100)
+                    props[prop_name] = random.randint(min_val, max_val)
+
+                elif prop_type == 'random_element':
+                    elements = prop_config['elements']
+                    props[prop_name] = random.choice(elements)
+
+                elif prop_type == 'boolean':
+                    probability = prop_config.get('probability', 0.5)
+                    props[prop_name] = random.random() < probability
+
+            properties.append(json.dumps(props))
+
+        return properties
+
+    def generate_daily_distribution(self, column_config: Dict, num_records: int) -> List[datetime]:
+        """
+        Generate timestamps distributed across every day in the date range.
+        Ensures continuous daily data with realistic patterns.
+        """
+        start_date_str = column_config.get('start_date', '2024-01-01')
+        end_date_str = column_config.get('end_date', '2025-12-15')
+
+        # Parse dates
+        start_date = self._parse_date_string(start_date_str)
+        end_date = self._parse_date_string(end_date_str)
+
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+        # Get daily volume configuration
+        daily_volume = column_config.get('daily_volume', {})
+        min_daily = daily_volume.get('min', 10)
+        max_daily = daily_volume.get('max', 100)
+        avg_daily = daily_volume.get('avg', 50)
+
+        # Get pattern multipliers
+        weekday_mult = column_config.get('weekday_multiplier', 1.0)
+        weekend_mult = column_config.get('weekend_multiplier', 0.7)
+
+        # Get growth trend
+        growth_trend = column_config.get('growth_trend', 'flat')
+        growth_rate = column_config.get('growth_rate', 0.0)
+
+        # Generate date list for each day in range
+        current_date = start_date
+        all_timestamps = []
+        day_count = 0
+
+        while current_date <= end_date:
+            # Determine if weekday or weekend
+            is_weekend = current_date.weekday() >= 5  # Saturday=5, Sunday=6
+            day_multiplier = weekend_mult if is_weekend else weekday_mult
+
+            # Apply growth trend
+            if growth_trend == 'linear':
+                growth_factor = 1.0 + (growth_rate * day_count / 30)  # Monthly growth
+            elif growth_trend == 'exponential':
+                growth_factor = (1.0 + growth_rate) ** (day_count / 30)
+            else:  # flat
+                growth_factor = 1.0
+
+            # Calculate daily count with some randomness
+            base_count = avg_daily * day_multiplier * growth_factor
+            daily_count = int(random.gauss(base_count, base_count * 0.2))  # 20% std dev
+            daily_count = max(min_daily, min(max_daily, daily_count))  # Clamp to min/max
+
+            # Generate timestamps for this day
+            for _ in range(daily_count):
+                # Generate random time during business hours (more realistic)
+                hour = random.choices(
+                    range(24),
+                    weights=[1, 1, 1, 1, 1, 2, 3, 5, 8, 12, 14, 15, 14, 12, 15, 16, 17, 15, 10, 6, 4, 3, 2, 1],
+                    k=1
+                )[0]
+                minute = random.randint(0, 59)
+                second = random.randint(0, 59)
+
+                timestamp = datetime.combine(current_date.date(), time(hour, minute, second))
+                all_timestamps.append(timestamp)
+
+            current_date += timedelta(days=1)
+            day_count += 1
+
+        # If we have more timestamps than needed, sample them
+        if len(all_timestamps) > num_records:
+            all_timestamps = random.sample(all_timestamps, num_records)
+        # If we have fewer, duplicate some
+        elif len(all_timestamps) < num_records:
+            additional_needed = num_records - len(all_timestamps)
+            all_timestamps.extend(random.choices(all_timestamps, k=additional_needed))
+
+        # Sort timestamps
+        all_timestamps.sort()
+
+        logger.info(f"Generated {len(all_timestamps)} timestamps across {day_count} days")
+        return all_timestamps
+
+    def generate_daily_hourly_distribution(self, column_config: Dict, num_records: int) -> List[datetime]:
+        """
+        Generate timestamps with both daily and intraday (hourly) patterns.
+        Perfect for event streams with peak hours and off-peak hours.
+        """
+        start_date_str = column_config.get('start_date', '2024-01-01')
+        end_date_str = column_config.get('end_date', '2025-12-15')
+
+        # Parse dates
+        start_date = self._parse_date_string(start_date_str)
+        end_date = self._parse_date_string(end_date_str)
+
+        if isinstance(start_date, str):
+            start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        if isinstance(end_date, str):
+            end_date = datetime.strptime(end_date, '%Y-%m-%d')
+
+        # Get intraday pattern configuration
+        intraday = column_config.get('intraday_pattern', {})
+        peak_hours = intraday.get('peak_hours', [9, 10, 11, 14, 15, 16, 17])
+        peak_mult = intraday.get('peak_multiplier', 2.0)
+        night_hours = intraday.get('night_hours', [0, 1, 2, 3, 4, 5])
+        night_mult = intraday.get('night_multiplier', 0.2)
+
+        # Get daily volume configuration
+        daily_volume = column_config.get('daily_volume', {})
+        min_daily = daily_volume.get('min', 1000)
+        max_daily = daily_volume.get('max', 5000)
+        avg_daily = daily_volume.get('avg', 2500)
+
+        # Get pattern multipliers
+        weekday_mult = column_config.get('weekday_multiplier', 1.3)
+        weekend_mult = column_config.get('weekend_multiplier', 0.6)
+
+        # Build hourly weights
+        hourly_weights = []
+        for hour in range(24):
+            if hour in peak_hours:
+                hourly_weights.append(peak_mult)
+            elif hour in night_hours:
+                hourly_weights.append(night_mult)
+            else:
+                hourly_weights.append(1.0)
+
+        # Generate timestamps for each day
+        current_date = start_date
+        all_timestamps = []
+
+        while current_date <= end_date:
+            # Determine if weekday or weekend
+            is_weekend = current_date.weekday() >= 5
+            day_multiplier = weekend_mult if is_weekend else weekday_mult
+
+            # Calculate daily count with randomness
+            base_count = avg_daily * day_multiplier
+            daily_count = int(random.gauss(base_count, base_count * 0.15))
+            daily_count = max(min_daily, min(max_daily, daily_count))
+
+            # Generate timestamps for this day with hourly distribution
+            for _ in range(daily_count):
+                hour = random.choices(range(24), weights=hourly_weights, k=1)[0]
+                minute = random.randint(0, 59)
+                second = random.randint(0, 59)
+
+                timestamp = datetime.combine(current_date.date(), time(hour, minute, second))
+                all_timestamps.append(timestamp)
+
+            current_date += timedelta(days=1)
+
+        # Adjust to match num_records
+        if len(all_timestamps) > num_records:
+            all_timestamps = random.sample(all_timestamps, num_records)
+        elif len(all_timestamps) < num_records:
+            additional_needed = num_records - len(all_timestamps)
+            all_timestamps.extend(random.choices(all_timestamps, k=additional_needed))
+
+        # Sort timestamps
+        all_timestamps.sort()
+
+        logger.info(f"Generated {len(all_timestamps)} timestamps with intraday patterns")
+        return all_timestamps
+
+    def generate_realistic_sessions(self, column_config: Dict, num_records: int, generated_df: pd.DataFrame = None) -> List[str]:
+        """
+        Generate realistic session IDs with proper session flows.
+        Each session has multiple events in chronological order.
+        """
+        if generated_df is None or 'event_timestamp' not in generated_df.columns:
+            logger.warning("event_timestamp not found, generating sessions without temporal grouping")
+            return self.generate_sessions(column_config, num_records, generated_df)
+
+        # Get session configuration
+        sessions_config = column_config.get('sessions_per_day', {})
+        events_per_session = column_config.get('events_per_session', {})
+        min_events = events_per_session.get('min', 3)
+        max_events = events_per_session.get('max', 25)
+        avg_events = events_per_session.get('avg', 8)
+
+        # Sort dataframe by timestamp
+        df_sorted = generated_df.sort_values('event_timestamp').reset_index(drop=True)
+
+        session_ids = []
+        current_session_id = None
+        events_in_session = 0
+        session_event_target = 0
+        last_timestamp = None
+
+        for idx, row in df_sorted.iterrows():
+            timestamp = row['event_timestamp']
+
+            # Start new session if needed
+            if current_session_id is None or events_in_session >= session_event_target:
+                # Generate new session
+                current_session_id = hashlib.sha256(
+                    f"session_{idx}_{timestamp}_{random.random()}".encode()
+                ).hexdigest()[:16]
+                events_in_session = 0
+                # Determine session length (skewed towards shorter sessions)
+                session_event_target = max(min_events, min(max_events,
+                    int(random.expovariate(1.0 / (avg_events - min_events)) + min_events)))
+                last_timestamp = timestamp
+
+            # Check if too much time has passed (session timeout)
+            if last_timestamp is not None:
+                if isinstance(timestamp, str):
+                    timestamp = pd.to_datetime(timestamp)
+                if isinstance(last_timestamp, str):
+                    last_timestamp = pd.to_datetime(last_timestamp)
+
+                time_diff = (timestamp - last_timestamp).total_seconds()
+                if time_diff > 1800:  # 30 minutes session timeout
+                    # Start new session
+                    current_session_id = hashlib.sha256(
+                        f"session_{idx}_{timestamp}_{random.random()}".encode()
+                    ).hexdigest()[:16]
+                    events_in_session = 0
+                    session_event_target = max(min_events, min(max_events,
+                        int(random.expovariate(1.0 / (avg_events - min_events)) + min_events)))
+
+            session_ids.append(current_session_id)
+            events_in_session += 1
+            last_timestamp = timestamp
+
+        logger.info(f"Generated {len(set(session_ids))} unique sessions for {len(session_ids)} events")
+        return session_ids
+
+    def post_process_skills(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Post-process skills table to map categories"""
+        if self.table_name != 'skills':
+            return df
+
+        mapping_config = self.config['columns']['category']['mapping']
+
+        def get_category(skill_name):
+            for category, skills in mapping_config.items():
+                if skill_name in skills:
+                    return category
+            return 'tech'  # Default
+
+        df['category'] = df['name'].apply(get_category)
+        return df
+
+    def post_process_conditional(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Post-process conditional columns"""
+        for col_name, col_config in self.config['columns'].items():
+            if col_config.get('type') == 'conditional':
+                condition_col = col_config['condition']
+
+                if condition_col == 'status' and 'if_equals' in col_config:
+                    # Handle job_postings status conditional
+                    for status, value_config in col_config['if_equals'].items():
+                        mask = df[condition_col] == status
+                        if value_config is None:
+                            df.loc[mask, col_name] = None
+                        elif isinstance(value_config, dict):
+                            # Generate values for this subset
+                            num_rows = mask.sum()
+                            values = []
+                            for _ in range(num_rows):
+                                values.append(self.generate_faker_value(value_config))
+                            df.loc[mask, col_name] = values
+
+        return df
+
+    def post_process_datetime_format(self, df: pd.DataFrame) -> pd.DataFrame:
+        """Format datetime columns as YYYY-MM-DD HH:MM:SS"""
+        datetime_columns = ['created_at', 'updated_at', 'published_at', 'applied_at', 'start_date', 'end_date', 'event_timestamp']
+
+        for col in datetime_columns:
+            if col in df.columns:
+                # Convert to datetime if not already
+                df[col] = pd.to_datetime(df[col], errors='coerce')
+                # Format as YYYY-MM-DD HH:MM:SS, handling NaT (null) values
+                df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S') if pd.notna(x) else None)
+
+        return df
+
+    def generate_table_data(self) -> pd.DataFrame:
+        """Generate complete table data"""
+        logger.info(f"Generating data for table: {self.table_name}")
+
+        num_records = self.get_num_records()
+        logger.info(f"Number of records to generate: {num_records}")
+
+        df = pd.DataFrame()
+
+        # Generate columns in order
+        for column_name, column_config in self.config['columns'].items():
+            logger.info(f"Generating column: {column_name}")
+            values = self.generate_column_data(column_name, column_config, num_records, df)
+            df[column_name] = values
+
+        # Post-processing
+        df = self.post_process_skills(df)
+        df = self.post_process_conditional(df)
+        df = self.post_process_datetime_format(df)
+
+        logger.info(f"Generated {len(df)} records for {self.table_name}")
+        return df
+
+    def save_data(self, df: pd.DataFrame):
+        """Save generated data to file"""
+        output_config = self.config['output']
+        file_format = output_config['file_format']
+        file_name = output_config['file_name']
+        output_path = self.output_dir / file_name
+
+        if file_format == 'csv':
+            df.to_csv(output_path, index=False)
+            logger.info(f"Saved data to {output_path}")
+        elif file_format == 'parquet':
+            df.to_parquet(output_path, index=False)
+            logger.info(f"Saved data to {output_path}")
+        else:
+            logger.error(f"Unknown file format: {file_format}")
+
+    def generate(self):
+        """Main generation method"""
+        df = self.generate_table_data()
+        self.save_data(df)
+        return df
+
+
+def generate_all_tables(config_dir: str = "config", output_dir: str = "output"):
+    """Generate all tables in dependency order"""
+    # Define generation order based on dependencies
+    table_order = [
+        'users',        # No dependencies
+        'companies',    # No dependencies
+        'skills',       # No dependencies
+        'profiles',     # Depends on users
+        'education',    # Depends on users
+        'work_history', # Depends on users
+        'job_postings', # Depends on companies
+        'job_skills',   # Depends on job_postings, skills
+        'user_skills',  # Depends on users, skills
+        'applications', # Depends on users, job_postings
+        'streaming_job_activity',  # Depends on job_postings (streaming events)
+    ]
+
+    config_dir = Path(config_dir)
+
+    for table in table_order:
+        config_file = config_dir / f"{table}_config.yaml"
+        if config_file.exists():
+            logger.info(f"\n{'='*60}")
+            logger.info(f"Generating table: {table}")
+            logger.info(f"{'='*60}")
+
+            generator = MockDataGenerator(str(config_file), output_dir)
+            generator.generate()
+        else:
+            logger.warning(f"Config file not found: {config_file}")
+
+
+def main():
+    """Main entry point"""
+    parser = argparse.ArgumentParser(description='Generate mock OLTP data')
+    parser.add_argument('--config', type=str, help='Path to config file')
+    parser.add_argument('--all', action='store_true', help='Generate all tables')
+    parser.add_argument('--tables', type=str, help='Comma-separated list of tables to generate')
+    parser.add_argument('--output', type=str, default='output', help='Output directory')
+    parser.add_argument('--config-dir', type=str, default='config', help='Config directory')
+
+    args = parser.parse_args()
+
+    if args.all:
+        generate_all_tables(args.config_dir, args.output)
+    elif args.tables:
+        tables = args.tables.split(',')
+        for table in tables:
+            config_file = Path(args.config_dir) / f"{table.strip()}_config.yaml"
+            if config_file.exists():
+                generator = MockDataGenerator(str(config_file), args.output)
+                generator.generate()
+            else:
+                logger.error(f"Config file not found: {config_file}")
+    elif args.config:
+        generator = MockDataGenerator(args.config, args.output)
+        generator.generate()
+    else:
+        parser.print_help()
+
+
+if __name__ == '__main__':
+    main()

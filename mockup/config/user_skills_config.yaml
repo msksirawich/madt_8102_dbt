@@ -1,0 +1,114 @@
+# User Skills Table Mock Data Configuration
+
+table_name: user_skills
+description: "Many-to-many link between users and their skills"
+
+# Number of records (each user has 5-15 skills)
+records_per_user:
+  min: 5
+  max: 15
+  avg: 8
+
+# Output settings
+output:
+  file_format: csv
+  file_name: user_skills.csv
+
+# Column definitions
+columns:
+  user_id:
+    type: foreign_key
+    reference_table: users
+    reference_column: user_id
+    description: "Foreign key to users table"
+
+  skill_id:
+    type: foreign_key
+    reference_table: skills
+    reference_column: skill_id
+    description: "Foreign key to skills table"
+
+  proficiency:
+    type: faker
+    provider: random_int
+    min: 1
+    max: 5
+    description: "Skill proficiency level (1-5 scale)"
+
+  created_at:
+    type: faker
+    provider: date_time_between
+    start_date: "2024-01-01"
+    end_date: "2025-12-15"
+    description: "Record creation timestamp"
+
+  updated_at:
+    type: derived
+    source: created_at
+    offset_days:
+      min: 0
+      max: 90
+    description: "Last update timestamp"
+
+# Primary key (composite)
+primary_key:
+  - user_id
+  - skill_id
+
+# Business rules
+rules:
+  - No duplicate (user_id, skill_id) pairs
+  - Each user should have mix of tech skills (70%), soft skills (25%), languages (5%)
+  - Proficiency distribution: 5 (expert) = 20%, 4 = 30%, 3 = 30%, 2 = 15%, 1 = 5%
+  - Users with more years of experience have higher average proficiency
+  - Core skills get proficiency 4-5, secondary skills get 2-3
+
+# Proficiency distribution weights
+proficiency_weights:
+  1: 5   # Beginner
+  2: 15  # Basic
+  3: 30  # Intermediate
+  4: 30  # Advanced
+  5: 20  # Expert
+
+# Skill selection rules by role
+skill_by_role:
+  "Data Scientist":
+    must_have:
+      - "Python"
+      - "Machine Learning"
+      - "SQL"
+      - "Statistical Analysis"
+    likely:
+      - "TensorFlow"
+      - "PyTorch"
+      - "Pandas"
+      - "NumPy"
+      - "Data Visualization"
+
+  "Software Engineer":
+    must_have:
+      - "Git"
+      - "Programming Language"
+    likely:
+      - "Docker"
+      - "REST API"
+      - "Database"
+      - "Testing"
+
+  "DevOps Engineer":
+    must_have:
+      - "Docker"
+      - "Kubernetes"
+      - "CI/CD"
+    likely:
+      - "AWS/Azure/GCP"
+      - "Terraform"
+      - "Linux"
+
+# Dependencies
+dependencies:
+  - table: users
+    column: user_id
+  - table: skills
+    column: skill_id

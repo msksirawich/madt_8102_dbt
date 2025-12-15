@@ -1,0 +1,51 @@
+skill_key,skill_name,category
+1,Python,tech
+2,SQL,tech
+3,Java,tech
+4,JavaScript,tech
+5,React,tech
+6,Node.js,tech
+7,AWS,tech
+8,Docker,tech
+9,Kubernetes,tech
+10,Machine Learning,tech
+11,Data Analysis,tech
+12,Project Management,soft_skill
+13,Communication,soft_skill
+14,Leadership,soft_skill
+15,Problem Solving,soft_skill
+16,Teamwork,soft_skill
+17,Time Management,soft_skill
+18,Agile/Scrum,soft_skill
+19,English,language
+20,Spanish,language
+21,Mandarin,language
+22,Git,tech
+23,TensorFlow,tech
+24,PyTorch,tech
+25,Tableau,tech
+26,Power BI,tech
+27,Excel,tech
+28,Statistical Analysis,tech
+29,Deep Learning,tech
+30,NLP,tech
+31,Computer Vision,tech
+32,REST API,tech
+33,GraphQL,tech
+34,PostgreSQL,tech
+35,MongoDB,tech
+36,Redis,tech
+37,Spark,tech
+38,Hadoop,tech
+39,ETL,tech
+40,Data Warehousing,tech
+41,CI/CD,tech
+42,Testing,tech
+43,TypeScript,tech
+44,Go,tech
+45,Rust,tech
+46,C++,tech
+47,Azure,tech
+48,GCP,tech
+49,Microservices,tech
+50,System Design,tech

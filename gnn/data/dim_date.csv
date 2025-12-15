@@ -1,0 +1,15 @@
+date_key,full_date,is_weekend,is_holiday
+20241201,2024-12-01,true,false
+20241202,2024-12-02,false,false
+20241203,2024-12-03,false,false
+20241204,2024-12-04,false,false
+20241205,2024-12-05,false,false
+20241206,2024-12-06,false,false
+20241207,2024-12-07,true,false
+20241208,2024-12-08,true,false
+20241209,2024-12-09,false,false
+20241210,2024-12-10,false,false
+20241211,2024-12-11,false,false
+20241212,2024-12-12,false,false
+20241213,2024-12-13,false,false
+20241214,2024-12-14,true,false

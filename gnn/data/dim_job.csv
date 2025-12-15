@@ -1,0 +1,51 @@
+job_key,job_id_natural,job_title,company_name,company_industry,description_length_words,valid_from,valid_to,is_current
+1,1001,Senior Data Scientist,TechCorp,Technology,450,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+2,1002,Machine Learning Engineer,AI Dynamics,Technology,520,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+3,1003,Full Stack Developer,WebSolutions Inc,Technology,380,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+4,1004,Data Engineer,DataFlow Systems,Technology,410,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+5,1005,Backend Developer,CloudFirst,Technology,340,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+6,1006,DevOps Engineer,InfraScale,Technology,395,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+7,1007,Data Analyst,FinanceHub,Finance,320,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+8,1008,AI Research Scientist,DeepMind Labs,Research,580,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+9,1009,Software Engineer,StartupX,Technology,360,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+10,1010,Cloud Architect,Enterprise Cloud Co,Technology,470,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+11,1011,Data Scientist,HealthTech Analytics,Healthcare,425,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+12,1012,Frontend Developer,UX Innovations,Technology,310,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+13,1013,ML Engineer,AutoDrive Systems,Automotive,490,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+14,1014,Data Engineer,Retail Analytics Co,Retail,385,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+15,1015,Senior Software Engineer,PaymentTech,FinTech,440,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+16,1016,Platform Engineer,SaaS Platform Inc,Technology,405,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+17,1017,Analytics Engineer,Marketing Insights,Marketing,370,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+18,1018,Computer Vision Engineer,RoboVision,Robotics,510,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+19,1019,NLP Engineer,LangTech AI,Technology,475,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+20,1020,Site Reliability Engineer,ScaleOps,Technology,420,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+21,1021,Junior Data Analyst,ConsumerTech,Technology,280,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+22,1022,Principal Engineer,MegaCorp,Technology,550,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+23,1023,Data Platform Engineer,DataLake Solutions,Technology,460,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+24,1024,Software Architect,Enterprise Systems,Technology,500,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+25,1025,ML Ops Engineer,AI Platform Co,Technology,435,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+26,1026,Full Stack Engineer,E-Commerce Giant,E-Commerce,390,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+27,1027,Data Scientist,InsurTech Analytics,Insurance,415,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+28,1028,Backend Engineer,Gaming Studios,Gaming,365,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+29,1029,Security Engineer,CyberDefense Inc,Cybersecurity,455,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+30,1030,BI Developer,Business Intelligence Co,Technology,345,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+31,1031,Applied Scientist,Research Lab,Research,530,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+32,1032,Infrastructure Engineer,GlobalTech,Technology,425,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+33,1033,Quantitative Analyst,Hedge Fund Analytics,Finance,480,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+34,1034,Mobile Developer,AppDev Studios,Technology,355,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+35,1035,Systems Engineer,Aerospace Tech,Aerospace,465,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+36,1036,Staff Data Engineer,Big Data Corp,Technology,495,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+37,1037,Deep Learning Engineer,Vision AI,Technology,505,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+38,1038,Database Administrator,Financial Services,Finance,375,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+39,1039,Technical Lead,Product Company,Technology,445,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+40,1040,QA Engineer,Quality Systems,Technology,330,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+41,1041,Data Engineer,Streaming Media Co,Media,400,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+42,1042,Software Development Engineer,Tech Giant,Technology,430,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+43,1043,ML Researcher,University AI Lab,Education,540,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+44,1044,Solutions Architect,Consulting Firm,Consulting,485,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+45,1045,Data Science Manager,Analytics Firm,Technology,460,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+46,1046,Automation Engineer,Manufacturing Tech,Manufacturing,380,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+47,1047,Graduate Software Engineer,Tech Startup,Technology,295,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+48,1048,Engineering Manager,Product Tech,Technology,470,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+49,1049,Research Engineer,Innovation Labs,Research,515,2024-01-01 00:00:00,9999-12-31 23:59:59,true
+50,1050,Technical Program Manager,Enterprise Tech,Technology,440,2024-01-01 00:00:00,9999-12-31 23:59:59,true

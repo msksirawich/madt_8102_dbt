@@ -1,0 +1,128 @@
+# Applications Table Mock Data Configuration
+
+table_name: applications
+description: "Job application tracking (user applies to job)"
+
+# Number of records - increased for daily continuity
+# Date range: 2024-06-01 to 2025-12-15 = ~198 days
+# Target: ~60-75 applications per day = ~12,000-15,000 total
+num_records: 12000
+
+# Output settings
+output:
+  file_format: csv
+  file_name: applications.csv
+
+# Column definitions
+columns:
+  application_id:
+    type: sequence
+    start: 1
+    description: "Primary key"
+
+  user_id:
+    type: foreign_key
+    reference_table: users
+    reference_column: user_id
+    filter:
+      is_active: true  # Only active users can apply
+    description: "Foreign key to users table (active users only)"
+
+  job_id:
+    type: foreign_key
+    reference_table: job_postings
+    reference_column: job_id
+    filter:
+      status: "open"  # Only open jobs can receive applications
+    description: "Foreign key to job_postings table (open jobs only)"
+
+  current_status:
+    type: faker
+    provider: random_element
+    elements:
+      - "applied"
+      - "screening"
+      - "interview"
+      - "offer"
+      - "rejected"
+      - "withdrawn"
+    weights: [30, 20, 15, 5, 25, 5]
+    description: "Current application status"
+
+  applied_at:
+    type: daily_distribution
+    start_date: "2024-06-01"
+    end_date: "2025-12-15"
+    daily_volume:
+      min: 20       # Minimum applications per day
+      max: 150      # Maximum applications per day
+      avg: 60       # Average ~60 applications per day
+    weekday_multiplier: 1.5    # 50% more applications on weekdays
+    weekend_multiplier: 0.7    # 30% fewer applications on weekends
+    growth_trend: "linear"     # Linear growth over time
+    growth_rate: 0.02          # 2% monthly growth in applications
+    description: "Application submission timestamp with daily continuity"
+
+  created_at:
+    type: same_as
+    source: applied_at
+    description: "Record creation timestamp (same as applied_at)"
+
+  updated_at:
+    type: derived
+    source: applied_at
+    offset_days:
+      min: 0
+      max: 60
+    description: "Last status update timestamp"
+
+# Business rules
+rules:
+  - No duplicate applications (user_id, job_id must be unique)
+  - Only active users can apply
+  - Only open jobs can receive applications
+  - applied_at must be after job published_at
+  - Status progression: applied → screening → interview → offer/rejected
+  - Withdrawn can happen at any stage
+  - updated_at >= applied_at
+  - DAILY CONTINUITY: Every day must have application data for analytics
+
+# Status distribution
+status_distribution:
+  applied: 30%      # Initial state
+  screening: 20%    # Under review
+  interview: 15%    # Interview stage
+  offer: 5%         # Success rate
+  rejected: 25%     # Rejection rate
+  withdrawn: 5%     # Candidate withdrew
+
+# Application funnel conversion rates
+funnel:
+  applied_to_screening: 0.67
+  screening_to_interview: 0.50
+  interview_to_offer: 0.25
+  overall_conversion: 0.05  # 5% of applications get offers
+
+# Real-world patterns implemented
+patterns:
+  daily_continuity: true
+  weekday_peak: true        # More applications on weekdays
+  business_hours: true      # Most applications during 9am-5pm
+  growth_trend: true        # Linear growth over time
+  realistic_volumes: true   # 20-150 applications per day
+
+# Dependencies
+dependencies:
+  - table: users
+    column: user_id
+    condition: is_active = true
+  - table: job_postings
+    column: job_id
+    condition: status = 'open'
+
+# Constraints
+constraints:
+  - unique_application: true  # (user_id, job_id) is unique
+  - active_users_only: true
+  - open_jobs_only: true
+  - daily_data_required: true  # Must have data for every day

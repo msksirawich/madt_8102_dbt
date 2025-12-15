@@ -1,0 +1,191 @@
+# Streaming Job Activity Table Mock Data Configuration
+
+table_name: streaming_job_activity
+description: "Raw immutable event stream from frontend applications"
+
+# Number of records to generate
+# REAL-WORLD VOLUMES: Job platforms have 50K-500K+ events per day
+# Date range: 2024-06-01 to 2025-12-15 = ~198 days
+# Target: ~2,500 events per day = ~500,000 total events
+num_records: 500000
+
+# Output settings
+output:
+  file_format: csv
+  file_name: streaming_job_activity.csv
+
+# Column definitions
+columns:
+  event_id:
+    type: faker
+    provider: uuid4
+    description: "UUID for the specific event"
+
+  session_id:
+    type: realistic_sessions
+    sessions_per_day:
+      min: 100      # Minimum sessions per day
+      max: 500      # Maximum sessions per day
+      avg: 250      # Average sessions per day
+    events_per_session:
+      min: 3        # Minimum events per session (bounce = 1-2 events)
+      max: 25       # Maximum events per session (deep engagement)
+      avg: 8        # Average ~8 events per session
+    description: "Session identifier with realistic session flows"
+
+  user_cookie_id:
+    type: faker
+    provider: sha256
+    description: "Hashed identifier for the user/browser"
+
+  job_id:
+    type: foreign_key
+    reference_table: job_postings
+    reference_column: job_id
+    description: "The specific Job Listing ID being interacted with"
+
+  event_timestamp:
+    type: daily_hourly_distribution
+    start_date: "2024-06-01"
+    end_date: "2025-12-15"
+    daily_volume:
+      min: 1000     # Minimum events per day
+      max: 5000     # Maximum events per day
+      avg: 2500     # Average ~2,500 events per day
+    intraday_pattern:
+      peak_hours: [9, 10, 11, 14, 15, 16, 17]  # Business hours (9am-5pm)
+      peak_multiplier: 2.0      # 2x events during peak hours
+      night_hours: [0, 1, 2, 3, 4, 5]
+      night_multiplier: 0.2     # 80% fewer events at night (2am-6am)
+    weekday_multiplier: 1.3    # 30% more activity on weekdays
+    weekend_multiplier: 0.6    # 40% less activity on weekends
+    description: "UTC timestamp with daily continuity and intraday patterns"
+
+  event_type:
+    type: faker
+    provider: random_element
+    elements:
+      - "PAGE_VIEW"
+      - "SCROLL"
+      - "CLICK"
+      - "HEARTBEAT"
+    weights: [25, 30, 20, 25]  # Distribution of event types
+    description: "Event type categorical"
+
+  event_properties:
+    type: json_properties
+    mapping:
+      PAGE_VIEW:
+        load_time_ms:
+          type: random_int
+          min: 100
+          max: 3000
+        referrer:
+          type: random_element
+          elements:
+            - "google"
+            - "direct"
+
+      SCROLL:
+        scroll_depth_percent:
+          type: random_int
+          min: 10
+          max: 100
+        max_scroll_px:
+          type: random_int
+          min: 500
+          max: 3000
+        scroll_direction:
+          type: random_element
+          elements: ["down", "up"]
+
+      HEARTBEAT:
+        time_since_load_sec:
+          type: random_int
+          min: 5
+          max: 300
+        is_active:
+          type: boolean
+          probability: 0.7
+
+      CLICK:
+        element_id:
+          type: random_element
+          elements:
+            - "apply_btn"
+            - "save_job_btn"
+            - "share_btn"
+        button_text:
+          type: random_element
+          elements:
+            - "Apply Now"
+            - "Save Job"
+            - "Share"
+        click_x:
+          type: random_int
+          min: 0
+          max: 1920
+        click_y:
+          type: random_int
+          min: 0
+          max: 1080
+    description: "Dynamic JSON payload based on event_type"
+
+# Business rules
+rules:
+  - Events in same session should have same user_cookie_id
+  - Events in same session should have chronological timestamps
+  - PAGE_VIEW is typically first event in a session
+  - event_properties structure depends on event_type
+  - DAILY CONTINUITY: Every day must have event data for analytics
+  - REALISTIC VOLUMES: 1,000-5,000 events per day (real-world scale)
+  - INTRADAY PATTERNS: Peak hours during business hours, low at night
+  - SESSION FLOWS: Realistic session lengths with 30-min timeout
+
+# Event flow patterns (implemented in generator)
+event_patterns:
+  bounce_session:
+    description: "User views page briefly and leaves"
+    events: [PAGE_VIEW]
+    duration: "<10 seconds"
+    percentage: 30%
+
+  quick_browse:
+    description: "User views and scrolls briefly"
+    events: [PAGE_VIEW, SCROLL]
+    duration: "10-60 seconds"
+    percentage: 40%
+
+  deep_engagement:
+    description: "User reads content thoroughly"
+    events: [PAGE_VIEW, SCROLL (multiple), HEARTBEAT (periodic)]
+    duration: "1-10 minutes"
+    percentage: 25%
+
+  application_flow:
+    description: "User applies to job"
+    events: [PAGE_VIEW, SCROLL, CLICK (apply_btn)]
+    duration: "2-15 minutes"
+    percentage: 5%
+
+# Real-world patterns implemented
+patterns:
+  daily_continuity: true
+  hourly_patterns: true      # Peak hours vs off-hours
+  weekday_patterns: true     # More activity on weekdays
+  session_flows: true        # Realistic session sequences
+  high_volumes: true         # Real-world event volumes
+  session_timeout: 30min     # Sessions expire after 30 min inactivity
+
+# Dependencies
+dependencies:
+  - table: job_postings
+    column: job_id
+
+# Constraints
+constraints:
+  - unique_event_id: true
+  - event_timestamp_required: true
+  - valid_event_types: ["PAGE_VIEW", "SCROLL", "CLICK", "HEARTBEAT"]
+  - daily_data_required: true
+  - chronological_events: true  # Events within session are ordered
