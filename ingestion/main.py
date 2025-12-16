@@ -44,22 +44,26 @@ def validate_date(date_string: str) -> str:
         raise ValueError(f"Invalid date format: {date_string}. Expected YYYY-MM-DD")
 
 
-def run_ingestion(config: dict, start_date: str, end_date: str = None):
+def run_ingestion(config: dict, start_date: str = None, end_date: str = None, full_load: bool = False):
     """Run data ingestion pipeline.
 
     Args:
         config: Configuration dictionary
-        start_date: Start date to filter data (YYYY-MM-DD)
+        start_date: Start date to filter data (YYYY-MM-DD), required if not full_load
         end_date: End date to filter data (YYYY-MM-DD), defaults to start_date if not provided
+        full_load: If True, load all data without date filtering
     """
-    # Default end_date to start_date for backward compatibility
-    if end_date is None:
-        end_date = start_date
-
-    if start_date == end_date:
-        print(f"Starting ingestion for date: {start_date}")
+    if full_load:
+        print("Starting FULL LOAD ingestion - loading all data...")
     else:
-        print(f"Starting ingestion for date range: {start_date} to {end_date}")
+        # Default end_date to start_date for backward compatibility
+        if end_date is None:
+            end_date = start_date
+
+        if start_date == end_date:
+            print(f"Starting ingestion for date: {start_date}")
+        else:
+            print(f"Starting ingestion for date range: {start_date} to {end_date}")
 
     # Get configurations
     pipeline_config = config['pipeline']
@@ -97,18 +101,15 @@ def run_ingestion(config: dict, start_date: str, end_date: str = None):
     # Setup target credentials
     target.setup_credentials()
 
-    # Get destination configuration (use end_date for partitioning)
-    dest_config = target.get_destination_config(end_date)
-
     if target_type == 'gcs':
+        # Get base destination configuration (without specific partition)
+        dest_config = target.get_destination_config(end_date)
         base_url = dest_config['base_url']  # gs://bucket
         table_path = dest_config['table_path']  # e.g., 'users'
-        partition = dest_config['partition']  # e.g., 'dt=2024-12-01'
-
-        # Construct final path: gs://bucket/table/dt=2024-12-01
-        full_path = f"{base_url}/{table_path}/{partition}"
-        print(f"Target path: {full_path}")
+        print(f"Target base path: {base_url}/{table_path}")
     else:  # duckdb
+        # Get destination configuration (use end_date for partitioning)
+        dest_config = target.get_destination_config(end_date)
         database_path = dest_config['database_path']
         table_name = dest_config['table_name']
         print(f"Target database: {database_path}")
@@ -122,7 +123,8 @@ def run_ingestion(config: dict, start_date: str, end_date: str = None):
             data = source.extract_data(
                 date_column=source_config['date_column'],
                 start_date=start_date,
-                end_date=end_date
+                end_date=end_date,
+                full_load=full_load
             )
         else:  # postgres
             data = source.extract_data(
@@ -130,6 +132,7 @@ def run_ingestion(config: dict, start_date: str, end_date: str = None):
                 date_column=source_config['date_column'],
                 start_date=start_date,
                 end_date=end_date,
+                full_load=full_load,
                 schema=config['database'].get('schema', 'public')
             )
 
@@ -145,19 +148,30 @@ def run_ingestion(config: dict, start_date: str, end_date: str = None):
 
         # Convert timestamp strings to datetime objects and add dt partition column
         for record in data_list:
-            # Convert timestamp string columns to datetime objects
-            # Check common timestamp column names
-            timestamp_columns = ['created_at', 'updated_at', 'event_timestamp', 'timestamp']
-            if date_column and date_column not in timestamp_columns:
-                timestamp_columns.append(date_column)
-
+            # Auto-detect and convert timestamp columns
+            # Look for columns that:
+            # - End with '_at' (created_at, updated_at, applied_at, published_at, etc.)
+            # - End with '_date' (start_date, end_date, etc.)
+            # - Contain 'timestamp' (event_timestamp, etc.)
             for key, value in record.items():
-                if isinstance(value, str) and key in timestamp_columns:
-                    try:
-                        # Parse timestamp string to datetime object (preserves time)
-                        record[key] = datetime.fromisoformat(value)
-                    except (ValueError, AttributeError):
-                        pass  # Keep as string if parsing fails
+                # Check if column name matches timestamp patterns
+                is_timestamp_column = (
+                    key.endswith('_at') or
+                    key.endswith('_date') or
+                    'timestamp' in key.lower()
+                )
+
+                if is_timestamp_column:
+                    if isinstance(value, str):
+                        if value.strip():  # Non-empty string
+                            try:
+                                # Parse timestamp string to datetime object (preserves time)
+                                record[key] = datetime.fromisoformat(value)
+                            except (ValueError, AttributeError):
+                                pass  # Keep as string if parsing fails
+                        else:
+                            # Empty string - convert to None for proper NULL handling
+                            record[key] = None
 
             # Add dt column for partitioning (date only)
             # Priority: configured date_column > created_at > updated_at
@@ -176,26 +190,62 @@ def run_ingestion(config: dict, start_date: str, end_date: str = None):
         print(f"✓ Added _ingestion_time column: {df['_ingestion_time'].iloc[0]}")
 
         if target_type == 'gcs':
-            # Generate filename with timestamp
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"{timestamp}.parquet"
-            file_path = f"{full_path}/{filename}"
+            # Check if 'dt' column exists for partitioning
+            if 'dt' not in df.columns:
+                print("Warning: 'dt' column not found. Writing all data to single partition.")
+                # Write all data to single partition with end_date
+                partition = f"dt={end_date}"
+                full_path = f"{base_url}/{table_path}/{partition}"
 
-            # Write parquet file directly to GCS
-            print(f"Writing {len(df)} records to {file_path}...")
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"{timestamp}.parquet"
+                file_path = f"{full_path}/{filename}"
 
-            # Write using pandas to_parquet with gcsfs (simpler approach)
-            # Use coerce_timestamps='us' for BigQuery compatibility (microsecond precision)
-            df.to_parquet(
-                file_path,
-                engine='pyarrow',
-                compression='snappy',
-                index=False,
-                coerce_timestamps='us'  # Convert timestamps to microseconds (BigQuery compatible)
-            )
+                print(f"Writing {len(df)} records to {file_path}...")
+                df.to_parquet(
+                    file_path,
+                    engine='pyarrow',
+                    compression='snappy',
+                    index=False,
+                    coerce_timestamps='us'
+                )
+                print(f"✓ Successfully wrote {len(df)} records to {file_path}")
+            else:
+                # Group by 'dt' and write each partition separately
+                unique_dates = df['dt'].unique()
+                print(f"Found {len(unique_dates)} unique dates to partition: {sorted([str(d) for d in unique_dates])}")
 
-            print(f"✓ Successfully wrote {len(df)} records to {file_path}")
-            print(f"  File size: {df.memory_usage(deep=True).sum() / 1024:.2f} KB")
+                total_records = 0
+                for dt_value in sorted(unique_dates):
+                    # Filter data for this date
+                    df_partition = df[df['dt'] == dt_value]
+
+                    # Construct partition path
+                    partition = f"dt={dt_value}"
+                    full_path = f"{base_url}/{table_path}/{partition}"
+
+                    # Generate filename with timestamp
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"{timestamp}.parquet"
+                    file_path = f"{full_path}/{filename}"
+
+                    # Write parquet file directly to GCS
+                    print(f"Writing {len(df_partition)} records to {file_path}...")
+
+                    # Use coerce_timestamps='us' for BigQuery compatibility (microsecond precision)
+                    df_partition.to_parquet(
+                        file_path,
+                        engine='pyarrow',
+                        compression='snappy',
+                        index=False,
+                        coerce_timestamps='us'
+                    )
+
+                    total_records += len(df_partition)
+                    print(f"✓ Successfully wrote {len(df_partition)} records to partition {partition}")
+
+                print(f"✓ Total {total_records} records written across {len(unique_dates)} partitions")
+                print(f"  Total memory size: {df.memory_usage(deep=True).sum() / 1024:.2f} KB")
 
         elif target_type == 'duckdb':
             # Write to DuckDB
@@ -233,22 +283,38 @@ def main():
         type=str,
         help='End date for data filtering (YYYY-MM-DD format). Defaults to start-date if not provided.'
     )
+    parser.add_argument(
+        '--full-load',
+        action='store_true',
+        default=False,
+        help='Load all data without date filtering. Cannot be used with date parameters.'
+    )
 
     args = parser.parse_args()
 
-    # Handle backward compatibility with --execution-date
-    if args.execution_date and not args.start_date:
+    # Validate mutually exclusive arguments
+    if args.full_load and (args.start_date or args.end_date or args.execution_date):
+        parser.error("--full-load cannot be used with --start-date, --end-date, or --execution-date")
+
+    # Handle date parameters
+    if args.full_load:
+        # Full load mode - no dates needed
+        start_date = None
+        end_date = None
+    elif args.execution_date and not args.start_date:
+        # Backward compatibility with --execution-date
         start_date = validate_date(args.execution_date)
         end_date = start_date
         print("Note: --execution-date is deprecated. Use --start-date and --end-date instead.")
     elif args.start_date:
+        # Incremental mode with date range
         start_date = validate_date(args.start_date)
         end_date = validate_date(args.end_date) if args.end_date else start_date
     else:
-        parser.error("Either --execution-date or --start-date must be provided")
+        parser.error("Either --full-load or date parameters (--start-date or --execution-date) must be provided")
 
-    # Validate date range
-    if start_date > end_date:
+    # Validate date range (only for incremental mode)
+    if not args.full_load and start_date > end_date:
         raise ValueError(f"start_date ({start_date}) cannot be after end_date ({end_date})")
 
     # Load configuration
@@ -256,7 +322,7 @@ def main():
 
     # Run ingestion
     try:
-        run_ingestion(config, start_date, end_date)
+        run_ingestion(config, start_date, end_date, full_load=args.full_load)
         print("Ingestion completed successfully!")
     except Exception as e:
         print(f"Error during ingestion: {str(e)}")

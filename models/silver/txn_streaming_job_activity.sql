@@ -26,40 +26,40 @@ cleaned as (
         -- Extract common properties from JSON based on event_type
         -- PAGE_VIEW properties
         case when upper(trim(event_type)) = 'PAGE_VIEW'
-            then cast(json_extract_string(event_properties, '$.load_time_ms') as int64)
+            then cast(JSON_EXTRACT_SCALAR(event_properties, '$.load_time_ms') as int64)
             else null
         end as load_time_ms,
 
         -- SCROLL properties
         case when upper(trim(event_type)) = 'SCROLL'
-            then cast(json_extract_string(event_properties, '$.scroll_depth_percent') as int64)
+            then cast(JSON_EXTRACT_SCALAR(event_properties, '$.scroll_depth_percent') as int64)
             else null
         end as scroll_depth_percent,
 
         case when upper(trim(event_type)) = 'SCROLL'
-            then cast(json_extract_string(event_properties, '$.max_scroll_px') as int64)
+            then cast(JSON_EXTRACT_SCALAR(event_properties, '$.max_scroll_px') as int64)
             else null
         end as max_scroll_px,
 
         -- HEARTBEAT properties
         case when upper(trim(event_type)) = 'HEARTBEAT'
-            then cast(json_extract_string(event_properties, '$.time_since_load_sec') as int64)
+            then cast(JSON_EXTRACT_SCALAR(event_properties, '$.time_since_load_sec') as int64)
             else null
         end as time_since_load_sec,
 
         case when upper(trim(event_type)) = 'HEARTBEAT'
-            then cast(json_extract_string(event_properties, '$.is_active') as bool)
+            then cast(JSON_EXTRACT_SCALAR(event_properties, '$.is_active') as bool)
             else null
         end as is_active,
 
         -- CLICK properties
         case when upper(trim(event_type)) = 'CLICK'
-            then json_extract_string(event_properties, '$.element_id')
+            then JSON_EXTRACT_SCALAR(event_properties, '$.element_id')
             else null
         end as element_id,
 
         case when upper(trim(event_type)) = 'CLICK'
-            then json_extract_string(event_properties, '$.button_text')
+            then JSON_EXTRACT_SCALAR(event_properties, '$.button_text')
             else null
         end as button_text,
 

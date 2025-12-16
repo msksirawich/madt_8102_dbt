@@ -18,7 +18,7 @@
 with users_base as (
     select *
     from {{ ref('users') }}
-    where is_active = true
+    where is_active = 'True'  -- is_active is STRING, not BOOL
 ),
 
 profiles_cleaned as (
@@ -58,7 +58,7 @@ work_experience as (
     select
         user_id,
         count(*) as total_positions,
-        date_diff('year', min(cast(start_date as date)), current_date()) as years_experience,
+        date_diff(current_date(), min(cast(start_date as date)), year) as years_experience,
         max(
             case when end_date is null then title end
         ) as current_position,

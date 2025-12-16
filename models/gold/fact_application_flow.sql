@@ -62,9 +62,9 @@ application_with_steps as (
 fact_application as (
     select
         -- Primary key
-        cast(a.user_id as varchar) || '_' ||
-        cast(a.job_id as varchar) || '_' ||
-        cast(a.application_id as varchar) as flow_id,
+        cast(a.user_id as string) || '_' ||
+        cast(a.job_id as string) || '_' ||
+        cast(a.application_id as string) as flow_id,
 
         -- Dimension foreign keys
         dj.job_key,
@@ -72,7 +72,7 @@ fact_application as (
         dd.date_key,
 
         -- Time dimension (optional - based on application hour)
-        cast(strftime(cast(a.applied_at as timestamp), '%H') || '0000' as integer) as time_key,
+        cast(format_timestamp('%H', cast(a.applied_at as timestamp)) || '0000' as int64) as time_key,
 
         -- Application identifiers
         a.application_id,
@@ -98,7 +98,7 @@ fact_application as (
         extract(dayofweek from cast(a.applied_at as timestamp)) as applied_day_of_week,
 
         -- Processing time (if applicable)
-        date_diff('day', cast(a.applied_at as timestamp), cast(a.updated_at as timestamp)) as days_since_application,
+        timestamp_diff(cast(a.updated_at as timestamp), cast(a.applied_at as timestamp), day) as days_since_application,
 
         -- Application funnel classification
         case
@@ -124,7 +124,7 @@ fact_application as (
         on a.user_id = du.user_id_natural
         and du.is_current = true
     left join {{ ref('dim_date') }} dd
-        on cast(strftime(cast(a.applied_at as date), '%Y%m%d') as integer) = dd.date_key
+        on cast(format_date('%Y%m%d', cast(a.applied_at as date)) as int64) = dd.date_key
 )
 
 select * from fact_application

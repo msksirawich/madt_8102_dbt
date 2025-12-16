@@ -56,7 +56,7 @@ job_snapshot_source as (
             split(
                 regexp_replace(
                     regexp_replace(jp.description_html, '<[^>]*>', ' '),  -- Remove HTML tags
-                    '\s+', ' '  -- Normalize whitespace
+                    r'\s+', ' '  -- Normalize whitespace
                 ),
                 ' '
             )

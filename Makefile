@@ -47,6 +47,9 @@ help: ## Show this help message
 	@echo "  make pipeline                          # Run full pipeline in dev with yesterday's date"
 	@echo "  make pipeline ENV=prod DATE=2024-12-01 # Run full pipeline in prod with specific date"
 	@echo "  make ingest ENV=dev                    # Run ingestion only in dev"
+	@echo "  make ingest-range ENV=prod START_DATE=2024-12-01 END_DATE=2024-12-07 # Ingest date range"
+	@echo "  make ingest-full ENV=prod              # Full load - ingest all data (no date filtering)"
+	@echo "  make ingest-full-table TABLE=users ENV=prod # Full load single table"
 	@echo "  make dbt-run ENV=prod                  # Run dbt models in prod"
 
 .PHONY: check-env
@@ -95,8 +98,9 @@ ingest-table: ## Ingest a single table (requires TABLE=<name>)
 			--config config/csv_$(TABLE)_to_duckdb.yaml \
 			--execution-date $(DATE); \
 	else \
-		echo "$(COLOR_YELLOW)Prod ingestion to GCS not implemented yet$(COLOR_RESET)"; \
-		exit 1; \
+		cd $(INGESTION_DIR) && $(PYTHON) main.py \
+			--config config/csv_$(TABLE)_pipeline_config.yaml \
+			--execution-date $(DATE); \
 	fi
 
 .PHONY: ingest
@@ -113,12 +117,47 @@ ingest-range: check-env ## Ingest all tables for a date range (requires START_DA
 	@echo "$(COLOR_BLUE)Starting ingestion for date range $(START_DATE) to $(END_DATE)...$(COLOR_RESET)"
 	@for table in $(TABLES); do \
 		echo "$(COLOR_GREEN)Ingesting $$table...$(COLOR_RESET)"; \
-		cd $(INGESTION_DIR) && $(PYTHON) main.py \
-			--config config/csv_$${table}_to_duckdb.yaml \
-			--start-date $(START_DATE) \
-			--end-date $(END_DATE); \
+		if [ "$(ENV)" = "dev" ]; then \
+			cd $(INGESTION_DIR) && $(PYTHON) main.py \
+				--config config/csv_$${table}_to_duckdb.yaml \
+				--start-date $(START_DATE) \
+				--end-date $(END_DATE); \
+		else \
+			cd $(INGESTION_DIR) && $(PYTHON) main.py \
+				--config config/csv_$${table}_pipeline_config.yaml \
+				--start-date $(START_DATE) \
+				--end-date $(END_DATE); \
+		fi; \
 	done
 	@echo "$(COLOR_GREEN)All tables ingested for date range$(COLOR_RESET)"
+
+.PHONY: ingest-full-table
+ingest-full-table: ## Full load a single table - ingest all data (requires TABLE=<name>)
+	@if [ -z "$(TABLE)" ]; then \
+		echo "$(COLOR_YELLOW)Error: TABLE variable required$(COLOR_RESET)"; \
+		echo "Usage: make ingest-full-table TABLE=users ENV=prod"; \
+		exit 1; \
+	fi
+	@echo "$(COLOR_BLUE)Full loading $(TABLE) in $(ENV) environment (all data)...$(COLOR_RESET)"
+	@if [ "$(ENV)" = "dev" ]; then \
+		cd $(INGESTION_DIR) && $(PYTHON) main.py \
+			--config config/csv_$(TABLE)_to_duckdb.yaml \
+			--full-load; \
+	else \
+		cd $(INGESTION_DIR) && $(PYTHON) main.py \
+			--config config/csv_$(TABLE)_pipeline_config.yaml \
+			--full-load; \
+	fi
+
+.PHONY: ingest-full
+ingest-full: check-env ## Full load all tables - ingest all data without date filtering
+	@echo "$(COLOR_BLUE)Starting FULL LOAD ingestion for all tables ($(ENV) environment)...$(COLOR_RESET)"
+	@echo "$(COLOR_YELLOW)This will ingest ALL data from CSV files$(COLOR_RESET)"
+	@for table in $(TABLES); do \
+		echo "$(COLOR_GREEN)Full loading $$table...$(COLOR_RESET)"; \
+		$(MAKE) ingest-full-table TABLE=$$table ENV=$(ENV) --no-print-directory || exit 1; \
+	done
+	@echo "$(COLOR_GREEN)Full load completed for all tables$(COLOR_RESET)"
 
 # ============================================================================
 # DBT TARGETS

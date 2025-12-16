@@ -14,13 +14,13 @@ with time_spine as (
     select
         hour_value
     from
-        generate_series(0, 23, 1) as t(hour_value)
+        unnest(generate_array(0, 23, 1)) as hour_value
 ),
 
 time_dimension as (
     select
         -- Surrogate key in HHMMSS format (top of hour)
-        cast(lpad(cast(hour_value as varchar), 2, '0') || '0000' as integer) as time_key,
+        cast(lpad(cast(hour_value as string), 2, '0') || '0000' as int64) as time_key,
 
         -- Time components
         hour_value as hour,

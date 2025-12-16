@@ -1,0 +1,25 @@
+# CSV to GCS Pipeline Configuration
+
+# Pipeline Settings
+pipeline:
+  name: csv_to_gcs
+  source_type: csv  # Options: postgres, csv
+
+  # Source Configuration
+  source:
+    file_path: data/streaming_job_activity.csv  # Path to CSV file
+    encoding: utf-8
+    date_column: event_timestamp  # Column to filter by execution date
+
+  # Target Configuration
+  target:
+    bucket: madt8102_bronze
+    path: streaming_job_activity  # Path within bucket
+    partition_column: dt  # Column used for Hive partitioning (dt=YYYY-MM-DD) - auto-generated from event_timestamp
+    file_format: parquet  # Options: parquet, jsonl
+    credentials_path: /Users/sirawich/Desktop/madt-8102-dbt-bq-key.json  # GCS service account key file
+
+  # Data Load Configuration
+  dlt:
+    write_disposition: append  # Options: append, replace, merge
+    loader_file_format: parquet

@@ -32,18 +32,18 @@ with streaming_events as (
 session_metrics as (
     select
         session_id,
-        cast(job_id as integer) as job_id,
+        cast(job_id as int64) as job_id,
         user_cookie_id,  -- Keep as string (it's a hash, not a user_id)
         cast(min(event_timestamp) as date) as event_date,
 
         -- Duration: Time from first to last event in session (in seconds)
-        date_diff('second', min(event_timestamp), max(event_timestamp)) as time_on_page_seconds,
+        timestamp_diff(max(event_timestamp), min(event_timestamp), second) as time_on_page_seconds,
 
         -- Max scroll depth from SCROLL events
         max(
             case
                 when event_type = 'SCROLL'
-                then cast(json_extract_string(event_properties, '$.scroll_depth_percent') as integer)
+                then cast(JSON_EXTRACT_SCALAR(event_properties, '$.scroll_depth_percent') as int64)
                 else 0
             end
         ) as max_scroll_depth_percent,
@@ -52,7 +52,7 @@ session_metrics as (
         max(
             case
                 when event_type = 'CLICK'
-                     and json_extract_string(event_properties, '$.element_id') = 'apply_btn'
+                     and JSON_EXTRACT_SCALAR(event_properties, '$.element_id') = 'apply_btn'
                 then 1
                 else 0
             end
@@ -83,11 +83,11 @@ fact_engagement as (
 
         -- Dimension foreign keys
         dj.job_key,
-        cast(null as varchar) as user_key,  -- Cookie ID doesn't map to user_id
+        cast(null as string) as user_key,  -- Cookie ID doesn't map to user_id
         dd.date_key,
 
         -- Time dimension (optional - based on session start hour)
-        cast(strftime(sm.session_start, '%H') || '0000' as integer) as time_key,
+        cast(format_timestamp('%H', sm.session_start) || '0000' as int64) as time_key,
 
         -- User identification (cookie-based, not authenticated user)
         sm.user_cookie_id,
@@ -135,10 +135,10 @@ fact_engagement as (
 
     from session_metrics sm
     left join {{ ref('dim_job') }} dj
-        on sm.job_id = dj.job_id_natural
+        on cast(sm.job_id as string) = dj.job_id_natural
         and dj.is_current = true
     left join {{ ref('dim_date') }} dd
-        on cast(strftime(sm.event_date, '%Y%m%d') as integer) = dd.date_key
+        on cast(format_date('%Y%m%d', sm.event_date) as int64) = dd.date_key
 )
 
 select * from fact_engagement

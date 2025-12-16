@@ -79,10 +79,9 @@ application_metrics as (
 daily_performance as (
     select
         -- Composite surrogate key
-        cast(
-            md5(cast(coalesce(e.date_key, a.date_key) as varchar) || '_' ||
-                cast(coalesce(e.job_key, a.job_key) as varchar))
-            as varchar
+        to_hex(
+            md5(cast(coalesce(e.date_key, a.date_key) as string) || '_' ||
+                cast(coalesce(e.job_key, a.job_key) as string))
         ) as job_day_sk,
 
         -- Dimension foreign keys
@@ -134,33 +133,33 @@ daily_performance as (
         -- Conversion rates (calculated metrics)
         case
             when coalesce(e.view_count, 0) > 0
-            then cast(coalesce(e.apply_click_count, 0) as double) / e.view_count
+            then cast(coalesce(e.apply_click_count, 0) as float64) / e.view_count
             else 0.0
         end as view_to_click_rate,
 
         case
             when coalesce(e.apply_click_count, 0) > 0
-            then cast(coalesce(a.completed_apply_count, 0) as double) / e.apply_click_count
+            then cast(coalesce(a.completed_apply_count, 0) as float64) / e.apply_click_count
             else 0.0
         end as click_to_complete_rate,
 
         case
             when coalesce(a.completed_apply_count, 0) > 0
-            then cast(coalesce(a.offer_count, 0) as double) / a.completed_apply_count
+            then cast(coalesce(a.offer_count, 0) as float64) / a.completed_apply_count
             else 0.0
         end as complete_to_offer_rate,
 
         -- Bounce rate
         case
             when coalesce(e.view_count, 0) > 0
-            then cast(coalesce(e.bounce_count, 0) as double) / e.view_count
+            then cast(coalesce(e.bounce_count, 0) as float64) / e.view_count
             else 0.0
         end as bounce_rate,
 
         -- Deep read rate (key KPI)
         case
             when coalesce(e.view_count, 0) > 0
-            then cast(coalesce(e.deepread_noapply_count, 0) as double) / e.view_count
+            then cast(coalesce(e.deepread_noapply_count, 0) as float64) / e.view_count
             else 0.0
         end as deepread_noapply_rate,
 

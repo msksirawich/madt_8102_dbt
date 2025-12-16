@@ -21,16 +21,18 @@ class CSVSource:
     def extract_data(
         self,
         date_column: str,
-        start_date: str,
+        start_date: str = None,
         end_date: str = None,
+        full_load: bool = False,
         batch_size: int = 1000
     ) -> Iterator[Dict[str, Any]]:
-        """Extract data from CSV file filtered by date range.
+        """Extract data from CSV file filtered by date range or full load.
 
         Args:
             date_column: Column name to filter by date
-            start_date: Start date to filter (YYYY-MM-DD format)
+            start_date: Start date to filter (YYYY-MM-DD format), required if not full_load
             end_date: End date to filter (YYYY-MM-DD format), defaults to start_date if not provided
+            full_load: If True, extract all data without date filtering
             batch_size: Number of rows to yield per batch (for consistency)
 
         Yields:
@@ -40,7 +42,7 @@ class CSVSource:
             raise ValueError("file_path is required in source configuration")
 
         # Default end_date to start_date for backward compatibility
-        if end_date is None:
+        if not full_load and end_date is None:
             end_date = start_date
 
         file_path = Path(self.file_path)
@@ -51,11 +53,15 @@ class CSVSource:
             reader = csv.DictReader(csvfile)
 
             for row in reader:
-                # Filter by date range
-                if date_column in row:
-                    row_date = row[date_column].split()[0]  # Extract date part (YYYY-MM-DD)
-                    if start_date <= row_date <= end_date:
-                        yield row
+                if full_load:
+                    # Full load - yield all records
+                    yield row
+                else:
+                    # Incremental load - filter by date range
+                    if date_column in row:
+                        row_date = row[date_column].split()[0]  # Extract date part (YYYY-MM-DD)
+                        if start_date <= row_date <= end_date:
+                            yield row
 
     def __enter__(self):
         """Context manager entry."""

@@ -12,19 +12,15 @@
 with date_spine as (
     -- Generate dates from 2020-01-01 to 2030-12-31
     select
-        date_day::date as date_day
+        date_day
     from
-        generate_series(
-            date '2020-01-01',
-            date '2030-12-31',
-            interval '1 day'
-        ) as t(date_day)
+        unnest(generate_date_array('2020-01-01', '2030-12-31', interval 1 day)) as date_day
 ),
 
 date_dimension as (
     select
         -- Surrogate key in YYYYMMDD format
-        cast(strftime(date_day, '%Y%m%d') as integer) as date_key,
+        cast(format_date('%Y%m%d', date_day) as int64) as date_key,
 
         -- Date attributes
         date_day as full_date,
@@ -32,17 +28,17 @@ date_dimension as (
         extract(month from date_day) as month,
         extract(day from date_day) as day,
         extract(quarter from date_day) as quarter,
-        extract(dayofweek from date_day) as day_of_week,
+        extract(dayofweek from date_day) as day_of_week,  -- 1=Sunday, 7=Saturday in BigQuery
         extract(dayofyear from date_day) as day_of_year,
         extract(week from date_day) as week_of_year,
 
         -- Day name and month name
-        strftime(date_day, '%A') as day_name,
-        strftime(date_day, '%B') as month_name,
+        format_date('%A', date_day) as day_name,
+        format_date('%B', date_day) as month_name,
 
         -- Weekend flag
         case
-            when extract(dayofweek from date_day) in (0, 6) then true  -- Sunday = 0, Saturday = 6 in DuckDB
+            when extract(dayofweek from date_day) in (1, 7) then true  -- Sunday = 1, Saturday = 7 in BigQuery
             else false
         end as is_weekend,
 
@@ -71,7 +67,7 @@ date_dimension as (
         end as is_first_day_of_month,
 
         case
-            when date_day = last_day(date_day) then true
+            when date_day = last_day(date_day, month) then true
             else false
         end as is_last_day_of_month,
 
