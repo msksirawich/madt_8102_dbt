@@ -1,0 +1,248 @@
+version: 2
+
+models:
+  - name: dim_date
+    description: "Date dimension table with calendar attributes for analytics"
+    columns:
+      - name: date_key
+        description: "Primary key in YYYYMMDD format"
+        tests:
+          - unique
+          - not_null
+      - name: full_date
+        description: "Full date value"
+      - name: is_weekend
+        description: "Flag indicating if date is a weekend (Saturday/Sunday)"
+      - name: is_holiday
+        description: "Flag indicating if date is a holiday"
+
+  - name: dim_time
+    description: "Time dimension table with time-of-day classifications"
+    columns:
+      - name: time_key
+        description: "Primary key in HHMMSS format"
+        tests:
+          - unique
+          - not_null
+      - name: time_segment
+        description: "Time classification: work_hours, commute_hours, off_hours"
+      - name: is_peak_hours
+        description: "Flag for peak usage hours (18:00-22:00)"
+
+  - name: dim_user
+    description: "User dimension (SCD Type 2) combining identity, profile, education, and work history"
+    columns:
+      - name: user_key
+        description: "Surrogate key for the user dimension"
+        tests:
+          - unique
+          - not_null
+      - name: user_id_natural
+        description: "Natural key from source users table"
+      - name: current_role
+        description: "Current role/headline from user profile"
+      - name: years_experience
+        description: "Total years of work experience calculated from work history"
+      - name: highest_degree
+        description: "Highest educational degree attained (PhD, MS, BS, None)"
+      - name: career_level
+        description: "Career level classification based on experience"
+      - name: valid_from
+        description: "SCD Type 2 start date"
+      - name: valid_to
+        description: "SCD Type 2 end date (NULL for current record)"
+      - name: is_current
+        description: "Flag indicating current active record"
+
+  - name: dim_job
+    description: "Job dimension (SCD Type 2) combining job postings with company information"
+    columns:
+      - name: job_key
+        description: "Surrogate key for the job dimension"
+        tests:
+          - unique
+          - not_null
+      - name: job_id_natural
+        description: "Natural key from source job_postings table"
+      - name: job_title
+        description: "Job title"
+      - name: company_name
+        description: "Company name from companies table"
+      - name: company_industry
+        description: "Industry classification of the company"
+      - name: description_length_words
+        description: "Word count of job description (HTML tags removed)"
+      - name: seniority_level
+        description: "Job seniority level (Junior, Mid, Senior)"
+      - name: salary_tier
+        description: "Salary tier classification (Low, Medium, High)"
+      - name: valid_from
+        description: "SCD Type 2 start date"
+      - name: valid_to
+        description: "SCD Type 2 end date (NULL for current record)"
+      - name: is_current
+        description: "Flag indicating current active record"
+
+  - name: dim_skill
+    description: "Skill dimension (Type 1 SCD) - master list of skills"
+    columns:
+      - name: skill_key
+        description: "Surrogate key for the skill dimension"
+        tests:
+          - unique
+          - not_null
+      - name: skill_id_natural
+        description: "Natural key from source skills table"
+      - name: skill_name
+        description: "Normalized skill name"
+      - name: skill_category
+        description: "Skill category (Technical, Soft Skill, Language, Other)"
+      - name: category_group
+        description: "Grouped category classification"
+
+  - name: fact_job_content_engagement
+    description: "Session-level engagement metrics from streaming job activity events"
+    columns:
+      - name: engagement_id
+        description: "Primary key (session_id)"
+        tests:
+          - unique
+          - not_null
+      - name: job_key
+        description: "Foreign key to dim_job"
+        tests:
+          - relationships:
+              to: ref('dim_job')
+              field: job_key
+      - name: user_key
+        description: "Foreign key to dim_user"
+        tests:
+          - relationships:
+              to: ref('dim_user')
+              field: user_key
+      - name: date_key
+        description: "Foreign key to dim_date"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: time_on_page_seconds
+        description: "Total time spent in session (seconds)"
+      - name: max_scroll_depth_percent
+        description: "Maximum scroll depth reached in session (%)"
+      - name: is_bounce
+        description: "Bounce flag (session < 10 seconds)"
+      - name: did_click_apply
+        description: "Flag indicating if apply button was clicked"
+      - name: is_deep_read_no_apply
+        description: "Key KPI: scroll > 70% but no apply click"
+      - name: engagement_quality
+        description: "Engagement quality classification (High, Medium, Low)"
+
+  - name: fact_application_flow
+    description: "Application funnel tracking - accumulating snapshot fact"
+    columns:
+      - name: flow_id
+        description: "Primary key (composite of user_id, job_id, application_id)"
+        tests:
+          - unique
+          - not_null
+      - name: job_key
+        description: "Foreign key to dim_job"
+        tests:
+          - relationships:
+              to: ref('dim_job')
+              field: job_key
+      - name: user_key
+        description: "Foreign key to dim_user"
+        tests:
+          - relationships:
+              to: ref('dim_user')
+              field: user_key
+      - name: date_key
+        description: "Foreign key to dim_date"
+        tests:
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: exit_step
+        description: "Funnel exit step (1, 2, or 3)"
+      - name: is_completed
+        description: "Flag indicating completed application"
+      - name: current_status
+        description: "Application status (applied, rejected, offer, accepted)"
+      - name: application_stage
+        description: "Human-readable application stage classification"
+      - name: dropped_at_step1
+        description: "Flag for drop-off at step 1"
+      - name: dropped_at_step2
+        description: "Flag for drop-off at step 2"
+
+  - name: mart_job_performance_daily
+    description: "Daily aggregated job performance mart for executive dashboards - combines engagement and funnel metrics"
+    columns:
+      - name: job_day_sk
+        description: "Surrogate key (MD5 hash of date + job_key)"
+        tests:
+          - unique
+          - not_null
+      - name: datekey
+        description: "Foreign key to dim_date"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_key
+      - name: job_key
+        description: "Foreign key to dim_job"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_job')
+              field: job_key
+      - name: view_count
+        description: "Total number of job listing views"
+      - name: unique_visitor_count
+        description: "Count of distinct visitors (based on cookies)"
+      - name: total_view_duration_sec
+        description: "Sum of all session durations"
+      - name: avg_view_duration_sec
+        description: "Average session duration"
+      - name: bounce_count
+        description: "Number of bounced sessions (< 10 seconds)"
+      - name: bounce_rate
+        description: "Bounce count / view count"
+      - name: deepread_noapply_count
+        description: "Key KPI: Sessions with >70% scroll but no apply click"
+      - name: deepread_noapply_rate
+        description: "Deep read no apply / total views"
+      - name: apply_click_count
+        description: "Number of apply button clicks"
+      - name: total_applications
+        description: "Total application submissions"
+      - name: start_step1_count
+        description: "Count of applications that started step 1"
+      - name: start_step2_count
+        description: "Count of applications that reached step 2"
+      - name: start_step3_count
+        description: "Count of applications that reached step 3"
+      - name: completed_apply_count
+        description: "Count of completed applications"
+      - name: drop_step1_count
+        description: "Drop-offs between step 1 and 2"
+      - name: drop_step2_count
+        description: "Drop-offs between step 2 and 3"
+      - name: drop_step3_count
+        description: "Drop-offs at final step (calculated)"
+      - name: offer_count
+        description: "Number of offers extended"
+      - name: hired_count
+        description: "Number of accepted offers (hired)"
+      - name: rejected_count
+        description: "Number of rejections"
+      - name: view_to_click_rate
+        description: "Conversion rate: apply clicks / views"
+      - name: click_to_complete_rate
+        description: "Conversion rate: completions / clicks"
+      - name: complete_to_offer_rate
+        description: "Conversion rate: offers / completions"

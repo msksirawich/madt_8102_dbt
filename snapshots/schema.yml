@@ -1,0 +1,91 @@
+version: 2
+
+snapshots:
+  - name: snap_user_dimension
+    description: |
+      SCD Type 2 snapshot for user dimension.
+      Tracks historical changes to user profiles, education, and work experience.
+      Uses 'check' strategy to detect changes in key attributes.
+    config:
+      strategy: check
+      unique_key: user_id
+      check_cols:
+        - headline
+        - highest_degree
+        - years_experience
+        - current_position
+        - current_salary
+    columns:
+      - name: user_id
+        description: "Natural key - unique identifier for users"
+        tests:
+          - not_null
+      - name: email
+        description: "User email address"
+      - name: headline
+        description: "User's current role/headline (tracked for changes)"
+      - name: highest_degree
+        description: "Highest educational degree (PhD, MS, BS, None) - tracked for changes"
+      - name: years_experience
+        description: "Calculated years of experience - tracked for changes"
+      - name: current_position
+        description: "Current job title - tracked for changes"
+      - name: current_salary
+        description: "Current salary - tracked for changes"
+      - name: career_level
+        description: "Derived career level classification"
+      - name: dbt_valid_from
+        description: "Timestamp when this version became active"
+      - name: dbt_valid_to
+        description: "Timestamp when this version became inactive (NULL for current)"
+      - name: dbt_updated_at
+        description: "Timestamp of last snapshot update"
+
+  - name: snap_job_dimension
+    description: |
+      SCD Type 2 snapshot for job dimension.
+      Tracks historical changes to job postings including title, description, salary, and company.
+      Uses 'check' strategy to detect changes in key attributes.
+    config:
+      strategy: check
+      unique_key: job_id
+      check_cols:
+        - title
+        - description_html
+        - min_salary
+        - max_salary
+        - status
+        - company_id
+    columns:
+      - name: job_id
+        description: "Natural key - unique identifier for job postings"
+        tests:
+          - not_null
+      - name: title
+        description: "Job title - tracked for changes"
+      - name: description_html
+        description: "Job description HTML - tracked for changes"
+      - name: min_salary
+        description: "Minimum salary - tracked for changes"
+      - name: max_salary
+        description: "Maximum salary - tracked for changes"
+      - name: status
+        description: "Job posting status (open, closed, draft) - tracked for changes"
+      - name: company_id
+        description: "Company identifier - tracked for changes"
+      - name: company_name
+        description: "Company name from companies table"
+      - name: company_industry
+        description: "Industry classification"
+      - name: description_length_words
+        description: "Calculated word count of job description"
+      - name: seniority_level
+        description: "Derived seniority level (Junior, Mid, Senior)"
+      - name: salary_tier
+        description: "Derived salary tier (Low, Medium, High)"
+      - name: dbt_valid_from
+        description: "Timestamp when this version became active"
+      - name: dbt_valid_to
+        description: "Timestamp when this version became inactive (NULL for current)"
+      - name: dbt_updated_at
+        description: "Timestamp of last snapshot update"
