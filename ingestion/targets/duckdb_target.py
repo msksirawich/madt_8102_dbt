@@ -17,9 +17,16 @@ class DuckDBTarget:
             target_config: Target configuration dictionary
         """
         self.database_path = target_config['database_path']
+        self.schema = target_config.get('schema', None)
         self.table_name = target_config['table_name']
         self.partition_column = target_config.get('partition_column', 'dt')
         self.if_exists = target_config.get('if_exists', 'append')  # append, replace, or overwrite_partition
+
+        # Construct full table name with schema if provided
+        if self.schema:
+            self.full_table_name = f"{self.schema}.{self.table_name}"
+        else:
+            self.full_table_name = self.table_name
 
         # Create directory if it doesn't exist
         db_dir = Path(self.database_path).parent
@@ -41,6 +48,11 @@ class DuckDBTarget:
         """Establish connection to DuckDB database."""
         self.connection = duckdb.connect(self.database_path)
         print(f"✓ Connected to DuckDB: {self.database_path}")
+
+        # Create schema if it doesn't exist
+        if self.schema:
+            self.connection.execute(f"CREATE SCHEMA IF NOT EXISTS {self.schema}")
+            print(f"✓ Schema ensured: {self.schema}")
 
     def close(self):
         """Close DuckDB connection."""
@@ -92,54 +104,59 @@ class DuckDBTarget:
             df[self.partition_column] = partition_value
 
         # Check if table exists
-        table_exists = self.connection.execute(
-            f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{self.table_name}'"
-        ).fetchone()[0] > 0
+        if self.schema:
+            table_exists = self.connection.execute(
+                f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{self.schema}' AND table_name = '{self.table_name}'"
+            ).fetchone()[0] > 0
+        else:
+            table_exists = self.connection.execute(
+                f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{self.table_name}'"
+            ).fetchone()[0] > 0
 
         if not table_exists:
             # Create table from DataFrame
-            self.connection.execute(f"CREATE TABLE {self.table_name} AS SELECT * FROM df")
-            print(f"✓ Created table: {self.table_name}")
+            self.connection.execute(f"CREATE TABLE {self.full_table_name} AS SELECT * FROM df")
+            print(f"✓ Created table: {self.full_table_name}")
             print(f"✓ Inserted {len(df)} records")
         else:
             if self.if_exists == 'replace':
                 # Drop and recreate table
-                self.connection.execute(f"DROP TABLE {self.table_name}")
-                self.connection.execute(f"CREATE TABLE {self.table_name} AS SELECT * FROM df")
-                print(f"✓ Replaced table: {self.table_name}")
+                self.connection.execute(f"DROP TABLE {self.full_table_name}")
+                self.connection.execute(f"CREATE TABLE {self.full_table_name} AS SELECT * FROM df")
+                print(f"✓ Replaced table: {self.full_table_name}")
                 print(f"✓ Inserted {len(df)} records")
             elif self.if_exists == 'overwrite_partition':
                 # Delete existing records for this partition
                 delete_count = self.connection.execute(
-                    f"SELECT COUNT(*) FROM {self.table_name} WHERE {self.partition_column} = ?",
+                    f"SELECT COUNT(*) FROM {self.full_table_name} WHERE {self.partition_column} = ?",
                     [partition_value]
                 ).fetchone()[0]
 
                 if delete_count > 0:
                     self.connection.execute(
-                        f"DELETE FROM {self.table_name} WHERE {self.partition_column} = ?",
+                        f"DELETE FROM {self.full_table_name} WHERE {self.partition_column} = ?",
                         [partition_value]
                     )
                     print(f"✓ Deleted {delete_count} existing records for partition {self.partition_column}={execution_date}")
 
                 # Insert new data
-                self.connection.execute(f"INSERT INTO {self.table_name} SELECT * FROM df")
+                self.connection.execute(f"INSERT INTO {self.full_table_name} SELECT * FROM df")
                 print(f"✓ Inserted {len(df)} records for partition {self.partition_column}={execution_date}")
             else:  # append
                 # Insert data into existing table
-                self.connection.execute(f"INSERT INTO {self.table_name} SELECT * FROM df")
-                print(f"✓ Appended {len(df)} records to table: {self.table_name}")
+                self.connection.execute(f"INSERT INTO {self.full_table_name} SELECT * FROM df")
+                print(f"✓ Appended {len(df)} records to table: {self.full_table_name}")
 
         # Show table info
-        row_count = self.connection.execute(f"SELECT COUNT(*) FROM {self.table_name}").fetchone()[0]
-        print(f"  Total records in {self.table_name}: {row_count}")
+        row_count = self.connection.execute(f"SELECT COUNT(*) FROM {self.full_table_name}").fetchone()[0]
+        print(f"  Total records in {self.full_table_name}: {row_count}")
 
         # Show partition info if using overwrite_partition
         if self.if_exists == 'overwrite_partition' and self.partition_column:
             partition_count = self.connection.execute(
-                f"SELECT COUNT(DISTINCT {self.partition_column}) FROM {self.table_name}"
+                f"SELECT COUNT(DISTINCT {self.partition_column}) FROM {self.full_table_name}"
             ).fetchone()[0]
-            print(f"  Total partitions in {self.table_name}: {partition_count}")
+            print(f"  Total partitions in {self.full_table_name}: {partition_count}")
 
     def get_table_info(self) -> Dict[str, Any]:
         """Get information about the target table.
@@ -151,9 +168,14 @@ class DuckDBTarget:
             self.connect()
 
         # Check if table exists
-        table_exists = self.connection.execute(
-            f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{self.table_name}'"
-        ).fetchone()[0] > 0
+        if self.schema:
+            table_exists = self.connection.execute(
+                f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{self.schema}' AND table_name = '{self.table_name}'"
+            ).fetchone()[0] > 0
+        else:
+            table_exists = self.connection.execute(
+                f"SELECT COUNT(*) FROM information_schema.tables WHERE table_name = '{self.table_name}'"
+            ).fetchone()[0] > 0
 
         if not table_exists:
             return {
@@ -163,10 +185,10 @@ class DuckDBTarget:
             }
 
         # Get row count
-        row_count = self.connection.execute(f"SELECT COUNT(*) FROM {self.table_name}").fetchone()[0]
+        row_count = self.connection.execute(f"SELECT COUNT(*) FROM {self.full_table_name}").fetchone()[0]
 
         # Get schema
-        schema_info = self.connection.execute(f"DESCRIBE {self.table_name}").fetchdf()
+        schema_info = self.connection.execute(f"DESCRIBE {self.full_table_name}").fetchdf()
 
         return {
             'exists': True,

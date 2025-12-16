@@ -1,0 +1,218 @@
+version: 2
+
+models:
+  # OLTP Identity & Profile Models
+  - name: users
+    description: Bronze layer - Raw user account data
+    columns:
+      - name: user_id
+        description: Primary key - unique user identifier
+      - name: email
+        description: User email address
+      - name: password_hash
+        description: Hashed password for authentication
+      - name: is_active
+        description: Status flag indicating if account is active
+      - name: created_at
+        description: Timestamp when user record was created
+      - name: updated_at
+        description: Timestamp when user record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: profiles
+    description: Bronze layer - Raw extended user details (1:1 with users)
+    columns:
+      - name: profile_id
+        description: Primary key
+      - name: user_id
+        description: Foreign key to users (1:1 relationship)
+      - name: headline
+        description: Short bio/professional headline
+      - name: summary
+        description: Full bio/professional summary
+      - name: current_salary
+        description: Used for salary matching features
+      - name: willing_to_relocate
+        description: Critical GNN feature - relocation preference
+      - name: created_at
+        description: Timestamp when profile was created
+      - name: updated_at
+        description: Timestamp when profile was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: education
+    description: Bronze layer - Raw education history for users
+    columns:
+      - name: education_id
+        description: Primary key
+      - name: user_id
+        description: Foreign key to users
+      - name: degree
+        description: Degree level (BS, MS, PhD)
+      - name: school_name
+        description: Name of educational institution
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: work_history
+    description: Bronze layer - Raw work experience records
+    columns:
+      - name: work_id
+        description: Primary key
+      - name: user_id
+        description: Foreign key to users
+      - name: company_name
+        description: Name of company
+      - name: title
+        description: Job title held
+      - name: start_date
+        description: Employment start date
+      - name: end_date
+        description: Employment end date (null if current)
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: user_skills
+    description: Bronze layer - Raw many-to-many link between users and skills
+    columns:
+      - name: user_id
+        description: Foreign key to users (composite PK)
+      - name: skill_id
+        description: Foreign key to skills (composite PK)
+      - name: proficiency
+        description: 1-5 scale proficiency level
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  # OLTP Job Market Models
+  - name: companies
+    description: Bronze layer - Raw company registry data
+    columns:
+      - name: company_id
+        description: Primary key
+      - name: name
+        description: Company name
+      - name: industry
+        description: Industry category for matching
+      - name: size_range
+        description: Company size range
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: job_postings
+    description: Bronze layer - Raw job catalog/listings data
+    columns:
+      - name: job_id
+        description: Primary key
+      - name: company_id
+        description: Foreign key to companies
+      - name: title
+        description: Job title
+      - name: description_html
+        description: HTML content with job description
+      - name: min_salary
+        description: Minimum salary for position
+      - name: max_salary
+        description: Maximum salary for position
+      - name: status
+        description: Job posting status (open, closed, draft)
+      - name: published_at
+        description: When job was published
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: skills
+    description: Bronze layer - Raw master list of skills (Python, SQL, etc.)
+    columns:
+      - name: skill_id
+        description: Primary key
+      - name: name
+        description: Skill name
+      - name: category
+        description: Skill category (tech, soft skill, language)
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  - name: job_skills
+    description: Bronze layer - Raw many-to-many link for job skill requirements
+    columns:
+      - name: job_id
+        description: Foreign key to job_postings (composite PK)
+      - name: skill_id
+        description: Foreign key to skills (composite PK)
+      - name: importance
+        description: 1-5 scale importance level
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  # OLTP Transaction Models
+  - name: applications
+    description: Bronze layer - Raw job application records
+    columns:
+      - name: application_id
+        description: Primary key
+      - name: user_id
+        description: Foreign key to users
+      - name: job_id
+        description: Foreign key to job_postings
+      - name: current_status
+        description: Application status (applied, rejected, offer)
+      - name: applied_at
+        description: Timestamp when application was submitted
+      - name: created_at
+        description: Timestamp when record was created
+      - name: updated_at
+        description: Timestamp when record was last updated
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse
+
+  # Streaming Event Models
+  - name: streaming_job_activity
+    description: Bronze layer - Raw immutable event stream from frontend applications
+    columns:
+      - name: event_id
+        description: UUID for the specific event
+      - name: session_id
+        description: Critical for sessionizing data
+      - name: user_cookie_id
+        description: Hashed identifier for user/browser
+      - name: job_id
+        description: Specific Job Listing ID being interacted with
+      - name: event_timestamp
+        description: UTC timestamp of when event occurred
+      - name: event_type
+        description: Event category (PAGE_VIEW, SCROLL, CLICK, HEARTBEAT)
+      - name: event_properties
+        description: Dynamic JSON payload based on event_type
+      - name: _ingestion_time
+        description: When this record landed in the data warehouse

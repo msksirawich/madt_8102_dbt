@@ -2,57 +2,292 @@ version: 2
 
 sources:
   - name: bronze
-    description: Raw data ingested from source systems
+    description: Raw data ingested from source systems (OLTP and streaming sources)
     schema: bronze
     tables:
-      - name: customers
-        description: Raw customer data from source system
+      # OLTP Identity & Profile Tables
+      - name: users
+        description: Core identity table - user accounts
         columns:
-          - name: customer_id
-            description: Unique customer identifier
+          - name: user_id
+            description: Primary key - unique user identifier
             tests:
               - unique
               - not_null
           - name: email
-            description: Customer email address
-            tests:
-              - not_null
-          - name: first_name
-            description: Customer first name
-          - name: last_name
-            description: Customer last name
-          - name: created_at
-            description: Timestamp when customer record was created
-          - name: updated_at
-            description: Timestamp when customer record was last updated
-
-      - name: orders
-        description: Raw order data from source system
-        columns:
-          - name: order_id
-            description: Unique order identifier
+            description: User email address
             tests:
               - unique
               - not_null
-          - name: customer_id
-            description: Foreign key to customer
+          - name: password_hash
+            description: Hashed password for authentication
+          - name: is_active
+            description: Status flag indicating if account is active
+          - name: created_at
+            description: Timestamp when user record was created
+          - name: updated_at
+            description: Timestamp when user record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: profiles
+        description: Extended user details (1:1 with users)
+        columns:
+          - name: profile_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: Foreign key to users (1:1 relationship)
             tests:
               - not_null
-          - name: order_date
-            description: Date when order was placed
+          - name: headline
+            description: Short bio/professional headline
+          - name: summary
+            description: Full bio/professional summary
+          - name: current_salary
+            description: Used for salary matching features
+          - name: willing_to_relocate
+            description: Critical GNN feature - relocation preference
+          - name: created_at
+            description: Timestamp when profile was created
+          - name: updated_at
+            description: Timestamp when profile was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: education
+        description: Education history for users
+        columns:
+          - name: education_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: Foreign key to users
             tests:
               - not_null
-          - name: amount
-            description: Order amount in dollars
+          - name: degree
+            description: Degree level (BS, MS, PhD)
+          - name: school_name
+            description: Name of educational institution
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: work_history
+        description: Work experience records
+        columns:
+          - name: work_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: Foreign key to users
             tests:
               - not_null
+          - name: company_name
+            description: Name of company
+          - name: title
+            description: Job title held
+          - name: start_date
+            description: Employment start date
+          - name: end_date
+            description: Employment end date (null if current)
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: user_skills
+        description: Many-to-many link between users and skills
+        columns:
+          - name: user_id
+            description: Foreign key to users (composite PK)
+            tests:
+              - not_null
+          - name: skill_id
+            description: Foreign key to skills (composite PK)
+            tests:
+              - not_null
+          - name: proficiency
+            description: 1-5 scale proficiency level
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      # OLTP Job Market Tables
+      - name: companies
+        description: Company registry
+        columns:
+          - name: company_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: name
+            description: Company name
+            tests:
+              - not_null
+          - name: industry
+            description: Industry category for matching
+          - name: size_range
+            description: Company size range
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: job_postings
+        description: Job catalog/listings
+        columns:
+          - name: job_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: company_id
+            description: Foreign key to companies
+            tests:
+              - not_null
+          - name: title
+            description: Job title
+            tests:
+              - not_null
+          - name: description_html
+            description: HTML content with job description
+          - name: min_salary
+            description: Minimum salary for position
+          - name: max_salary
+            description: Maximum salary for position
           - name: status
-            description: Current order status
+            description: Job posting status
+            tests:
+              - accepted_values:
+                  values: ['open', 'closed', 'draft']
+          - name: published_at
+            description: When job was published
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: skills
+        description: Master list of skills (Python, SQL, etc.)
+        columns:
+          - name: skill_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: name
+            description: Skill name
+            tests:
+              - not_null
+          - name: category
+            description: Skill category (tech, soft skill, language)
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      - name: job_skills
+        description: Many-to-many link for job skill requirements
+        columns:
+          - name: job_id
+            description: Foreign key to job_postings (composite PK)
+            tests:
+              - not_null
+          - name: skill_id
+            description: Foreign key to skills (composite PK)
+            tests:
+              - not_null
+          - name: importance
+            description: 1-5 scale importance level
+          - name: created_at
+            description: Timestamp when record was created
+          - name: updated_at
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      # OLTP Transaction Tables
+      - name: applications
+        description: Job application records
+        columns:
+          - name: application_id
+            description: Primary key
+            tests:
+              - unique
+              - not_null
+          - name: user_id
+            description: Foreign key to users
+            tests:
+              - not_null
+          - name: job_id
+            description: Foreign key to job_postings
+            tests:
+              - not_null
+          - name: current_status
+            description: Application status
             tests:
               - not_null
               - accepted_values:
-                  values: ['PENDING', 'PROCESSING', 'SHIPPED', 'DELIVERED', 'CANCELLED']
+                  values: ['applied', 'rejected', 'offer']
+          - name: applied_at
+            description: Timestamp when application was submitted
           - name: created_at
-            description: Timestamp when order record was created
+            description: Timestamp when record was created
           - name: updated_at
-            description: Timestamp when order record was last updated
+            description: Timestamp when record was last updated
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse
+
+      # Streaming Event Data
+      - name: streaming_job_activity
+        description: Raw immutable event stream from frontend applications
+        columns:
+          - name: event_id
+            description: UUID for the specific event
+            tests:
+              - unique
+              - not_null
+          - name: session_id
+            description: Critical for sessionizing data
+            tests:
+              - not_null
+          - name: user_cookie_id
+            description: Hashed identifier for user/browser
+          - name: job_id
+            description: Specific Job Listing ID being interacted with
+          - name: event_timestamp
+            description: UTC timestamp of when event occurred
+            tests:
+              - not_null
+          - name: event_type
+            description: Event category (PAGE_VIEW, SCROLL, CLICK, HEARTBEAT)
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['PAGE_VIEW', 'SCROLL', 'CLICK', 'HEARTBEAT']
+          - name: event_properties
+            description: Dynamic JSON payload based on event_type
+          - name: _ingestion_time
+            description: When this record landed in the data warehouse

@@ -15,6 +15,7 @@ pipeline:
   target:
     type: duckdb  # Target type: duckdb
     database_path: data/ingestion.duckdb  # Path to DuckDB database file
-    table_name: bronze_job_skills  # Table name in DuckDB
+    schema: bronze  # Schema name in DuckDB
+    table_name: job_skills  # Table name in DuckDB
     partition_column: dt  # Column used for partitioning (will be added automatically)
     if_exists: overwrite_partition  # Options: append, replace, overwrite_partition

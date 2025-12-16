@@ -3,8 +3,8 @@ madt8102_dbt:
   outputs:
     dev:
       type: duckdb
-      schema: public
-      path: '/content/duckdb.duckdb'
+      schema: dev
+      path: '/Users/sirawich/Documents/madt8102_git/madt_8102_dbt/ingestion/data/ingestion.duckdb'
       extensions:
         - httpfs
         - parquet

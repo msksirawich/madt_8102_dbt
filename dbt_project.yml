@@ -50,10 +50,6 @@ models:
       +schema: silver
 
     # Gold layer: Business metrics as tables for analytics
-    gold:
-      +materialized: table
-      +schema: gold
-
-    # Example models (can be removed if not needed)
-    example:
-      +materialized: view
+    # gold:
+    #   +materialized: table
+    #   +schema: gold
