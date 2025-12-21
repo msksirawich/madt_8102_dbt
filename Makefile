@@ -50,7 +50,22 @@ help: ## Show this help message
 	@echo "  make ingest-range ENV=prod START_DATE=2024-12-01 END_DATE=2024-12-07 # Ingest date range"
 	@echo "  make ingest-full ENV=prod              # Full load - ingest all data (no date filtering)"
 	@echo "  make ingest-full-table TABLE=users ENV=prod # Full load single table"
+	@echo ""
+	@echo "  $(COLOR_YELLOW)DBT Pipeline Commands:$(COLOR_RESET)"
 	@echo "  make dbt-run ENV=prod                  # Run dbt models in prod"
+	@echo "  make dbt-run-silver START_DATE=2024-12-01 END_DATE=2024-12-07 # Run all silver models for date range"
+	@echo "  make dbt-run-silver-master START_DATE=2024-12-01 END_DATE=2024-12-07 # Run silver master tables (mst_*)"
+	@echo "  make dbt-run-silver-transaction START_DATE=2024-12-01 END_DATE=2024-12-07 # Run silver transaction tables (txn_*)"
+	@echo "  make dbt-run-gold START_DATE=2024-12-01 END_DATE=2024-12-07   # Run all gold models for date range"
+	@echo "  make dbt-run-gold-dim START_DATE=2024-12-01 END_DATE=2024-12-07 # Run gold dimension tables (dim_*)"
+	@echo "  make dbt-run-gold-fact START_DATE=2024-12-01 END_DATE=2024-12-07 # Run gold fact tables (fact_*)"
+	@echo "  make dbt-run-gold-mart START_DATE=2024-12-01 END_DATE=2024-12-07 # Run gold mart tables (mart_*)"
+	@echo ""
+	@echo "  $(COLOR_YELLOW)Daily Pipeline Commands (Silver + Gold on same date):$(COLOR_RESET)"
+	@echo "  make dbt-run-master-dim START_DATE=2024-12-01 END_DATE=2024-12-07 # Run silver mst_* -> snapshot -> gold dim_* per day"
+	@echo "  make dbt-run-transaction-fact START_DATE=2024-12-01 END_DATE=2024-12-07 # Run silver txn_* -> gold fact_* per day"
+	@echo "  make dbt-run-fact-mart START_DATE=2024-12-01 END_DATE=2024-12-07 # Run gold fact_* -> gold mart_* per day"
+	@echo "  make dbt-run-transaction-fact-mart START_DATE=2024-12-01 END_DATE=2024-12-07 # Run silver txn_* -> gold fact_* -> gold mart_* per day"
 
 .PHONY: check-env
 check-env: ## Validate environment setup
@@ -180,14 +195,235 @@ dbt-run-bronze: ## Run bronze layer models only
 	$(DBT) run --models bronze.* --target $(ENV) --vars '{execution_date: $(DATE)}'
 
 .PHONY: dbt-run-silver
-dbt-run-silver: ## Run silver layer models only
+dbt-run-silver: ## Run silver layer models only (supports START_DATE and END_DATE for daily loops)
 	@echo "$(COLOR_BLUE)Running silver layer models ($(ENV))...$(COLOR_RESET)"
-	$(DBT) run --models silver.* --target $(ENV) --vars '{execution_date: $(DATE)}'
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) run --models silver.* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) run --models silver.* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Silver layer models executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-silver-master
+dbt-run-silver-master: ## Run silver master tables only (mst_* models, supports START_DATE and END_DATE)
+	@echo "$(COLOR_BLUE)Running silver master tables (mst_*) ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) run --models silver.mst_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) run --models silver.mst_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Silver master tables executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-silver-transaction
+dbt-run-silver-transaction: ## Run silver transaction tables only (txn_* models, supports START_DATE and END_DATE)
+	@echo "$(COLOR_BLUE)Running silver transaction tables (txn_*) ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) run --models silver.txn_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) run --models silver.txn_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Silver transaction tables executed successfully$(COLOR_RESET)"
 
 .PHONY: dbt-run-gold
-dbt-run-gold: ## Run gold layer models only
+dbt-run-gold: ## Run gold layer models only (supports START_DATE and END_DATE for daily loops)
 	@echo "$(COLOR_BLUE)Running gold layer models ($(ENV))...$(COLOR_RESET)"
-	$(DBT) run --models gold.* --target $(ENV) --vars '{execution_date: $(DATE)}'
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) snapshot --target $(ENV) --vars "{execution_date: $$current_date}" && $(DBT) run --models gold.* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) snapshot --target $(ENV) --vars '{execution_date: $(DATE)}' && $(DBT) run --models gold.* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Gold layer models executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-gold-dim
+dbt-run-gold-dim: ## Run gold dimension tables only (dim_* models, supports START_DATE and END_DATE)
+	@echo "$(COLOR_BLUE)Running gold dimension tables (dim_*) ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) snapshot --target $(ENV) --vars "{execution_date: $$current_date}" && $(DBT) run --models gold.dim_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) snapshot --target $(ENV) --vars '{execution_date: $(DATE)}' && $(DBT) run --models gold.dim_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Gold dimension tables executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-gold-fact
+dbt-run-gold-fact: ## Run gold fact tables only (fact_* models, supports START_DATE and END_DATE)
+	@echo "$(COLOR_BLUE)Running gold fact tables (fact_*) ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) run --models gold.fact_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) run --models gold.fact_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Gold fact tables executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-gold-mart
+dbt-run-gold-mart: ## Run gold mart tables only (mart_* models, supports START_DATE and END_DATE)
+	@echo "$(COLOR_BLUE)Running gold mart tables (mart_*) ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			$(DBT) run --models gold.mart_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		$(DBT) run --models gold.mart_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Gold mart tables executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-master-dim
+dbt-run-master-dim: ## Run master -> dim pipeline (silver mst_* -> snapshot -> gold dim_*) for date range
+	@echo "$(COLOR_BLUE)Running master -> dim pipeline ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_BLUE)Step 1/3: Running silver master tables (mst_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models silver.mst_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 2/3: Running dbt snapshots...$(COLOR_RESET)"; \
+			$(DBT) snapshot --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 3/3: Running gold dimension tables (dim_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.dim_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_GREEN)Date $$current_date completed successfully$(COLOR_RESET)"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		echo "$(COLOR_BLUE)Step 1/3: Running silver master tables (mst_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models silver.mst_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 2/3: Running dbt snapshots...$(COLOR_RESET)"; \
+		$(DBT) snapshot --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 3/3: Running gold dimension tables (dim_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.dim_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Master -> Dim pipeline executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-transaction-fact
+dbt-run-transaction-fact: ## Run transaction -> fact pipeline (silver txn_* -> gold fact_*) for date range
+	@echo "$(COLOR_BLUE)Running transaction -> fact pipeline ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_BLUE)Step 1/2: Running silver transaction tables (txn_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models silver.txn_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 2/2: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.fact_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_GREEN)Date $$current_date completed successfully$(COLOR_RESET)"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		echo "$(COLOR_BLUE)Step 1/2: Running silver transaction tables (txn_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models silver.txn_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 2/2: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.fact_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Transaction -> Fact pipeline executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-fact-mart
+dbt-run-fact-mart: ## Run fact -> mart pipeline (gold fact_* -> gold mart_*) for date range
+	@echo "$(COLOR_BLUE)Running fact -> mart pipeline ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_BLUE)Step 1/2: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.fact_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 2/2: Running gold mart tables (mart_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.mart_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_GREEN)Date $$current_date completed successfully$(COLOR_RESET)"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		echo "$(COLOR_BLUE)Step 1/2: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.fact_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 2/2: Running gold mart tables (mart_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.mart_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Fact -> Mart pipeline executed successfully$(COLOR_RESET)"
+
+.PHONY: dbt-run-transaction-fact-mart
+dbt-run-transaction-fact-mart: ## Run complete transaction -> fact -> mart pipeline (silver txn_* -> gold fact_* -> gold mart_*) for date range
+	@echo "$(COLOR_BLUE)Running transaction -> fact -> mart pipeline ($(ENV))...$(COLOR_RESET)"
+	@if [ "$(START_DATE)" != "$(END_DATE)" ]; then \
+		echo "$(COLOR_BLUE)Running incrementally from $(START_DATE) to $(END_DATE)$(COLOR_RESET)"; \
+		current_date=$(START_DATE); \
+		while [ "$$current_date" != `date -j -v+1d -f "%Y-%m-%d" "$(END_DATE)" +%Y-%m-%d` ]; do \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)Processing date: $$current_date$(COLOR_RESET)"; \
+			echo "$(COLOR_GREEN)============================================$(COLOR_RESET)"; \
+			echo "$(COLOR_BLUE)Step 1/3: Running silver transaction tables (txn_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models silver.txn_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 2/3: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.fact_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_BLUE)Step 3/3: Running gold mart tables (mart_*)...$(COLOR_RESET)"; \
+			$(DBT) run --models gold.mart_* --target $(ENV) --vars "{execution_date: $$current_date}"; \
+			echo "$(COLOR_GREEN)Date $$current_date completed successfully$(COLOR_RESET)"; \
+			current_date=`date -j -v+1d -f "%Y-%m-%d" "$$current_date" +%Y-%m-%d`; \
+		done; \
+	else \
+		echo "$(COLOR_BLUE)Running for single date: $(DATE)$(COLOR_RESET)"; \
+		echo "$(COLOR_BLUE)Step 1/3: Running silver transaction tables (txn_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models silver.txn_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 2/3: Running gold fact tables (fact_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.fact_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+		echo "$(COLOR_BLUE)Step 3/3: Running gold mart tables (mart_*)...$(COLOR_RESET)"; \
+		$(DBT) run --models gold.mart_* --target $(ENV) --vars '{execution_date: $(DATE)}'; \
+	fi
+	@echo "$(COLOR_GREEN)Transaction -> Fact -> Mart pipeline executed successfully$(COLOR_RESET)"
 
 .PHONY: dbt-test
 dbt-test: ## Run dbt tests

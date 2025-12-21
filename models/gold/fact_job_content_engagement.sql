@@ -2,25 +2,26 @@
     config(
         materialized='incremental',
         schema='gold',
-        unique_key='engagement_id'
+        unique_key=['user_id_natural', 'job_id_natural', 'date_key']
     )
 }}
 
--- Gold layer: Job Content Engagement Fact Table
--- Session-level engagement metrics from streaming events
--- Grain: One row per session (session_id)
+-- Gold layer: Job Content Engagement Fact Table (Reason Engine)
+-- Engagement metrics from streaming events
+-- Grain: One row per user + job + date (dimensional grain)
+-- Updated to match data model specification
 
 with streaming_events as (
     select
         event_id,
-        session_id,
-        user_cookie_id,
+        user_id,
         job_id,
         event_timestamp,
         event_type,
-        event_properties,
+        duration_sec,
+        scroll_depth_percent,
         _ingestion_time
-    from {{ ref('streaming_job_activity') }}
+    from {{ ref('txn_streaming_job_activity') }}
 
     {% if is_incremental() %}
     -- Incremental load: only process new events
@@ -28,117 +29,110 @@ with streaming_events as (
     {% endif %}
 ),
 
--- Step 1: Sessionize events and calculate engagement metrics
-session_metrics as (
+-- Direct aggregation to user + job + date grain (no session level)
+engagement_metrics as (
     select
-        session_id,
-        cast(job_id as int64) as job_id,
-        user_cookie_id,  -- Keep as string (it's a hash, not a user_id)
-        cast(min(event_timestamp) as date) as event_date,
+        -- Grain: user + job + date
+        user_id,
+        job_id,
+        cast(event_timestamp as date) as event_date,
 
-        -- Duration: Time from first to last event in session (in seconds)
-        timestamp_diff(max(event_timestamp), min(event_timestamp), second) as time_on_page_seconds,
+        -- Aggregate VIEW metrics
+        sum(case when event_type = 'VIEW' then 1 else 0 end) as view_count,
 
-        -- Max scroll depth from SCROLL events
-        max(
-            case
-                when event_type = 'SCROLL'
-                then cast(JSON_EXTRACT_SCALAR(event_properties, '$.scroll_depth_percent') as int64)
-                else 0
-            end
-        ) as max_scroll_depth_percent,
+        -- Calculate average and max duration from VIEW events
+        avg(case when event_type = 'VIEW' then duration_sec else null end) as avg_time_on_page_seconds,
+        max(case when event_type = 'VIEW' then duration_sec else null end) as max_time_on_page_seconds,
 
-        -- Did user click apply button?
-        max(
-            case
-                when event_type = 'CLICK'
-                     and JSON_EXTRACT_SCALAR(event_properties, '$.element_id') = 'apply_btn'
-                then 1
-                else 0
-            end
-        ) as did_click_apply,
+        -- Calculate max scroll depth from SCROLL events
+        max(case when event_type = 'SCROLL' then scroll_depth_percent else null end) as max_scroll_depth_percent,
 
-        -- Count of different event types
-        sum(case when event_type = 'PAGE_VIEW' then 1 else 0 end) as page_view_count,
-        sum(case when event_type = 'SCROLL' then 1 else 0 end) as scroll_count,
-        sum(case when event_type = 'CLICK' then 1 else 0 end) as click_count,
-        sum(case when event_type = 'HEARTBEAT' then 1 else 0 end) as heartbeat_count,
+        -- Check if user applied for this job on this date
+        max(case when event_type = 'APPLY_BUTTON_CLICK' then 1 else 0 end) as did_apply,
 
-        -- First and last event timestamps
-        min(event_timestamp) as session_start,
-        max(event_timestamp) as session_end,
+        -- Count bounce VIEW events: duration < 30s (will check for apply later)
+        sum(case
+            when event_type = 'VIEW' and coalesce(duration_sec, 0) < 30 then 1
+            else 0
+        end) as bounce_view_count,
 
-        -- Ingestion time for incremental processing
-        max(_ingestion_time) as _ingestion_time
+        -- Count deep read VIEW events: duration > 240s AND scroll > 70% (will check for apply later)
+        sum(case
+            when event_type = 'VIEW'
+                 and coalesce(duration_sec, 0) > 240 then 1
+            else 0
+        end) as deep_view_count,
+
+        -- Check if max scroll > 70% for deep read
+        max(case
+            when event_type = 'SCROLL' and scroll_depth_percent > 70 then 1
+            else 0
+        end) as has_deep_scroll
 
     from streaming_events
-    group by session_id, job_id, user_cookie_id
+    group by user_id, job_id, cast(event_timestamp as date)
 ),
 
--- Step 2: Join with dimensions
+-- Calculate final metrics with apply check
+final_metrics as (
+    select
+        user_id,
+        job_id,
+        event_date,
+        view_count,
+        avg_time_on_page_seconds,
+        max_time_on_page_seconds,
+        max_scroll_depth_percent,
+
+        -- Bounce: short views AND no apply
+        case when did_apply = 0 then bounce_view_count else 0 end as bounce_no_apply_count,
+
+        -- Deep read: long views with deep scroll AND no apply
+        case
+            when did_apply = 0 and has_deep_scroll = 1 then deep_view_count
+            else 0
+        end as deep_read_no_apply_count
+
+    from engagement_metrics
+),
+
+-- Join with dimensions
 fact_engagement as (
     select
-        -- Primary key
-        sm.session_id as engagement_id,
+        -- Primary key (composite surrogate key: user + job + date)
+        {{ dbt_utils.generate_surrogate_key([
+            'du.user_key',
+            'dj.job_key',
+            'dd.date_key'
+        ]) }} as engagement_id,
 
-        -- Dimension foreign keys
-        dj.job_key,
-        cast(null as string) as user_key,  -- Cookie ID doesn't map to user_id
+        -- Dimension foreign keys (grain)
+        du.user_id_natural,  -- Nullable - only populated for authenticated users
+        dj.job_id_natural,
         dd.date_key,
 
-        -- Time dimension (optional - based on session start hour)
-        cast(format_timestamp('%H', sm.session_start) || '0000' as int64) as time_key,
+        -- Engagement metrics (matching data model spec)
+        cast(fm.view_count as int64) as view_count,
+        cast(coalesce(fm.avg_time_on_page_seconds, 0) as int64) as avg_time_on_page_seconds,
+        cast(coalesce(fm.max_time_on_page_seconds, 0) as int64) as max_time_on_page_seconds,
+        -- cast(coalesce(fm.max_scroll_depth_percent, 0) as int64) as max_scroll_depth_percent,
+        fm.max_scroll_depth_percent,
 
-        -- User identification (cookie-based, not authenticated user)
-        sm.user_cookie_id,
+        -- Bounce and deep read counts (user+job+date level)
+        cast(fm.bounce_no_apply_count as int64) as bounce_no_apply_count,
+        cast(fm.deep_read_no_apply_count as int64) as deep_read_no_apply_count,
 
-        -- Engagement metrics
-        sm.time_on_page_seconds,
-        coalesce(sm.max_scroll_depth_percent, 0) as max_scroll_depth_percent,
+        current_timestamp as _ingestion_time
 
-        -- Bounce logic: session < 10 seconds
-        case
-            when sm.time_on_page_seconds < 10 then true
-            else false
-        end as is_bounce,
-
-        -- Apply click flag
-        case when sm.did_click_apply = 1 then true else false end as did_click_apply,
-
-        -- Event counts
-        sm.page_view_count,
-        sm.scroll_count,
-        sm.click_count,
-        sm.heartbeat_count,
-
-        -- Session timestamps
-        sm.session_start,
-        sm.session_end,
-        sm.event_date,
-
-        -- Engagement quality classification
-        case
-            when sm.time_on_page_seconds >= 120 and sm.max_scroll_depth_percent >= 70 then 'High'
-            when sm.time_on_page_seconds >= 30 and sm.max_scroll_depth_percent >= 30 then 'Medium'
-            else 'Low'
-        end as engagement_quality,
-
-        -- Deep read without apply (key KPI)
-        case
-            when sm.max_scroll_depth_percent > 70 and sm.did_click_apply = 0 then true
-            else false
-        end as is_deep_read_no_apply,
-
-        -- Audit fields
-        sm._ingestion_time,
-        current_timestamp as _created_at
-
-    from session_metrics sm
+    from final_metrics fm
     left join {{ ref('dim_job') }} dj
-        on cast(sm.job_id as string) = dj.job_id_natural
+        on fm.job_id = dj.job_id_natural
         and dj.is_current = true
+    left join {{ ref('dim_user') }} du
+        on fm.user_id = du.user_id_natural
+        and du.is_current = true
     left join {{ ref('dim_date') }} dd
-        on cast(format_date('%Y%m%d', sm.event_date) as int64) = dd.date_key
+        on cast(format_date('%Y%m%d', fm.event_date) as int64) = dd.date_key
 )
 
 select * from fact_engagement

@@ -17,7 +17,9 @@ columns:
   skill_id:
     type: sequence
     start: 1
-    description: "Primary key"
+    prefix: "SKL"
+    padding: 6
+    description: "Primary key - format: SKL000001 (SKL + 6 digits)"
 
   name:
     type: predefined_list
@@ -237,8 +239,8 @@ columns:
   created_at:
     type: faker
     provider: date_time_between
-    start_date: "2024-01-01"
-    end_date: "2024-12-31"
+    start_date: "2025-12-01"
+    end_date: "2025-12-31"
     description: "Skill registration timestamp"
 
   updated_at:
@@ -246,7 +248,7 @@ columns:
     source: created_at
     offset_days:
       min: 0
-      max: 180
+      max: 0
     description: "Last update timestamp"
 
 # Constraints

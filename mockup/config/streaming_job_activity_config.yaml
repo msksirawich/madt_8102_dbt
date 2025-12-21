@@ -5,9 +5,9 @@ description: "Raw immutable event stream from frontend applications"
 
 # Number of records to generate
 # REAL-WORLD VOLUMES: Job platforms have 50K-500K+ events per day
-# Date range: 2024-06-01 to 2025-12-15 = ~198 days
-# Target: ~2,500 events per day = ~500,000 total events
-num_records: 500000
+# Date range: 2025-12-01 to 2025-12-10 = 10 days
+# Target: ~2,500 events per day = ~25,000 total events
+num_records: 25000
 
 # Output settings
 output:
@@ -21,22 +21,16 @@ columns:
     provider: uuid4
     description: "UUID for the specific event"
 
-  session_id:
-    type: realistic_sessions
-    sessions_per_day:
-      min: 100      # Minimum sessions per day
-      max: 500      # Maximum sessions per day
-      avg: 250      # Average sessions per day
-    events_per_session:
-      min: 3        # Minimum events per session (bounce = 1-2 events)
-      max: 25       # Maximum events per session (deep engagement)
-      avg: 8        # Average ~8 events per session
-    description: "Session identifier with realistic session flows"
+  user_id:
+    type: foreign_key
+    reference_table: users
+    reference_column: user_id
+    description: "Authenticated user ID - nullable for anonymous browsing, required for application events"
 
   user_cookie_id:
-    type: faker
-    provider: sha256
-    description: "Hashed identifier for the user/browser"
+    type: derived_hash
+    source_column: user_id
+    description: "Hashed identifier for the user/browser (derived from user_id for consistency)"
 
   job_id:
     type: foreign_key
@@ -46,8 +40,8 @@ columns:
 
   event_timestamp:
     type: daily_hourly_distribution
-    start_date: "2024-06-01"
-    end_date: "2025-12-15"
+    start_date: "2025-12-01"
+    end_date: "2025-12-10"
     daily_volume:
       min: 1000     # Minimum events per day
       max: 5000     # Maximum events per day
@@ -61,30 +55,46 @@ columns:
     weekend_multiplier: 0.6    # 40% less activity on weekends
     description: "UTC timestamp with daily continuity and intraday patterns"
 
+  session_id:
+    type: realistic_sessions
+    sessions_per_day:
+      min: 100      # Minimum sessions per day
+      max: 500      # Maximum sessions per day
+      avg: 250      # Average sessions per day
+    events_per_session:
+      min: 3        # Minimum events per session (bounce = 1-2 events)
+      max: 25       # Maximum events per session (deep engagement)
+      avg: 8        # Average ~8 events per session
+    description: "Session identifier with realistic session flows (user-specific)"
+
   event_type:
     type: faker
     provider: random_element
     elements:
-      - "PAGE_VIEW"
+      - "VIEW"
       - "SCROLL"
-      - "CLICK"
-      - "HEARTBEAT"
-    weights: [25, 30, 20, 25]  # Distribution of event types
-    description: "Event type categorical"
+      - "APPLY_BUTTON_CLICK"
+      - "APPLICATION_FORM_INTERACTION"
+      - "APPLICATION_SUBMISSION"
+    weights: [20, 25, 30, 22.6, 2.4]  # Distribution: VIEW (20%), SCROLL (25%), APPLY_BUTTON (30%), FORM (22.6%), SUBMISSION (2.4%)
+    description: "Event type - Higher engagement funnel: 12% conversion rate (VIEW→SUBMISSION). Aligns ~12,240 applications with 510K total events."
 
   event_properties:
     type: json_properties
     mapping:
-      PAGE_VIEW:
+      VIEW:
         load_time_ms:
           type: random_int
           min: 100
           max: 3000
+        duration_sec:
+          type: random_int
+          min: 5
+          max: 300
         referrer:
           type: random_element
           elements:
             - "google"
-            - "direct"
 
       SCROLL:
         scroll_depth_percent:
@@ -95,48 +105,60 @@ columns:
           type: random_int
           min: 500
           max: 3000
-        scroll_direction:
-          type: random_element
-          elements: ["down", "up"]
 
-      HEARTBEAT:
-        time_since_load_sec:
-          type: random_int
-          min: 5
-          max: 300
-        is_active:
+      APPLY_BUTTON_CLICK:
+        button_location:
+          type: random_element
+          elements:
+            - "job_detail_header"
+            - "job_detail_footer"
+            - "job_list_card"
+        is_authenticated:
           type: boolean
-          probability: 0.7
+          probability: 0.8
+        application_session_id:
+          type: uuid
 
-      CLICK:
-        element_id:
-          type: random_element
-          elements:
-            - "apply_btn"
-            - "save_job_btn"
-            - "share_btn"
-        button_text:
-          type: random_element
-          elements:
-            - "Apply Now"
-            - "Save Job"
-            - "Share"
-        click_x:
+      APPLICATION_FORM_INTERACTION:
+        application_session_id:
+          type: uuid
+        current_step:
           type: random_int
-          min: 0
-          max: 1920
-        click_y:
+          min: 1
+          max: 3
+        step_status:
+          type: random_element
+          elements: ["start", "complete", "abandon"]
+
+      APPLICATION_SUBMISSION:
+        application_session_id:
+          type: uuid
+        application_id:
+          type: foreign_key_ref
+          reference_table: applications
+          reference_table_column: application_id
+        is_complete:
+          type: boolean
+          probability: 0.95
+        total_steps_completed:
           type: random_int
-          min: 0
-          max: 1080
-    description: "Dynamic JSON payload based on event_type"
+          min: 1
+          max: 3
+        total_form_time_sec:
+          type: random_int
+          min: 30
+          max: 600
+    description: "Dynamic JSON payload based on event_type per data model specification"
 
 # Business rules
 rules:
   - Events in same session should have same user_cookie_id
   - Events in same session should have chronological timestamps
-  - PAGE_VIEW is typically first event in a session
-  - event_properties structure depends on event_type
+  - VIEW is typically first event in a session
+  - event_properties structure depends on event_type (per data model)
+  - user_id is nullable for anonymous browsing (VIEW, SCROLL)
+  - user_id is required for application events (APPLY_BUTTON_CLICK, APPLICATION_FORM_INTERACTION, APPLICATION_SUBMISSION)
+  - application_session_id links application funnel events together
   - DAILY CONTINUITY: Every day must have event data for analytics
   - REALISTIC VOLUMES: 1,000-5,000 events per day (real-world scale)
   - INTRADAY PATTERNS: Peak hours during business hours, low at night
@@ -146,25 +168,25 @@ rules:
 event_patterns:
   bounce_session:
     description: "User views page briefly and leaves"
-    events: [PAGE_VIEW]
+    events: [VIEW]
     duration: "<10 seconds"
     percentage: 30%
 
   quick_browse:
     description: "User views and scrolls briefly"
-    events: [PAGE_VIEW, SCROLL]
+    events: [VIEW, SCROLL]
     duration: "10-60 seconds"
     percentage: 40%
 
   deep_engagement:
     description: "User reads content thoroughly"
-    events: [PAGE_VIEW, SCROLL (multiple), HEARTBEAT (periodic)]
+    events: [VIEW, SCROLL (multiple)]
     duration: "1-10 minutes"
     percentage: 25%
 
   application_flow:
     description: "User applies to job"
-    events: [PAGE_VIEW, SCROLL, CLICK (apply_btn)]
+    events: [VIEW, SCROLL, APPLY_BUTTON_CLICK, APPLICATION_FORM_INTERACTION (steps 1-3), APPLICATION_SUBMISSION]
     duration: "2-15 minutes"
     percentage: 5%
 
@@ -186,6 +208,7 @@ dependencies:
 constraints:
   - unique_event_id: true
   - event_timestamp_required: true
-  - valid_event_types: ["PAGE_VIEW", "SCROLL", "CLICK", "HEARTBEAT"]
+  - valid_event_types: ["VIEW", "SCROLL", "APPLY_BUTTON_CLICK", "APPLICATION_FORM_INTERACTION", "APPLICATION_SUBMISSION"]
   - daily_data_required: true
   - chronological_events: true  # Events within session are ordered
+  - user_id_nullable: true  # Nullable for anonymous browsing, required for application events

@@ -4,9 +4,9 @@ table_name: applications
 description: "Job application tracking (user applies to job)"
 
 # Number of records - increased for daily continuity
-# Date range: 2024-06-01 to 2025-12-15 = ~198 days
-# Target: ~60-75 applications per day = ~12,000-15,000 total
-num_records: 12000
+# Date range: 2025-12-01 to 2025-12-10 = 10 days
+# Target: ~60-75 applications per day = ~600-750 total
+num_records: 600
 
 # Output settings
 output:
@@ -18,23 +18,21 @@ columns:
   application_id:
     type: sequence
     start: 1
-    description: "Primary key"
+    prefix: "APP"
+    padding: 6
+    description: "Primary key - format: APP000001 (APP + 6 digits)"
 
   user_id:
     type: foreign_key
     reference_table: users
     reference_column: user_id
-    filter:
-      is_active: true  # Only active users can apply
-    description: "Foreign key to users table (active users only)"
+    description: "Foreign key to users table (all users)"
 
   job_id:
     type: foreign_key
     reference_table: job_postings
     reference_column: job_id
-    filter:
-      status: "open"  # Only open jobs can receive applications
-    description: "Foreign key to job_postings table (open jobs only)"
+    description: "Foreign key to job_postings table (all jobs)"
 
   current_status:
     type: faker
@@ -51,8 +49,8 @@ columns:
 
   applied_at:
     type: daily_distribution
-    start_date: "2024-06-01"
-    end_date: "2025-12-15"
+    start_date: "2025-12-01"
+    end_date: "2025-12-10"
     daily_volume:
       min: 20       # Minimum applications per day
       max: 150      # Maximum applications per day
@@ -79,8 +77,8 @@ columns:
 # Business rules
 rules:
   - No duplicate applications (user_id, job_id must be unique)
-  - Only active users can apply
-  - Only open jobs can receive applications
+  - All users can apply (including inactive users)
+  - All jobs can receive applications (open, closed, or draft status)
   - applied_at must be after job published_at
   - Status progression: applied → screening → interview → offer/rejected
   - Withdrawn can happen at any stage
@@ -115,14 +113,10 @@ patterns:
 dependencies:
   - table: users
     column: user_id
-    condition: is_active = true
   - table: job_postings
     column: job_id
-    condition: status = 'open'
 
 # Constraints
 constraints:
   - unique_application: true  # (user_id, job_id) is unique
-  - active_users_only: true
-  - open_jobs_only: true
   - daily_data_required: true  # Must have data for every day

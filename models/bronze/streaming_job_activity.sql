@@ -12,10 +12,11 @@ select
     event_id,
     session_id,
     user_cookie_id,
+    user_id,
     job_id,
     event_timestamp,
     event_type,
     event_properties,
     _ingestion_time,
-    dt,
+    dt
 from {{ source('bronze', 'streaming_job_activity') }}

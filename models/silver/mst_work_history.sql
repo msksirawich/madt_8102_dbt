@@ -1,6 +1,7 @@
 {{
     config(
-        materialized='table',
+        materialized='incremental',
+        unique_key='work_id',
         schema='silver'
     )
 }}
@@ -11,6 +12,7 @@
 with source as (
     select *
     from {{ ref('work_history') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 cleaned as (

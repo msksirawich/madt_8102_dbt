@@ -310,17 +310,6 @@ class MockDataGenerator:
             else:
                 return [None] * num_records
 
-        elif col_type == 'derived_hash':
-            # Generate consistent hash from source column value
-            source_col = column_config.get('source_column')
-            if generated_df is not None and source_col in generated_df.columns:
-                source_values = generated_df[source_col].tolist()
-                return [hashlib.sha256(str(val).encode()).hexdigest() if val is not None else None
-                        for val in source_values]
-            else:
-                logger.warning(f"Source column {source_col} not found for derived_hash column {column_name}")
-                return [None] * num_records
-
         elif col_type == 'conditional':
             # Handle conditional logic (for draft jobs, etc.)
             return [None] * num_records  # Placeholder, will handle in post-processing
@@ -647,11 +636,11 @@ class MockDataGenerator:
         max_events = events_per_session.get('max', 25)
         avg_events = events_per_session.get('avg', 8)
 
-        # Sort dataframe by user_cookie_id and timestamp, keeping original index
-        df_sorted = generated_df.sort_values(['user_cookie_id', 'event_timestamp']).reset_index()
+        # Sort dataframe by user_cookie_id and timestamp
+        df_sorted = generated_df.sort_values(['user_cookie_id', 'event_timestamp']).reset_index(drop=True)
 
-        # Create session IDs list
-        session_ids_sorted = []
+        # Create a mapping from original index to session_id
+        session_id_map = {}
 
         # Group by user_cookie_id and create sessions within each user
         for user_cookie, user_df in df_sorted.groupby('user_cookie_id'):
@@ -693,14 +682,12 @@ class MockDataGenerator:
                         session_event_target = max(min_events, min(max_events,
                             int(random.expovariate(1.0 / (avg_events - min_events)) + min_events)))
 
-                session_ids_sorted.append(current_session_id)
+                session_id_map[idx] = current_session_id
                 events_in_session += 1
                 last_timestamp = timestamp
 
-        # Add session_ids to sorted dataframe and sort back to original order
-        df_sorted['session_id_temp'] = session_ids_sorted
-        df_sorted = df_sorted.set_index('index').sort_index()
-        session_ids = df_sorted['session_id_temp'].tolist()
+        # Map back to original order
+        session_ids = [session_id_map[i] for i in generated_df.index]
 
         logger.info(f"Generated {len(set(session_ids))} unique sessions for {len(session_ids)} events across {len(df_sorted['user_cookie_id'].unique())} users")
         return session_ids
@@ -756,104 +743,6 @@ class MockDataGenerator:
 
         return df
 
-    def post_process_streaming_events(self, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Post-process streaming_job_activity to create realistic event sequences per session.
-        Each session should follow a realistic user journey:
-        - Bounce: VIEW only
-        - Browse: VIEW → SCROLL
-        - Deep engagement: VIEW → SCROLL (multiple)
-        - Application: VIEW → SCROLL → APPLY_BUTTON_CLICK → APPLICATION_FORM_INTERACTION (steps 1-3) → APPLICATION_SUBMISSION
-        """
-        if self.table_name != 'streaming_job_activity':
-            return df
-
-        import json
-        import uuid
-
-        logger.info("Post-processing streaming events to create realistic journeys...")
-
-        # Sort by session_id and event_timestamp
-        df = df.sort_values(['session_id', 'event_timestamp']).reset_index(drop=True)
-
-        # Define journey patterns with probabilities
-        journey_patterns = [
-            {'name': 'bounce', 'events': ['VIEW'], 'prob': 0.30},
-            {'name': 'quick_browse', 'events': ['VIEW', 'SCROLL'], 'prob': 0.25},
-            {'name': 'deep_browse', 'events': ['VIEW', 'SCROLL', 'SCROLL'], 'prob': 0.20},
-            {'name': 'apply_start', 'events': ['VIEW', 'SCROLL', 'APPLY_BUTTON_CLICK'], 'prob': 0.10},
-            {'name': 'apply_partial', 'events': ['VIEW', 'SCROLL', 'APPLY_BUTTON_CLICK', 'APPLICATION_FORM_INTERACTION'], 'prob': 0.10},
-            {'name': 'apply_complete', 'events': ['VIEW', 'SCROLL', 'APPLY_BUTTON_CLICK',
-                                                   'APPLICATION_FORM_INTERACTION', 'APPLICATION_FORM_INTERACTION',
-                                                   'APPLICATION_FORM_INTERACTION', 'APPLICATION_SUBMISSION'], 'prob': 0.05}
-        ]
-
-        # Process each session
-        new_rows = []
-        for session_id, session_df in df.groupby('session_id'):
-            # Pick a random journey pattern
-            pattern = random.choices(journey_patterns, weights=[p['prob'] for p in journey_patterns])[0]
-            events = pattern['events']
-
-            # Get session context (user, job, timestamp from first event)
-            first_row = session_df.iloc[0]
-            base_timestamp = pd.to_datetime(first_row['event_timestamp'])
-
-            # Create events for this session
-            session_app_id = None
-            for idx, event_type in enumerate(events):
-                # Create a copy of the first row
-                row = first_row.copy()
-
-                # Update event-specific fields
-                row['event_type'] = event_type
-                row['event_timestamp'] = (base_timestamp + pd.Timedelta(seconds=idx * random.randint(5, 30))).strftime('%Y-%m-%d %H:%M:%S')
-
-                # Generate appropriate event_properties based on event_type
-                if event_type == 'VIEW':
-                    row['event_properties'] = json.dumps({
-                        "load_time_ms": random.randint(100, 3000),
-                        "duration_sec": random.randint(5, 300),
-                        "referrer": "google"
-                    })
-                elif event_type == 'SCROLL':
-                    row['event_properties'] = json.dumps({
-                        "scroll_depth_percent": random.randint(10, 100),
-                        "max_scroll_px": random.randint(500, 3000)
-                    })
-                elif event_type == 'APPLY_BUTTON_CLICK':
-                    session_app_id = str(uuid.uuid4())
-                    row['event_properties'] = json.dumps({
-                        "button_location": random.choice(["job_detail_header", "job_detail_footer", "job_list_card"]),
-                        "is_authenticated": True,
-                        "application_session_id": session_app_id
-                    })
-                elif event_type == 'APPLICATION_FORM_INTERACTION':
-                    # Determine step number (1, 2, or 3)
-                    form_events_so_far = sum(1 for e in events[:idx] if e == 'APPLICATION_FORM_INTERACTION')
-                    step = form_events_so_far + 1
-                    row['event_properties'] = json.dumps({
-                        "application_session_id": session_app_id or str(uuid.uuid4()),
-                        "current_step": step,
-                        "step_status": random.choice(["start", "complete"])
-                    })
-                elif event_type == 'APPLICATION_SUBMISSION':
-                    row['event_properties'] = json.dumps({
-                        "application_session_id": session_app_id or str(uuid.uuid4()),
-                        "application_id": f"APP{random.randint(1, 1000):06d}",
-                        "is_complete": True,
-                        "total_steps_completed": 3,
-                        "total_form_time_sec": random.randint(30, 600)
-                    })
-
-                new_rows.append(row)
-
-        # Create new dataframe from processed rows
-        result_df = pd.DataFrame(new_rows)
-        logger.info(f"Created {len(result_df)} events across {result_df['session_id'].nunique()} sessions with realistic journeys")
-
-        return result_df
-
     def generate_table_data(self) -> pd.DataFrame:
         """Generate complete table data"""
         logger.info(f"Generating data for table: {self.table_name}")
@@ -873,7 +762,6 @@ class MockDataGenerator:
         df = self.post_process_skills(df)
         df = self.post_process_conditional(df)
         df = self.post_process_datetime_format(df)
-        df = self.post_process_streaming_events(df)
 
         logger.info(f"Generated {len(df)} records for {self.table_name}")
         return df

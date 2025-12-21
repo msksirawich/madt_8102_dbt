@@ -1,7 +1,8 @@
 {{
     config(
-        materialized='table',
-        schema='gold'
+        materialized='incremental',
+        schema='gold',
+        unique_key='skill_key'
     )
 }}
 
@@ -11,7 +12,7 @@
 
 with skills_base as (
     select *
-    from {{ ref('skills') }}
+    from {{ ref('mst_skills') }}
 ),
 
 skill_dimension as (

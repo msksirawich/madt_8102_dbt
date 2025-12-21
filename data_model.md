@@ -33,7 +33,7 @@ tablegroup "raw_event_streams" {
 // --- oltp tables ---
 
 table users [note: 'oltp: core identity table. source for dim_user.'] {
-  user_id integer [primary key, increment, note: 'primary key']
+  user_id varchar [primary key, note: 'primary key - format: USR000001 (USR + 6 digits)']
   email varchar [unique]
   password_hash varchar
   is_active boolean [note: 'status flag']
@@ -43,8 +43,8 @@ table users [note: 'oltp: core identity table. source for dim_user.'] {
 }
 
 table profiles [note: 'oltp: extended user details. source for dim_user features.'] {
-  profile_id integer [primary key]
-  user_id integer [ref: - users.user_id, note: '1:1 relationship with users']
+  profile_id varchar [primary key, note: 'primary key - format: PRF000001 (PRF + 6 digits)']
+  user_id varchar [ref: - users.user_id, note: '1:1 relationship with users']
   headline varchar [note: 'short bio']
   summary text [note: 'full bio']
   current_salary decimal [note: 'used for salary matching features']
@@ -55,8 +55,8 @@ table profiles [note: 'oltp: extended user details. source for dim_user features
 }
 
 table education [note: 'oltp: education history. source for dim_user.highest_degree.'] {
-  education_id integer [primary key]
-  user_id integer [ref: > users.user_id]
+  education_id varchar [primary key, note: 'primary key - format: EDU000001 (EDU + 6 digits)']
+  user_id varchar [ref: > users.user_id]
   degree varchar [note: 'bs, ms, phd']
   school_name varchar
   created_at timestamp
@@ -65,8 +65,8 @@ table education [note: 'oltp: education history. source for dim_user.highest_deg
 }
 
 table work_history [note: 'oltp: work experience. source for dim_user.years_experience.'] {
-  work_id integer [primary key]
-  user_id integer [ref: > users.user_id]
+  work_id varchar [primary key, note: 'primary key - format: WRK000001 (WRK + 6 digits)']
+  user_id varchar [ref: > users.user_id]
   company_name varchar
   title varchar
   start_date date
@@ -77,7 +77,7 @@ table work_history [note: 'oltp: work experience. source for dim_user.years_expe
 }
 
 table companies [note: 'oltp: company registry. source for dim_job.company_name.'] {
-  company_id integer [primary key]
+  company_id varchar [primary key, note: 'primary key - format: COM000001 (COM + 6 digits)']
   name varchar
   industry varchar [note: 'used for industry matching']
   size_range varchar
@@ -87,8 +87,8 @@ table companies [note: 'oltp: company registry. source for dim_job.company_name.
 }
 
 table job_postings [note: 'oltp: job catalog. source for dim_job.'] {
-  job_id integer [primary key]
-  company_id integer [ref: > companies.company_id]
+  job_id varchar [primary key, note: 'primary key - format: JOB000001 (JOB + 6 digits)']
+  company_id varchar [ref: > companies.company_id]
   title varchar
   description_html text [note: 'html content used to calc word count']
   min_salary decimal
@@ -101,7 +101,7 @@ table job_postings [note: 'oltp: job catalog. source for dim_job.'] {
 }
 
 table skills [note: 'oltp: master list of skills (python, sql). source for dim_skill.'] {
-  skill_id integer [primary key]
+  skill_id varchar [primary key, note: 'primary key - format: SKL000001 (SKL + 6 digits)']
   name varchar
   category varchar [note: 'tech, soft skill, language']
   created_at timestamp
@@ -110,8 +110,8 @@ table skills [note: 'oltp: master list of skills (python, sql). source for dim_s
 }
 
 table job_skills [note: 'oltp: many-to-many link for job requirements.'] {
-  job_id integer [ref: > job_postings.job_id]
-  skill_id integer [ref: > skills.skill_id]
+  job_id varchar [ref: > job_postings.job_id, note: 'composite pk - format: JOB000001']
+  skill_id varchar [ref: > skills.skill_id, note: 'composite pk - format: SKL000001']
   importance integer [note: '1-5 scale. source for fact_job_skill_demand.']
   created_at timestamp
   updated_at timestamp
@@ -120,8 +120,8 @@ table job_skills [note: 'oltp: many-to-many link for job requirements.'] {
 }
 
 table user_skills [note: 'oltp: many-to-many link for user competencies.'] {
-  user_id integer [ref: > users.user_id]
-  skill_id integer [ref: > skills.skill_id]
+  user_id varchar [ref: > users.user_id, note: 'composite pk - format: USR000001']
+  skill_id varchar [ref: > skills.skill_id, note: 'composite pk - format: SKL000001']
   proficiency integer [note: '1-5 scale. source for fact_user_skill_competency.']
   created_at timestamp
   updated_at timestamp
@@ -130,9 +130,9 @@ table user_skills [note: 'oltp: many-to-many link for user competencies.'] {
 }
 
 table applications [note: 'oltp: application state. source for fact_application_flow.'] {
-  application_id integer [primary key]
-  user_id integer [ref: > users.user_id]
-  job_id integer [ref: > job_postings.job_id]
+  application_id varchar [primary key, note: 'primary key - format: APP000001 (APP + 6 digits)']
+  user_id varchar [ref: > users.user_id]
+  job_id varchar [ref: > job_postings.job_id]
   current_status varchar [note: 'applied, rejected, offer']
   applied_at timestamp
   created_at timestamp
@@ -142,30 +142,69 @@ table applications [note: 'oltp: application state. source for fact_application_
 
 // raw streams (json payloads)
 
-table streaming_job_activity [note: 'Bronze Layer: Raw immutable event stream from frontend applications. One row per interaction event.'] {
-  
+table streaming_job_activity [note: 'Bronze Layer: Raw immutable event stream from frontend applications. Unified stream for both content engagement and application funnel tracking.'] {
+
   // Primary Identifiers
   event_id string [primary key, note: 'UUID for the specific event']
-  session_id string [note: 'Critical for sessionizing data to calculate duration and bounce rates']
-  user_cookie_id string [note: 'Hashed identifier for the user/browser']
+  session_id string [note: 'Browser session ID - used for content engagement sessionization']
+  user_cookie_id string [note: 'Hashed identifier for the user/browser (anonymous tracking)']
+  user_id string [note: 'Authenticated user ID - nullable for anonymous browsing, required for application events']
   job_id string [note: 'The specific Job Listing ID being interacted with']
-  
+
   // Temporal Data
   event_timestamp timestamp [note: 'UTC timestamp of when the event occurred']
 
   // Event Classification
-  // We use a single table with an event_type discriminator rather than separate tables
-  event_type string [note: "Categorical: 'PAGE_VIEW', 'SCROLL', 'CLICK', 'HEARTBEAT'"]
-  
+  // Single table with event_type discriminator for both engagement and application funnel events
+  event_type string [note: '''
+    Event Taxonomy:
+
+    Content Engagement Events:
+    - VIEW: Job posting page loaded
+    - SCROLL: User scrolled on job detail page
+
+    Application Funnel Events:
+    - APPLY_BUTTON_CLICK: User clicks "Apply Now" button (funnel entry point)
+    - APPLICATION_FORM_INTERACTION: Step-level tracking (start/complete/abandon)
+    - APPLICATION_SUBMISSION: Final application submit (funnel completion)
+  ''']
+
   // The Flexible Payload (The "What")
-  // Using a JSON/Variant type allows us to store attributes specific to the event_type
-  // without creating a sparse table with null columns.
+  // JSON schema varies by event_type to avoid sparse columns
   event_properties json [note: '''
-    Dynamic payload based on event_type. Examples:
-    - PAGE_VIEW: { "load_time_ms": 200 }
+    Dynamic payload based on event_type. Schema examples:
+
+    Content Engagement:
+    - VIEW: { "load_time_ms": 200, "duration_sec": 30, "referrer": "google" }
     - SCROLL: { "scroll_depth_percent": 75, "max_scroll_px": 1200 }
-    - HEARTBEAT: { "time_since_load_sec": 30, "is_active": true }
-    - CLICK: { "element_id": "apply_btn", "button_text": "Apply Now" }
+
+    Application Funnel:
+    - APPLY_BUTTON_CLICK: {
+        "button_location": "job_detail_header",
+        "is_authenticated": true,
+        "application_session_id": "sess-uuid-123"
+      }
+
+    - APPLICATION_FORM_INTERACTION: {
+        "application_session_id": "sess-uuid-123",
+        "current_step": 1,
+        "step_status": "start"
+      }
+      Note: step_status values: ["start", "complete", "abandon"]
+      Note: current_step values: [1, 2, 3]
+
+    - APPLICATION_SUBMISSION: {
+        "application_session_id": "sess-uuid-123",
+        "application_id": "APP000001",
+        "is_complete": true,
+        "total_steps_completed": 3,
+        "total_form_time_sec": 120
+      }
+
+    Key Design Notes:
+    - application_session_id: Unique per application attempt (one browser session may have multiple application attempts)
+    - application_id: Links to OLTP applications table, only present in APPLICATION_SUBMISSION
+    - step_status tracks granular user behavior: start (landed), complete (progressed), abandon (detected timeout/exit)
   ''']
 
   // Metadata
@@ -188,8 +227,6 @@ tablegroup "dw_dimensions" {
 tablegroup "dw_facts" {
   fact_application_flow
   fact_job_content_engagement
-  fact_job_skill_demand
-  fact_user_skill_competency
 }
 
 table dim_date [note: 'dimension: standard calendar.'] {
@@ -240,33 +277,35 @@ table fact_job_content_engagement [note: 'fact: "reason engine". session-based e
   job_key integer [ref: > dim_job.job_key]
   user_key integer [ref: > dim_user.user_key]
   date_key integer [ref: > dim_date.date_key]
-  time_on_page_seconds integer [note: 'derived from streaming_events_view.duration_ms']
+
+  // measurement
+  view_count integer [note: 'sum of view']
+  avg_time_on_page_seconds integer
+  max_time_on_page_seconds integer [note: 'derived from streaming_events_view.duration_ms']
   max_scroll_depth_percent integer [note: 'derived from streaming_events_view.max_scroll_percent']
-  is_bounce boolean [note: 'logic: duration < 10s']
-  did_click_apply boolean [note: 'logic: true if apply click in session']
+  bounce_no_apply_count boolean [note: 'logic: duration < 30s and no apply button click']
+  deep_read_no_apply_count integer [note: 'logic: duration > 240s and max_scroll_depth_percent > 70% and no apply button click']
 }
+
 
 table fact_application_flow [note: 'fact: "funnel engine". stitches intent (stream) with reality (oltp).'] {
   flow_id varchar [primary key]
   job_key integer [ref: > dim_job.job_key]
   user_key integer [ref: > dim_user.user_key]
   date_key integer [ref: > dim_date.date_key]
-  exit_step integer [note: 'last completed step (1, 2, or 3)']
+
+  // measurement
+  max_step_reached integer [note: 'last completed step (1, 2, or 3)']
   is_completed boolean [note: 'true if status = applied']
-}
 
-table fact_job_skill_demand [note: 'fact: gnn graph edge. job->skill.'] {
-  job_key integer [ref: > dim_job.job_key]
-  skill_key integer [ref: > dim_skill.skill_key]
-  importance_weight integer [note: '1-5 importance']
+  // step measurement
+  start_step1_count integer
+  start_step2_count integer
+  start_step3_count integer
+  drop_step1_count integer
+  drop_step2_count integer
+  drop_step3_count integer
 }
-
-table fact_user_skill_competency [note: 'fact: gnn graph edge. user->skill.'] {
-  user_key integer [ref: > dim_user.user_key]
-  skill_key integer [ref: > dim_skill.skill_key]
-  proficiency_level integer [note: '1-5 proficiency']
-}
-
 
 // ==========================================================
 // zone 3: data mart (gold layer)

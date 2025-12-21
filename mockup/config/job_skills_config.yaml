@@ -4,6 +4,8 @@ table_name: job_skills
 description: "Many-to-many link between jobs and required skills"
 
 # Number of records (each job requires 3-10 skills)
+# With 1200 jobs, avg 6 skills per job = ~7200 job_skills records
+num_records: 7200
 records_per_job:
   min: 3
   max: 10
@@ -38,8 +40,8 @@ columns:
   created_at:
     type: faker
     provider: date_time_between
-    start_date: "2024-01-01"
-    end_date: "2025-12-15"
+    start_date: "2025-12-01"
+    end_date: "2025-12-31"
     description: "Record creation timestamp"
 
   updated_at:
@@ -47,7 +49,7 @@ columns:
     source: created_at
     offset_days:
       min: 0
-      max: 30
+      max: 0
     description: "Last update timestamp"
 
 # Primary key (composite)

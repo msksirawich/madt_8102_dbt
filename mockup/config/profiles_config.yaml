@@ -16,7 +16,9 @@ columns:
   profile_id:
     type: sequence
     start: 1
-    description: "Primary key"
+    prefix: "PRF"
+    padding: 6
+    description: "Primary key - format: PRF000001 (PRF + 6 digits)"
 
   user_id:
     type: foreign_key
@@ -52,8 +54,8 @@ columns:
   created_at:
     type: faker
     provider: date_time_between
-    start_date: "2024-01-01"
-    end_date: "2025-12-15"
+    start_date: "2025-12-01"
+    end_date: "2025-12-31"
     description: "Profile creation timestamp"
 
   updated_at:
@@ -61,7 +63,7 @@ columns:
     source: created_at
     offset_days:
       min: 0
-      max: 180
+      max: 0
     description: "Last update timestamp"
 
 # Constraints

@@ -2,129 +2,141 @@
     config(
         materialized='incremental',
         schema='gold',
-        unique_key='flow_id'
+        unique_key=['user_id_natural', 'job_id_natural', 'date_key']
     )
 }}
 
--- Gold layer: Application Flow Fact Table (Accumulating Snapshot)
--- Tracks application funnel progression and outcomes
--- Grain: One row per application
+-- Gold layer: Application Flow Fact Table (Funnel Engine)
+-- Tracks application funnel progression from streaming events
+-- Grain: One row per user + job + date
+-- Data source: txn_streaming_job_activity (streaming events)
 
-with applications_base as (
+with streaming_events as (
     select
-        application_id,
         user_id,
         job_id,
-        current_status,
-        applied_at,
-        created_at,
-        updated_at,
+        event_timestamp,
+        event_type,
+        -- Form interaction details
+        current_step,
+        step_status,
+        -- Submission details
+        total_steps_completed,
         _ingestion_time
-    from {{ ref('txn_applications') }}
+    from {{ ref('txn_streaming_job_activity') }}
+    where event_type in ('APPLY_BUTTON_CLICK', 'APPLICATION_FORM_INTERACTION', 'APPLICATION_SUBMISSION')
 
     {% if is_incremental() %}
-    -- Incremental load: only process new or updated applications
-    where _ingestion_time > (select max(_ingestion_time) from {{ this }})
+    -- Incremental load: only process new events
+    and _ingestion_time > (select max(_ingestion_time) from {{ this }})
     {% endif %}
 ),
 
--- Optional: Join with streaming events to track funnel steps
-application_with_steps as (
+-- Aggregate to user + job + date grain
+application_flow_metrics as (
     select
-        a.application_id,
-        a.user_id,
-        a.job_id,
-        a.current_status,
-        a.applied_at,
-        a.created_at,
-        a.updated_at,
-        a._ingestion_time,
+        user_id,
+        job_id,
+        cast(event_timestamp as date) as application_date,
 
-        -- Calculate exit step based on status
+        -- Check if application was completed (has submission event)
+        max(case when event_type = 'APPLICATION_SUBMISSION' then 1 else 0 end) as is_completed,
+
+        -- Get max step reached from submission or form interactions
+        coalesce(
+            max(case when event_type = 'APPLICATION_SUBMISSION' then total_steps_completed end),
+            max(case when event_type = 'APPLICATION_FORM_INTERACTION' and step_status = 'complete' then current_step end),
+            0
+        ) as max_step_reached,
+
+        -- Count step starts (step_status = 'start')
+        sum(case when current_step = 1 and step_status = 'start' then 1 else 0 end) as start_step1_count,
+        sum(case when current_step = 2 and step_status = 'start' then 1 else 0 end) as start_step2_count,
+        sum(case when current_step = 3 and step_status = 'start' then 1 else 0 end) as start_step3_count,
+
+        -- Track if any step was completed
+        max(case when current_step = 1 and step_status = 'complete' then 1 else 0 end) as completed_step1,
+        max(case when current_step = 2 and step_status = 'complete' then 1 else 0 end) as completed_step2,
+        max(case when current_step = 3 and step_status = 'complete' then 1 else 0 end) as completed_step3
+
+    from streaming_events
+    group by user_id, job_id, cast(event_timestamp as date)
+),
+
+-- Calculate drop-off counts
+application_flow_final as (
+    select
+        user_id,
+        job_id,
+        application_date,
+        max_step_reached,
+        is_completed,
+
+        -- Step start counts
+        start_step1_count,
+        start_step2_count,
+        start_step3_count,
+
+        -- Calculate drop-offs (count of steps where user started but didn't progress)
+        -- Drop at step 1: started step 1 but didn't complete it
         case
-            when a.current_status in ('applied', 'rejected', 'offer', 'accepted') then 3  -- Completed application
-            when a.current_status = 'in_progress' then 2  -- Started but not submitted
-            else 1  -- Viewed but not started
-        end as exit_step,
+            when start_step1_count > 0 and completed_step1 = 0 then start_step1_count
+            else 0
+        end as drop_step1_count,
 
-        -- Completion flag
-        case when a.current_status = 'applied' then true else false end as is_completed,
+        -- Drop at step 2: started step 2 but didn't complete it
+        case
+            when start_step2_count > 0 and completed_step2 = 0 then start_step2_count
+            else 0
+        end as drop_step2_count,
 
-        -- Success flags
-        case when a.current_status = 'offer' then true else false end as received_offer,
-        case when a.current_status = 'accepted' then true else false end as accepted_offer,
-        case when a.current_status = 'rejected' then true else false end as was_rejected
+        -- Drop at step 3: started step 3 but didn't complete application
+        case
+            when start_step3_count > 0 and is_completed = 0 then start_step3_count
+            else 0
+        end as drop_step3_count
 
-    from applications_base a
+    from application_flow_metrics
 ),
 
 -- Join with dimensions
 fact_application as (
     select
-        -- Primary key
-        cast(a.user_id as string) || '_' ||
-        cast(a.job_id as string) || '_' ||
-        cast(a.application_id as string) as flow_id,
+        -- Primary key (composite surrogate key: user + job + date)
+        {{ dbt_utils.generate_surrogate_key([
+            'du.user_key',
+            'dj.job_key',
+            'dd.date_key'
+        ]) }} as flow_id,
 
         -- Dimension foreign keys
-        dj.job_key,
-        du.user_key,
+        dj.job_id_natural,
+        du.user_id_natural,
         dd.date_key,
 
-        -- Time dimension (optional - based on application hour)
-        cast(format_timestamp('%H', cast(a.applied_at as timestamp)) || '0000' as int64) as time_key,
+        -- Funnel metrics (matching data model spec)
+        cast(af.max_step_reached as int64) as max_step_reached,
+        cast(af.is_completed as bool) as is_completed,
 
-        -- Application identifiers
-        a.application_id,
+        -- Step measurements (matching data model spec)
+        cast(af.start_step1_count as int64) as start_step1_count,
+        cast(af.start_step2_count as int64) as start_step2_count,
+        cast(af.start_step3_count as int64) as start_step3_count,
+        cast(af.drop_step1_count as int64) as drop_step1_count,
+        cast(af.drop_step2_count as int64) as drop_step2_count,
+        cast(af.drop_step3_count as int64) as drop_step3_count,
 
-        -- Funnel metrics
-        a.exit_step,
-        a.is_completed,
+        current_timestamp as _ingestion_time
 
-        -- Status tracking
-        a.current_status,
-        a.received_offer,
-        a.accepted_offer,
-        a.was_rejected,
-
-        -- Drop-off analysis
-        case when a.exit_step < 2 then true else false end as dropped_at_step1,
-        case when a.exit_step < 3 then true else false end as dropped_at_step2,
-
-        -- Time metrics
-        a.applied_at,
-        cast(a.applied_at as date) as applied_date,
-        extract(hour from cast(a.applied_at as timestamp)) as applied_hour,
-        extract(dayofweek from cast(a.applied_at as timestamp)) as applied_day_of_week,
-
-        -- Processing time (if applicable)
-        timestamp_diff(cast(a.updated_at as timestamp), cast(a.applied_at as timestamp), day) as days_since_application,
-
-        -- Application funnel classification
-        case
-            when a.current_status = 'accepted' then 'Hired'
-            when a.current_status = 'offer' then 'Offer Extended'
-            when a.current_status = 'rejected' then 'Rejected'
-            when a.current_status = 'applied' then 'Under Review'
-            when a.current_status = 'in_progress' then 'Incomplete'
-            else 'Other'
-        end as application_stage,
-
-        -- Audit fields
-        a.created_at as application_created_at,
-        a.updated_at as application_updated_at,
-        a._ingestion_time,
-        current_timestamp as _created_at
-
-    from application_with_steps a
+    from application_flow_final af
     left join {{ ref('dim_job') }} dj
-        on a.job_id = dj.job_id_natural
+        on af.job_id = dj.job_id_natural
         and dj.is_current = true
     left join {{ ref('dim_user') }} du
-        on a.user_id = du.user_id_natural
+        on af.user_id = du.user_id_natural
         and du.is_current = true
     left join {{ ref('dim_date') }} dd
-        on cast(format_date('%Y%m%d', cast(a.applied_at as date)) as int64) = dd.date_key
+        on cast(format_date('%Y%m%d', af.application_date) as int64) = dd.date_key
 )
 
 select * from fact_application

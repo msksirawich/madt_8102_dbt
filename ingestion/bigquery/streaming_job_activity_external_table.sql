@@ -6,6 +6,7 @@ CREATE OR REPLACE EXTERNAL TABLE `madt-8102-479812.madt8102_bronze.streaming_job
   event_id STRING,
   session_id STRING,
   user_cookie_id STRING,
+  user_id STRING,
   job_id STRING,
   event_timestamp TIMESTAMP,
   event_type STRING,

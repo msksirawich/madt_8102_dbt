@@ -6,7 +6,7 @@
         target_database=target.database,
         unique_key='job_id',
         strategy='check',
-        check_cols=['title', 'description_html', 'min_salary', 'max_salary', 'status', 'company_id'],
+        check_cols='all',
         invalidate_hard_deletes=True
     )
 }}
@@ -18,11 +18,13 @@
 with job_postings_base as (
     select *
     from {{ ref('mst_job_postings') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 companies_cleaned as (
     select *
     from {{ ref('mst_companies') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 job_snapshot_source as (
@@ -99,7 +101,7 @@ job_snapshot_source as (
         jp.updated_at as job_updated_at
 
     from job_postings_base jp
-    inner join companies_cleaned c on jp.company_id = c.company_id
+    left join companies_cleaned c on jp.company_id = c.company_id
 )
 
 select * from job_snapshot_source

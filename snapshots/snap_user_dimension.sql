@@ -6,7 +6,7 @@
         target_database=target.database,
         unique_key='user_id',
         strategy='check',
-        check_cols=['headline', 'highest_degree', 'years_experience', 'current_position', 'current_salary'],
+        check_cols='all',
         invalidate_hard_deletes=True
     )
 }}
@@ -17,13 +17,15 @@
 
 with users_base as (
     select *
-    from {{ ref('users') }}
+    from {{ ref('mst_users') }}
     where is_active = 'True'  -- is_active is STRING, not BOOL
+    -- and CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 profiles_cleaned as (
     select *
     from {{ ref('mst_profiles') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 education_ranked as (
@@ -43,6 +45,7 @@ education_ranked as (
                 created_at desc
         ) as degree_rank
     from {{ ref('mst_education') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
 ),
 
 highest_education as (
@@ -66,6 +69,7 @@ work_experience as (
             case when end_date is null then company_name end
         ) as current_company
     from {{ ref('mst_work_history') }}
+    -- where CAST(dt AS DATE) = CAST('{{ var("execution_date") }}' AS DATE)
     group by user_id
 ),
 
